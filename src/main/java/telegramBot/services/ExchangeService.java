@@ -1,0 +1,17 @@
+package telegramBot.services;
+
+import org.springframework.boot.CommandLineRunner;
+import telegramBot.dto.OrderDto;
+import telegramBot.entity.Exchange;
+import telegramBot.enums.Language;
+
+import java.util.List;
+
+public interface ExchangeService extends CommandLineRunner  {
+    void update(Exchange exchange);
+    Exchange getExchange(telegramBot.enums.Exchange exchange);
+    void init();
+
+    List<OrderDto> findNewOrdersByLanguage(Language language);
+
+}
