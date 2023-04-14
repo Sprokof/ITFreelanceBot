@@ -141,7 +141,7 @@ public class OrderRepoImpl implements OrderRepo {
             session.beginTransaction();
             session.createSQLQuery("DELETE FROM ORDERS WHERE " +
                             "INIT_DATE <= cast(:date as date)").
-                    setParameter("date", currentDateMinusElevenDays()).
+                    setParameter("date", currentDateMinusSevenDays()).
                     executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -154,7 +154,7 @@ public class OrderRepoImpl implements OrderRepo {
     }
 
 
-    private String currentDateMinusElevenDays(){
-        return LocalDate.now().minusDays(9).toString();
+    private String currentDateMinusSevenDays(){
+        return LocalDate.now().minusDays(7).toString();
     }
 }

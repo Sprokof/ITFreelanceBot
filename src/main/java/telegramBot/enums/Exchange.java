@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Exchange {
-    HABR_FREELANCE("Habr-Freelance", "https://freelance.habr.com"),
+    HABR_FREELANCE("Хабр Фриланс", "https://freelance.habr.com"),
     FL_RU("Fl.ru", "https://www.fl.ru");
 
 
