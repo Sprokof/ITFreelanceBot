@@ -20,17 +20,16 @@ import java.util.Map;
 public class TaskImpl implements Task {
     private static final String HABR_SELECTOR = ".task__title a";
     private static final String FL_SELECTOR = ".search-item-body h3 a";
-
-    private static ParseClass flClasses;
     private static final Map<String, String> habrLinks = new HashMap<>();
 
     private static final Map<String, String> flLinks = new HashMap<>();
 
 
     static {
-        habrLinks.put(Language.JAVA.getName(), "https://freelance.habr.com/tasks?page=1&q=java");
-        habrLinks.put(Language.PYTHON.getName(), "https://freelance.habr.com/tasks?page=1&q=python");
-        habrLinks.put(Language.JAVASCRIPT.getName(), "https://freelance.habr.com/tasks?page=1&q=javascript");
+        habrLinks.put(Language.JAVA.getName(), "https://freelance.habr.com/tasks?page=1&q=java&fields=tags,title,description");
+        habrLinks.put(Language.PYTHON.getName(), "https://freelance.habr.com/tasks?page=1&q=python&fields=tags,title,description");
+        habrLinks.put(Language.JAVASCRIPT.getName(), "https://freelance.habr.com/tasks?page=1&q=javascript&fields=tags,title,description");
+        habrLinks.put(Language.PHP.getName(), "https://freelance.habr.com/tasks?page=1&q=phpfields=tags,title,description");
 
         flLinks.put(Language.JAVA.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=java&page=1");
@@ -38,9 +37,9 @@ public class TaskImpl implements Task {
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=python&page=1");
         flLinks.put(Language.JAVASCRIPT.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=javascript&page=1");
+        flLinks.put(Language.PHP.getName(),
+                "https://www.fl.ru/search/?action=search&type=projects&search_string=php&page=1");
 
-        //habrClasses = new ParseClass("task_title", "task_title a");
-        //flClasses = new ParseClass(".select-item-body a");
     }
 
     @Override
@@ -87,10 +86,8 @@ public class TaskImpl implements Task {
     public Document getDocument(String link) {
         Document document = null;
         try {
-            document = Jsoup.connect(link).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            document = SSLHelper.getConnection(link).get();
+        } catch (IOException e) {e.printStackTrace();}
         return document;
     }
 

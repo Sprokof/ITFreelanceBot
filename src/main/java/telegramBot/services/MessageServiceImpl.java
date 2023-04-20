@@ -71,8 +71,7 @@ public class MessageServiceImpl implements MessageService {
                     for(OrderDto orderDto : lDtos){
                         String orderInfo = getOrderInfo(orderDto);
                         notice.append("\n").append(orderInfo);
-                        String delim = "\n..............................\n";
-                        notice.append(delim);
+                        notice.append(delim());
                     }
             }
         }
@@ -114,6 +113,14 @@ public class MessageServiceImpl implements MessageService {
         return "<a href=" + "'"+dto.getExchangeLink() + dto.getLink() + "'"+">" + dto.getTitle() + "</a>";
 
 
+    }
+
+    public static String delim() {
+        String delim = "\n.";
+        for(int i = 0; i < 70; i ++){
+            delim += ".";
+        }
+    return delim + "\n";
     }
 
 }

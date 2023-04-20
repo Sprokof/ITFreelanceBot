@@ -3,9 +3,13 @@ package telegramBot.command;
 
 import telegramBot.services.MessageService;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import telegramBot.services.MessageServiceImpl;
 
 public class InfoCommand implements Command {
-    private static final String INFO_COMMAND = "Команда /add - добавление языка для подписки." +
+    private static final String INFO_COMMAND = "На данный момент собираю заказы со следующих бирж: freelance.habr.com, fl.ru"+
+            "\nПоддерживаю следующие языки: Java, Python, JavaScript, PHP "+ MessageServiceImpl.delim() +
+            "Поддерживаю следующие комманды" +
+            "\nКоманда /add - добавление языка для подписки." +
             "\nКоманда /remove - удаления языка подписки." +
             "\nКоманда /stop - остановка уведомлений об новых заказах." +
             "\nКоманда /restart - возообновление уведомлений об новых заказах.";

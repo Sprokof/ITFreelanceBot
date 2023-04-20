@@ -4,7 +4,9 @@ package telegramBot.enums;
 public enum Language {
     JAVA("Java"),
     PYTHON("Python"),
-    JAVASCRIPT("JavaScript");
+    JAVASCRIPT("JavaScript"),
+    PHP("PHP");
+
     private final String name;
 
     Language(String name){

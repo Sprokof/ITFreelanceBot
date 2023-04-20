@@ -32,10 +32,10 @@ public class OrderDto {
 
     public static List<OrderDto> toDtos(List<Order> orders) {
         List<OrderDto> result = new ArrayList<>();
-        for(Order order : orders){
+        for (Order order : orders) {
             result.add(toDto(order));
         }
-    return result;
+        return result;
     }
 
 

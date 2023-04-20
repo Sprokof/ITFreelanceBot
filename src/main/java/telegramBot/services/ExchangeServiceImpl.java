@@ -57,7 +57,7 @@ public class ExchangeServiceImpl implements ExchangeService {
             }
 
         }
-        InitStatusService.setInit();
+        InitStatusService.setInit(true);
 
     }
 
@@ -101,6 +101,10 @@ public class ExchangeServiceImpl implements ExchangeService {
         return OrderDto.toDtos(newOrders);
 
     }
+
+
+
+
 
 
 

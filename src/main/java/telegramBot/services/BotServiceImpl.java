@@ -26,7 +26,6 @@ public class BotServiceImpl implements BotService {
     private UserService userService;
 
 
-
     @Override
     public synchronized void executeNotices() {
         waitInit();

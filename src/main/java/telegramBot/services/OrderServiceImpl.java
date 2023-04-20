@@ -19,12 +19,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepo orderRepo;
 
-    @Autowired
-    private ExchangeService exchangeService;
-
-    @Autowired
-    private SubscriptionService subscriptionService;
-
 
     @Override
     public synchronized boolean saveIfNotExist(Order order) {
@@ -46,7 +40,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void deleteOldOrders() {
-        this.orderRepo.deleteOldOrders();
+        if(orderRepo.containsOldOrders()) {
+            this.orderRepo.deleteOldOrders();
+            InitStatusService.setInit(false);
+        }
     }
 
     @Override
@@ -83,4 +80,34 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrder(Order order) {
         this.orderRepo.update(order);
     }
+
+    @Override
+    public BigInteger getTaskNum(Order order) {
+        String link = order.getLink();
+        String digitPat = "\\d+";
+        String[] linksItems = link.split("");
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < linksItems.length; i++) {
+            String item = linksItems[i];
+            if (item.matches(digitPat)) {
+                int index = i;
+                while (linksItems[index].matches(digitPat)) {
+                    output.append(linksItems[index]);
+                    index++;
+                }
+            }
+
+        }
+        return (new BigInteger(output.toString()));
+
+    }
+
+    @Override
+    public BigInteger[] getTasksNums(List<Order> orders) {
+       return orders.stream().map(this::getTaskNum).sorted().
+               collect(Collectors.toList()).toArray(BigInteger[]::new);
+    }
+
+
+
 }

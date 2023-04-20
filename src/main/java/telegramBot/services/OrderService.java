@@ -19,4 +19,8 @@ public interface OrderService extends CommandLineRunner {
 
     void deleteOldOrders();
 
+    BigInteger getTaskNum(Order order);
+    BigInteger[] getTasksNums(List<Order> orders);
+
+
 }

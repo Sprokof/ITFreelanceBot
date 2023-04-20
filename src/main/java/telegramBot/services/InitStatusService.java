@@ -12,9 +12,9 @@ public class InitStatusService {
        return repo.getStatus().isInit();
     }
 
-    public static void setInit(){
+    public static void setInit(boolean flag){
         InitStatus status = repo.getStatus();
-        status.setInit(true);
+        status.setInit(flag);
         repo.update(status);
     }
 }

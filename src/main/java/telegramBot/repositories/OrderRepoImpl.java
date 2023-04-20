@@ -157,4 +157,46 @@ public class OrderRepoImpl implements OrderRepo {
     private String currentDateMinusSevenDays(){
         return LocalDate.now().minusDays(7).toString();
     }
+
+    @Override
+    public void deleteOrderById(long id) {
+        Session session = null;
+        try {
+            session = this.sessionFactory.openSession();
+            session.beginTransaction();
+            session.createSQLQuery("DELETE FROM " +
+                    "ORDERS WHERE ID=:id").setParameter("id", id).executeUpdate();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            if (session != null && session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    @Override
+    public boolean containsOldOrders() {
+        Session session = null;
+        BigInteger count = null;
+        try {
+            session = this.sessionFactory.openSession();
+            session.beginTransaction();
+            count = (BigInteger) session.createSQLQuery("SELECT COUNT(ID) FROM ORDERS WHERE " +
+                            "INIT_DATE <= cast(:date as date)").
+                    setParameter("date", currentDateMinusSevenDays()).
+                    getSingleResult();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            if (session != null && session.getTransaction() != null) {
+                session.getTransaction().rollback();
+                if(e instanceof NoResultException) return false;
+            }
+        } finally {
+            if (session != null) session.close();
+        }
+        assert count != null;
+        return count.intValue() > 0;
+    }
 }
