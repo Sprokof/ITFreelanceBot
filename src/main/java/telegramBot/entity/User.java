@@ -33,7 +33,7 @@ public class User {
 
     public User(String chatId) {
         this.chatId = chatId;
-        this.active = true;
+        this.active = false;
     }
 
     @Override
@@ -53,6 +53,14 @@ public class User {
         if(this.subscriptions == null) this.subscriptions = new ArrayList<>();
         this.subscriptions.add(subscription);
         subscription.getUsers().add(this);
+    }
+
+    public void removeSubscription(Subscription subscription){
+        if(this.subscriptions != null) {
+            this.subscriptions.remove(subscription);
+            subscription.getUsers().remove(this);
+        }
+
     }
 
     public List<Subscription> getSubscriptions() {

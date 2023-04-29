@@ -9,7 +9,7 @@ public interface UserRepo {
     User getUserByChatId(String chatId);
     void update(User user);
     boolean exist(User user);
-    List<User> getAllUsers();
+    List<User> getAllActiveUsers();
 
 
 }

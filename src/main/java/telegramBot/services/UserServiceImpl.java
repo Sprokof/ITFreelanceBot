@@ -39,9 +39,9 @@ public class UserServiceImpl implements UserService {
         Language language = Language.getLanguageByValue(input);
         Subscription subscription = this.subscriptionService.
                 getSubscriptionByLanguage(language);
+        if(!user.isActive()) user.setActive(true);
         user.addSubscription(subscription);
         this.subscriptionService.update(subscription);
-
     }
 
     @Override
@@ -65,17 +65,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return this.userRepo.getAllUsers();
+    public List<User> getAllActiveUsers() {
+        return this.userRepo.getAllActiveUsers();
     }
 
     @Override
     public void removeSubscription(User user, Update update) {
-        int userId = (int) user.getId();
         String language = update.getMessage().getText();
-        int subId = this.subscriptionService.
-                getSubscriptionByLanguage(Language.getLanguageByValue(language)).getId();
-        this.subscriptionService.deleteSubscription(userId, subId);
+        Subscription subscription = this.subscriptionService.
+                getSubscriptionByLanguage(Language.getLanguageByValue(language));
+        user.removeSubscription(subscription);
+        if(user.getSubscriptions().isEmpty()) user.setActive(false);
+        this.subscriptionService.update(subscription);
     }
 
     @Override

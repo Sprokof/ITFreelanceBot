@@ -98,13 +98,13 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<User> getAllUsers() {
+    public List<User> getAllActiveUsers() {
         Session session = null;
         List<User> chatsIds = null;
     try {
         session = this.sessionFactory.openSession();
         session.beginTransaction();
-        chatsIds = (List<User>) session.createSQLQuery("SELECT * FROM USERS").
+        chatsIds = (List<User>) session.createSQLQuery("SELECT * FROM USERS WHERE ACTIVE IS TRUE").
                 addEntity(User.class).list();
         session.getTransaction().commit();
     }

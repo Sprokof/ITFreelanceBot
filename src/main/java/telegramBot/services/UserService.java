@@ -15,7 +15,7 @@ public interface UserService {
     User createUser(String chatId);
 
     boolean exist(String chatId);
-    List<User> getAllUsers();
+    List<User> getAllActiveUsers();
 
     void removeSubscription(User user, Update update);
 

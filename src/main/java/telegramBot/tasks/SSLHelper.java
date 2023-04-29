@@ -13,7 +13,9 @@ import java.security.cert.X509Certificate;
 
 public class SSLHelper {
     static public Connection getConnection(String url){
-        return Jsoup.connect(url).sslSocketFactory(SSLHelper.socketFactory());
+        return Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Edg/112.0.1722.48")
+                .sslSocketFactory(SSLHelper.socketFactory());
     }
 
     static private SSLSocketFactory socketFactory() {

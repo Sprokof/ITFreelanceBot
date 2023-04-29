@@ -28,11 +28,9 @@ public class BotServiceImpl implements BotService {
 
     @Override
     public synchronized void executeNotices() {
-        waitInit();
-        if(!this.subscriptionService.subscriptionsExists()) return ;
-        for(User user : this.userService.getAllUsers()){
-            List<Subscription> subscriptions;
-            if(!user.isActive() || (subscriptions = user.getSubscriptions()).isEmpty()) continue;
+        if(!InitStatusService.init() || !this.subscriptionService.subscriptionsExists()) return ;
+        for(User user : this.userService.getAllActiveUsers()){
+            List<Subscription> subscriptions = user.getSubscriptions();
             List<OrderDto> dtos = new ArrayList<>();
             for(Subscription subscription : subscriptions){
                 Language subLanguage = Language.getLanguageByValue(subscription.getLanguage());
@@ -60,16 +58,7 @@ public class BotServiceImpl implements BotService {
         catch (InterruptedException e){
             e.getCause();
         }
-    }
 
-    private synchronized void waitInit() {
-        while (!InitStatusService.init()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.getCause();
-            }
-        }
     }
 
     private void addNewOrderIfExist(List<OrderDto> target, List<OrderDto> newOrders){
