@@ -7,7 +7,8 @@ public enum CommandName {
     RESTART("/restart"),
     INFO("/info"),
     REMOVE("/remove"),
-    UNKNOWN("/unknown");
+    UNKNOWN("/unknown"),
+    SUBSCRIPTIONS("/subs");
 
     private final String name;
 

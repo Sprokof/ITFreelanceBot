@@ -75,6 +75,7 @@ public class TaskImpl implements Task {
             orders.add(new Order(taskTitle, taskLink));
 
         }
+
         return orders;
     }
 
@@ -90,7 +91,6 @@ public class TaskImpl implements Task {
             orders.add(new Order(taskTitle, taskLink));
 
         }
-
         return orders;
     }
 
@@ -152,7 +152,7 @@ public class TaskImpl implements Task {
         }
         return null;
     }
-    
+
     private List<Order> extractKworkOrders(String json){
         return Arrays.stream(json.
                 split("(\\{|\\})")).
@@ -187,7 +187,8 @@ public class TaskImpl implements Task {
 
             if (field.startsWith(namePrefix)) {
                 int index = field.indexOf(":") + 1;
-                title = field.substring(index).replaceAll("\"", "");
+                title = field.substring(index).
+                        replaceAll("\"", "").trim();
             }
         }
     return new Order(title, link);

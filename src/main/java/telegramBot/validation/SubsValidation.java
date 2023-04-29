@@ -15,11 +15,7 @@ import java.util.List;
 public class SubsValidation extends AbstractValidation {
 
     @Autowired
-    private SubscriptionService subscriptionService;
-
-    @Autowired
     private UserService userService;
-
 
     private final MessageService messageService;
 
