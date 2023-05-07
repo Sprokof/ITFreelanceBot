@@ -15,6 +15,7 @@ public interface SubscriptionRepo {
     List<Subscription> getSubscriptions();
 
     boolean subscriptionsExists();
+    boolean subscriptionExist(Language language);
 
     void deleteSubscription(int userId, int subId);
 }

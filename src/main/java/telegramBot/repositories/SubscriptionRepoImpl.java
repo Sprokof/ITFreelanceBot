@@ -1,5 +1,6 @@
 package telegramBot.repositories;
 
+import org.checkerframework.checker.units.qual.A;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -161,22 +163,67 @@ public class SubscriptionRepoImpl implements SubscriptionRepo {
     @Override
     public void deleteSubscription(int userId, int subId) {
         Session session = null;
+        try {
+            session = this.sessionFactory.openSession();
+            session.beginTransaction();
+            session.createSQLQuery("DELETE FROM USERS_SUBSCRIPTIONS WHERE " +
+                    "USER_ID=:uId and SUBSCRIPTION_ID=:sId").
+                    setParameter("uId", userId).
+                    setParameter("sId", subId).executeUpdate();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            if (session != null && session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } finally {
+            if (session != null) session.getTransaction();
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean subscriptionExist(Language language) {
+        Session session = null;
+        int id = getId(language.getName());
+        List<Integer> ids = new ArrayList<>();
     try {
         session = this.sessionFactory.openSession();
         session.beginTransaction();
-        session.createSQLQuery("DELETE FROM USERS_SUBSCRIPTIONS WHERE " +
-                "USER_ID=:uId and SUBSCRIPTION_ID=:sId").
-                setParameter("uId", userId).
-                setParameter("sId", subId).executeUpdate();
+        ids = (List<Integer>) session.createQuery("SELECT USER_ID FROM USERS_SUBSCRIPTIONS " +
+                "WHERE SUBSCRIPTION_ID=:id").
+                setParameter("id", id).list();
         session.getTransaction().commit();
     }
-    catch(Exception e){
+    catch (Exception e){
         if(session != null && session.getTransaction() != null){
             session.getTransaction().rollback();
         }
     }
     finally {
-        if(session != null) session.getTransaction();
+        if(session != null) session.close();
     }
+        return ! ids.isEmpty();
+    }
+
+    private Integer getId(String language){
+        Session session = null;
+        Integer id = null;
+    try {
+        session = this.sessionFactory.openSession();
+        session.beginTransaction();
+        id = (Integer) session.createSQLQuery("SELECT ID FROM " +
+                "SUBSCRIPTIONS WHERE SUB_LANGUAGE=:lan").
+                setParameter("lan", language).getSingleResult();
+        session.getTransaction().commit();
+    }
+    catch (Exception e){
+        if(session != null && session.getTransaction() != null){
+            session.getTransaction().rollback();
+        }
+    }
+    finally {
+        if(session != null) session.close();
+    }
+    return id;
     }
 }

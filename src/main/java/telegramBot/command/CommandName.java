@@ -8,7 +8,8 @@ public enum CommandName {
     INFO("/info"),
     REMOVE("/remove"),
     UNKNOWN("/unknown"),
-    SUBSCRIPTIONS("/subs");
+    SUBSCRIPTIONS("/subs"),
+    LATEST("/latest");
 
     private final String name;
 

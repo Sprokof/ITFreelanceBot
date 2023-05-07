@@ -38,5 +38,10 @@ public class OrderDto {
         return result;
     }
 
+    public String getOrderInfo() {
+        return "<a href=" + "'" + this.getExchangeLink() +
+                this.getLink() + "'" + ">" + this.getTitle() + "</a>";
+    }
+
 
 }

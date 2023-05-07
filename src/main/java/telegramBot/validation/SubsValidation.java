@@ -82,4 +82,27 @@ public class SubsValidation extends AbstractValidation {
         return true;
 
     }
+
+    @Override
+    public boolean latestCommandValidate(Update update) {
+        String chatId = update.getMessage().getChatId().toString();
+        String subsLanguage = update.getMessage().getText();
+
+        if(subsLanguage.isEmpty()){
+            this.messageService.sendResponse(chatId, ValidationMessage.EMPTY.getMessage());
+            return false;
+        }
+
+        if(!languageSupports(subsLanguage)){
+            this.messageService.sendResponse(chatId, ValidationMessage.NOT_SUPPORTS.getMessage());
+            return false;
+        }
+
+        if(!subscriptionExist(chatId, subsLanguage)){
+            this.messageService.sendResponse(chatId, ValidationMessage.SUBSCRIPTION_NOT_EXIST.getMessage());
+            return false;
+        }
+
+        return true;
+    }
 }

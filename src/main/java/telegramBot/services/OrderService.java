@@ -1,6 +1,7 @@
 package telegramBot.services;
 
 import org.springframework.boot.CommandLineRunner;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
@@ -21,6 +22,9 @@ public interface OrderService extends CommandLineRunner {
 
     BigInteger getTaskNum(Order order);
     BigInteger[] getTasksNums(List<Order> orders);
+    void saveNewOrdersWithoutSubscriptions();
+    String getLatestOrdersMessage(Update update);
+
 
 
 }

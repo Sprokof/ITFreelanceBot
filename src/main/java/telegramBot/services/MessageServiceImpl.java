@@ -30,6 +30,7 @@ public class MessageServiceImpl implements MessageService {
         sendMessage.setChatId(userChatId);
         sendMessage.enableHtml(true);
         sendMessage.setText(message);
+        sendMessage.disableWebPagePreview();
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -69,7 +70,7 @@ public class MessageServiceImpl implements MessageService {
                     String subscription = "По запросу  " + language.getName() + ":";
                     notice.append("\n").append(subscription);
                     for(OrderDto orderDto : lDtos){
-                        String orderInfo = getOrderInfo(orderDto);
+                        String orderInfo = orderDto.getOrderInfo();
                         notice.append("\n").append(orderInfo);
                         notice.append(delim());
                     }
@@ -108,12 +109,6 @@ public class MessageServiceImpl implements MessageService {
         return result;
     }
 
-
-    private String getOrderInfo(OrderDto dto){
-        return "<a href=" + "'"+dto.getExchangeLink() + dto.getLink() + "'"+">" + dto.getTitle() + "</a>";
-
-
-    }
 
     public static String delim() {
         String delim = "\n.";

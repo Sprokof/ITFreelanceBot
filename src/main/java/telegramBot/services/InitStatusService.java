@@ -4,6 +4,8 @@ import telegramBot.entity.InitStatus;
 import telegramBot.repositories.InitStatusRepo;
 import telegramBot.repositories.InitStatusRepoImpl;
 
+import java.time.LocalDate;
+
 public class InitStatusService {
 
     private static final InitStatusRepo repo = new InitStatusRepoImpl();
@@ -17,4 +19,6 @@ public class InitStatusService {
         status.setInit(flag);
         repo.update(status);
     }
+
+
 }

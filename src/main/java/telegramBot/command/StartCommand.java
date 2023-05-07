@@ -8,7 +8,7 @@ import telegramBot.services.UserServiceImpl;
 
 @Component
 public class StartCommand implements Command {
-    private static final String START_COMMAND = "Помогаю с мониторингом новых заказов по интересующему языку программирования.\n " +
+    private static final String START_COMMAND = "Помогаю с мониторингом новых заказов на фриланс биржах по интересующему языку программирования.\n " +
             "\nКоманда /info для получения сводки.";
 
 

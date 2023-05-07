@@ -4,12 +4,10 @@ package telegramBot.bot;
 import telegramBot.command.CommandContainer;
 import telegramBot.command.CommandName;
 import telegramBot.command.UnknownCommand;
+import telegramBot.dto.OrderDto;
 import telegramBot.entity.User;
-import telegramBot.services.ExchangeService;
-import telegramBot.services.MessageService;
-import telegramBot.services.MessageServiceImpl;
+import telegramBot.services.*;
 
-import telegramBot.services.UserService;
 import telegramBot.validation.AbstractValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +39,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private ExchangeService exchangeService;
 
+    @Autowired
+    private OrderService orderService;
+
 
 
     @Value("${token}")
@@ -68,18 +69,27 @@ public class TelegramBot extends TelegramLongPollingBot {
                 commands.get(chatId).add(command);
             }
             else {
-                if(lastCommand(chatId).equals(CommandName.ADD.getName())){
+                String lastCommand = lastCommand(chatId);
+                if(lastCommand.equals(CommandName.ADD.getName())){
                     if(validation.addCommandValidate(update)){
                         userService.addSubscription(user, update);
                         this.messageService.sendResponse(chatId, ADD_SUCCESS);
                     }
                 }
-                else if(lastCommand(chatId).equals(CommandName.REMOVE.getName())){
+                else if(lastCommand.equals(CommandName.REMOVE.getName())){
                     if(validation.removeCommandValidate(update)){
                         userService.removeSubscription(user, update);
                         this.messageService.sendResponse(chatId, REMOVE_SUCCESS);
                     }
                 }
+                else if(lastCommand.equals(CommandName.LATEST.getName())){
+                     if(validation.latestCommandValidate(update)) {
+                       String latestOrdersMessage = this.orderService.
+                               getLatestOrdersMessage(update);
+                       this.messageService.sendResponse(chatId, latestOrdersMessage);
+                     }
+                }
+
                 else if(unknownInput(chatId)){
                     this.commandContainer.retrieveCommand(CommandName.
                             UNKNOWN.getName()).execute(update);

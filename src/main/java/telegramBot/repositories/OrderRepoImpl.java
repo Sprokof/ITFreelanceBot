@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 import telegramBot.enums.Language;
+import telegramBot.services.InitStatusService;
 
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
@@ -199,4 +200,8 @@ public class OrderRepoImpl implements OrderRepo {
         assert count != null;
         return count.intValue() > 0;
     }
+
+
+
+
 }

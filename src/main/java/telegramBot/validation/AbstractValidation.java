@@ -8,4 +8,5 @@ public abstract class AbstractValidation {
         return false;
     }
     public boolean removeCommandValidate(Update update){return false;}
+    public boolean latestCommandValidate(Update update){return false;}
 }

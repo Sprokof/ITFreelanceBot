@@ -13,10 +13,8 @@ public interface OrderRepo {
     void update(Order order);
     Order getOrderByLink(String link);
     void deleteOldOrders();
-
     void deleteOrderById(long id);
     List<Order> getOrdersByLanguage(Language language);
-
     boolean containsOldOrders();
 
 }
