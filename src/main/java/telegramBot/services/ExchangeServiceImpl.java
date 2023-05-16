@@ -47,10 +47,9 @@ public class ExchangeServiceImpl implements ExchangeService {
                 List<Order> orders = exchangesOrders.get(e);
                 telegramBot.entity.Exchange exchange = getExchange(e);
                 for (Order order : orders) {
-                    if (this.orderService.saveIfNotExist(order)) {
+                    if(orderService.saveIfNotExist(order)){
                         exchange.addOrder(order);
                         subscription.addOrder(order);
-
                         this.orderService.updateOrder(order);
                     }
                 }
@@ -77,33 +76,31 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
-    public List<OrderDto> findNewOrdersByLanguage(Language language) {
+    public List<Order> findNewOrders() {
         List<Order> newOrders = new ArrayList<>();
-        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
-        Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.task.getOrders(language);
-        for (telegramBot.enums.Exchange e : exchanges) {
-            List<Order> ordersByExchange = taskOrders.get(e);
-            for (Order order : ordersByExchange) {
-                if (!this.orderService.orderExist(order)) {
-                    Exchange exchange = this.exchangeRepo.getExchangeByName(e.getName());
-                    Subscription subscription = this.subscriptionService.
-                            getSubscriptionByLanguage(language);
+        for(Language language : Language.getLanguages()) {
+            telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
+            Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.task.getOrders(language);
+            for (telegramBot.enums.Exchange e : exchanges) {
+                List<Order> ordersByExchange = taskOrders.get(e);
+                for (Order order : ordersByExchange) {
+                    if (!this.orderService.orderExist(order)) {
+                        Exchange exchange = this.exchangeRepo.getExchangeByName(e.getName());
+                        Subscription subscription = this.subscriptionService.
+                                getSubscriptionByLanguage(language);
 
-                    order.setExchange(exchange);
-                    order.setSubscription(subscription);
-                    newOrders.add(order);
+                        order.setExchange(exchange);
+                        order.setSubscription(subscription);
+                        newOrders.add(order);
 
+                    }
                 }
             }
         }
 
-        newOrders.forEach(order -> this.orderService.saveOrder(order));
-        return OrderDto.toDtos(newOrders);
+        return newOrders;
 
     }
-
-
-
 
 
 

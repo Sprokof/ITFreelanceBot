@@ -1,5 +1,7 @@
 package telegramBot.repositories;
 
+import org.hibernate.type.StandardBasicTypeTemplate;
+import org.hibernate.type.StandardBasicTypes;
 import telegramBot.entity.Order;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,6 +12,7 @@ import telegramBot.services.InitStatusService;
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -40,12 +43,12 @@ public class OrderRepoImpl implements OrderRepo {
     @Override
     public boolean exist(String orderLink) {
         Session session = this.sessionFactory.openSession();
-        Integer id = null;
+        boolean exist = false;
     try {
         session = this.sessionFactory.openSession();
         session.beginTransaction();
-        id = (Integer) session.createSQLQuery("SELECT ID FROM " +
-                "ORDERS WHERE ORDER_LINK=:link").
+        exist = (Boolean) session.createSQLQuery("SELECT EXISTS " +
+                "(SELECT * FROM ORDERS WHERE ORDER_LINK=:link)").
                 setParameter("link", orderLink).getSingleResult();
         session.getTransaction().commit();
     }
@@ -58,7 +61,8 @@ public class OrderRepoImpl implements OrderRepo {
     finally {
         if(session != null) session.close();
     }
-    return (id != null);
+
+    return exist;
 
     }
 

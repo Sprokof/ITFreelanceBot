@@ -1,6 +1,5 @@
 package telegramBot.services;
 
-import telegramBot.dto.SubscriptionDto;
 import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
 
@@ -12,8 +11,6 @@ public interface SubscriptionService {
     List<Subscription> getSubscriptions();
     void update(Subscription subscription);
     boolean subscriptionsExists();
-    List<SubscriptionDto> getNotExistsSubscriptions();
-
     void deleteSubscription(int userId, int subId);
 
 

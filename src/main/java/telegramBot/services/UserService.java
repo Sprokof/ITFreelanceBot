@@ -1,7 +1,9 @@
 package telegramBot.services;
 
+import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import telegramBot.enums.Language;
 
 import java.util.List;
 
@@ -15,7 +17,8 @@ public interface UserService {
     User createUser(String chatId);
 
     boolean exist(String chatId);
-    List<User> getAllActiveUsers();
+    List<User> getAllActiveUsersWithSubscription(Subscription subscription);
+    List<User> getActiveUsers();
 
     void removeSubscription(User user, Update update);
 

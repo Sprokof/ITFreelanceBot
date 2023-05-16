@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -65,11 +66,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllActiveUsers() {
-        return this.userRepo.getAllActiveUsers();
-    }
-
-    @Override
     public void removeSubscription(User user, Update update) {
         String language = update.getMessage().getText();
         Subscription subscription = this.subscriptionService.
@@ -84,5 +80,17 @@ public class UserServiceImpl implements UserService {
         User user = getUserByChatId(chatId);
         user.setActive(flag);
         update(user);
+    }
+
+    @Override
+    public List<User> getAllActiveUsersWithSubscription(Subscription subscription) {
+        return this.userRepo.getAllActiveUsers().stream().
+                filter(user -> user.getSubscriptions().contains(subscription))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getActiveUsers() {
+        return this.userRepo.getAllActiveUsers();
     }
 }

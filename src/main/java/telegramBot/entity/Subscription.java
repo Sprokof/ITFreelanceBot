@@ -54,4 +54,12 @@ public class Subscription {
         if(this.users == null) this.users = new ArrayList<>();
         return users;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(! (obj instanceof Subscription)) return false;
+        Subscription subscription = (Subscription) obj;
+        return this.language.equals(subscription.language);
+    }
 }

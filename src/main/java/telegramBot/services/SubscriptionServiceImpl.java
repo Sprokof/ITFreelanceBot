@@ -1,8 +1,6 @@
 package telegramBot.services;
 
-import telegramBot.dto.SubscriptionDto;
 import telegramBot.entity.Subscription;
-import telegramBot.entity.User;
 import telegramBot.enums.Language;
 import telegramBot.repositories.SubscriptionRepo;
 import telegramBot.repositories.SubscriptionRepoImpl;
@@ -50,14 +48,4 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.subscriptionRepo.deleteSubscription(userId, subId);
     }
 
-    @Override
-    public List<SubscriptionDto> getNotExistsSubscriptions() {
-        List<SubscriptionDto> subscriptionDtos = new ArrayList<>();
-        for(Language language : Language.getLanguages()){
-            if(!this.subscriptionRepo.subscriptionExist(language)){
-                subscriptionDtos.add(new SubscriptionDto(language.getName()));
-            }
-        }
-    return subscriptionDtos;
-    }
 }

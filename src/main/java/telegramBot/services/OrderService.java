@@ -22,7 +22,6 @@ public interface OrderService extends CommandLineRunner {
 
     BigInteger getTaskNum(Order order);
     BigInteger[] getTasksNums(List<Order> orders);
-    void saveNewOrdersWithoutSubscriptions();
     String getLatestOrdersMessage(Update update);
 
 

@@ -27,10 +27,12 @@ public class Order {
 
     @Column(name = "ORDER_TITLE")
     @Getter
+    @Setter
     private String title;
 
     @Column(name = "ORDER_LINK")
     @Getter
+    @Setter
     private String link;
 
 

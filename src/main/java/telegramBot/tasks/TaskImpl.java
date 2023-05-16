@@ -3,6 +3,7 @@ package telegramBot.tasks;
 
 import com.google.gson.Gson;
 import org.apache.commons.text.StringEscapeUtils;
+import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.HttpMethod;
@@ -13,6 +14,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -23,30 +25,36 @@ import java.util.stream.Collectors;
 @Component
 public class TaskImpl implements Task {
     private static final String HABR_SELECTOR = ".task__title a";
-    private static final String FL_SELECTOR = ".search-item-body h3 a";
+    private static final String FL_SELECTOR = ".search-item-body";
     private static final Map<String, String> habrLinks = new HashMap<>();
     private static final Map<String, String> flLinks = new HashMap<>();
     private static final Map<String, String> kworkLinks = new HashMap<>();
 
 
     static {
-        habrLinks.put(Language.JAVA.getName(), "https://freelance.habr.com/tasks?page=1&q=java&fields=tags,title,description");
-        habrLinks.put(Language.PYTHON.getName(), "https://freelance.habr.com/tasks?page=1&q=python&fields=tags,title,description");
-        habrLinks.put(Language.JAVASCRIPT.getName(), "https://freelance.habr.com/tasks?page=1&q=javascript&fields=tags,title,description");
-        habrLinks.put(Language.PHP.getName(), "https://freelance.habr.com/tasks?page=1&q=phpfields=tags,title,description");
+        habrLinks.put(Language.JAVA.getName(), "https://freelance.habr.com/tasks?page=1&q=java&fields=tags");
+        habrLinks.put(Language.PYTHON.getName(), "https://freelance.habr.com/tasks?page=1&q=python&fields=tags");
+        habrLinks.put(Language.JAVASCRIPT.getName(), "https://freelance.habr.com/tasks?page=1&q=javascript&fields=tags|" +
+                "https://freelance.habr.com/tasks?page=1&q=java%20script&fields=tags|" +
+                "https://freelance.habr.com/tasks?page=1&q=js&fields=tags");
+        habrLinks.put(Language.PHP.getName(), "https://freelance.habr.com/tasks?page=1&q=php&fields=tags");
 
         flLinks.put(Language.JAVA.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=java&page=1");
         flLinks.put(Language.PYTHON.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=python&page=1");
         flLinks.put(Language.JAVASCRIPT.getName(),
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=javascript&page=1");
+                "https://www.fl.ru/search/?action=search&type=projects&search_string=javascript&page=1|" +
+                "https://www.fl.ru/search/?action=search&type=projects&search_string=java%20script&page=1|" +
+                        "https://www.fl.ru/search/?action=search&type=projects&search_string=js&page=1");
         flLinks.put(Language.PHP.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=php&page=1");
 
         kworkLinks.put(Language.JAVA.getName(), "https://kwork.ru/projects?keyword=java&a=1.json");
         kworkLinks.put(Language.PYTHON.getName(), "https://kwork.ru/projects?keyword=python&a=1.json");
-        kworkLinks.put(Language.JAVASCRIPT.getName(), "https://kwork.ru/projects?keyword=javacscript&a=1.json");
+        kworkLinks.put(Language.JAVASCRIPT.getName(), "https://kwork.ru/projects?keyword=javascript&a=1.json|" +
+                "https://kwork.ru/projects?keyword=java+script&a=1.json|" +
+                "https://kwork.ru/projects?keyword=js&a=1.json");
         kworkLinks.put(Language.PHP.getName(), "https://kwork.ru/projects?keyword=php&a=1.json");
 
     }
@@ -64,40 +72,49 @@ public class TaskImpl implements Task {
     }
 
     private List<Order> getHabrOrders(Language language) {
-        String link = habrLinks.get(language.getName());
-        Document document = getDocument(link);
-        Elements elements = document.select(HABR_SELECTOR);
         List<Order> orders = new ArrayList<>();
-        for (Element e : elements) {
-            String taskTitle = e.text();
-            String taskLink = e.attr("href");
-
-            orders.add(new Order(taskTitle, taskLink));
-
+        for(String link : habrLinks.get(language.getName()).split("\\|")) {
+            Document document = getDocument(link);
+            Elements elements = document.select(HABR_SELECTOR);
+            for (Element e : elements) {
+                String taskTitle = e.text();
+                String taskLink = e.attr("href");
+                orders.add(new Order(taskTitle, taskLink));
+            }
         }
 
         return orders;
     }
 
     private List<Order> getFlOrders(Language language) {
-        String link = flLinks.get(language.getName());
-        Document document = getDocument(link);
-        Elements elements = document.select(FL_SELECTOR);
         List<Order> orders = new ArrayList<>();
-        for (Element e : elements) {
-            String taskTitle = trimHtml(e.html());
-            String taskLink = e.attr("href");
+        for (String link : flLinks.get(language.getName()).split("\\|")) {
+            Document document = getDocument(link);
+            Elements elements = document.select(FL_SELECTOR);
+            for (Element e : elements) {
+                String taskTitle = trimHtml(e.child(1).child(0).text());
+                String taskLink = e.child(1).child(0).attr("href");
+                String taskDescription = trimHtml(e.child(2).text());
 
-            orders.add(new Order(taskTitle, taskLink));
-
+                OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
+                if (OrderQueryRelation.correctRelation(dto, language).equals(language)) {
+                    orders.add(dto.doBuild());
+                }
+            }
         }
         return orders;
     }
 
     private List<Order> getKworkOrders(Language language) {
-        String link = kworkLinks.get(language.getName());
-        String kworkJson = getJSON(link, HttpMethod.POST);
-        return extractKworkOrders(kworkJson);
+        List<Order> orders = new ArrayList<>();
+        for (String link : kworkLinks.get(language.getName()).split("\\|")) {
+            String kworkJson = getJSON(link, HttpMethod.POST);
+            List<Order> filteredOrders = extractKworkOrders(kworkJson).stream().filter(order ->
+                    OrderQueryRelation.correctRelation(order, language).equals(language)).
+                    map(OrderDto::doBuild).collect(Collectors.toList());
+            orders.addAll(filteredOrders);
+        }
+    return orders;
     }
 
     @Override
@@ -153,7 +170,7 @@ public class TaskImpl implements Task {
         return null;
     }
 
-    private List<Order> extractKworkOrders(String json){
+    private List<OrderDto> extractKworkOrders(String json){
         return Arrays.stream(json.
                 split("(\\{|\\})")).
                 filter(this::filterCondition).
@@ -173,25 +190,35 @@ public class TaskImpl implements Task {
         return false;
     }
 
-    private Order mapToKworkOrder(String json){
-        String idPrefix = "\"id\"", namePrefix = "\"name\"";
-        String title = null, link = null;
+    private OrderDto mapToKworkOrder(String json){
+        String idPrefix = "\"id\"", namePrefix = "\"name\"", descPrefix = "\"description\"";
+        String title = null, link = null, description = null;
         String[] fields = json.split("(,\"|\",)");
-        for (String field : fields) {
-            if (title != null && link != null) break;
+        int index = 0;
+        while(index != fields.length){
+            String field = fields[index];
+            if(link != null && title != null && description != null) break;
 
             if (field.startsWith(idPrefix)) {
-                int index = field.indexOf(":") + 1;
-                link = "/projects/" + field.substring(index);
+                link = "/projects/" + field.substring(field.indexOf(":") + 1);
             }
 
             if (field.startsWith(namePrefix)) {
-                int index = field.indexOf(":") + 1;
-                title = field.substring(index).
+                title = field.substring(field.indexOf(":") + 1).
                         replaceAll("\"", "").trim();
             }
+
+            if(field.startsWith(descPrefix)){
+                int subIndex = field.indexOf(":") + 1;
+                description = field.substring(subIndex).
+                        replaceAll("\"", "").trim();
+            }
+            index ++ ;
+
         }
-    return new Order(title, link);
+
+
+    return new OrderDto(title, link, description);
     }
 
 

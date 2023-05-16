@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import telegramBot.enums.Language;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class User {
         if(this.subscriptions == null) this.subscriptions = new ArrayList<>();
         return this.subscriptions;
     }
+
 
 
 }

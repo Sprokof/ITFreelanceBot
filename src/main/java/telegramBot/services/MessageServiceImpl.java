@@ -29,7 +29,7 @@ public class MessageServiceImpl implements MessageService {
                 new org.telegram.telegrambots.meta.api.methods.send.SendMessage();
         sendMessage.setChatId(userChatId);
         sendMessage.enableHtml(true);
-        sendMessage.setText(message);
+        sendMessage.setText(trimImgTag(message));
         sendMessage.disableWebPagePreview();
         try {
             bot.execute(sendMessage);
@@ -44,7 +44,7 @@ public class MessageServiceImpl implements MessageService {
                 new org.telegram.telegrambots.meta.api.methods.send.SendMessage();
         sendMessage.setChatId(userChatId);
         sendMessage.enableHtml(true);
-        sendMessage.setText(createNotices(dto));
+        sendMessage.setText(trimImgTag(createNotices(dto)));
         sendMessage.disableWebPagePreview();
         try {
             bot.execute(sendMessage);
@@ -116,6 +116,10 @@ public class MessageServiceImpl implements MessageService {
             delim += ".";
         }
     return delim + "\n";
+    }
+
+    private String trimImgTag(String message){
+        return message.replaceAll("(<img>)", "");
     }
 
 }

@@ -74,12 +74,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                     if(validation.addCommandValidate(update)){
                         userService.addSubscription(user, update);
                         this.messageService.sendResponse(chatId, ADD_SUCCESS);
+                        clearCommands(chatId);
                     }
                 }
                 else if(lastCommand.equals(CommandName.REMOVE.getName())){
                     if(validation.removeCommandValidate(update)){
                         userService.removeSubscription(user, update);
                         this.messageService.sendResponse(chatId, REMOVE_SUCCESS);
+                        clearCommands(chatId);
                     }
                 }
                 else if(lastCommand.equals(CommandName.LATEST.getName())){
@@ -87,6 +89,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                        String latestOrdersMessage = this.orderService.
                                getLatestOrdersMessage(update);
                        this.messageService.sendResponse(chatId, latestOrdersMessage);
+                       clearCommands(chatId);
                      }
                 }
 
@@ -125,7 +128,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (commands.get(chatId).isEmpty()) return true;
         String lastCommand = lastCommand(chatId);
         return !lastCommand.equals(CommandName.ADD.getName()) ||
-                lastCommand.equals(CommandName.REMOVE.getName());
+                lastCommand.equals(CommandName.REMOVE.getName()) ||
+                lastCommand.equals(CommandName.LATEST.getName());
+    }
+
+    private void clearCommands(String chatId){
+        commands.get(chatId).clear();
     }
 
 

@@ -1,33 +1,54 @@
 package telegramBot.enums;
 
 
+import lombok.Getter;
+
+import java.util.Arrays;
+
+@Getter
 public enum Language {
-    JAVA("Java"),
+    JAVASCRIPT("JavaScript", "Java Script", "JS"),
     PYTHON("Python"),
-    JAVASCRIPT("JavaScript"),
-    PHP("PHP");
+    JAVA("Java"),
+    PHP("PHP"),
+    UNKNOWN("Unknown");
 
     private final String name;
+    private String secondName;
+    private String thirdName;
 
     Language(String name){
         this.name = name;
     }
 
-    public String getName(){
-        return this.name;
+    Language(String name, String secondName, String thirdName){
+        this.name = name;
+        this.secondName = secondName;
+        this.thirdName = thirdName;
     }
+
+
+
 
     public static Language getLanguageByValue(String value){
         for(Language language : Language.values()){
-            if(language.getName().equalsIgnoreCase(value)){
+            if(language.equals(JAVASCRIPT)){
+                if(language.getName().equalsIgnoreCase(value) ||
+                        language.getSecondName().equalsIgnoreCase(value) ||
+                        language.getThirdName().equalsIgnoreCase(value))
+                    return language;
+            }
+            else if(language.getName().equalsIgnoreCase(value)){
                 return language;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 
     public static Language[] getLanguages(){
-        return Language.values();
+        return Arrays.stream(Language.values()).
+                filter(l -> !l.equals(UNKNOWN)).
+                toArray(Language[]::new);
     }
 
 

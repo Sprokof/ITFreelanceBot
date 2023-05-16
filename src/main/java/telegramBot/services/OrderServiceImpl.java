@@ -2,16 +2,13 @@ package telegramBot.services;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.dto.OrderDto;
-import telegramBot.dto.SubscriptionDto;
 import telegramBot.entity.Order;
-import telegramBot.entity.Subscription;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
 import telegramBot.repositories.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import telegramBot.tasks.Task;
-import telegramBot.tasks.TaskImpl;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -31,10 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public synchronized boolean saveIfNotExist(Order order) {
+    public boolean saveIfNotExist(Order order) {
         if (this.orderRepo.exist(order.getLink())) return false;
         this.orderRepo.saveOrder(order);
-        pause();
         return true;
     }
 
@@ -53,6 +49,7 @@ public class OrderServiceImpl implements OrderService {
         if(orderRepo.containsOldOrders()) {
             this.orderRepo.deleteOldOrders();
         }
+        waitDay();
     }
 
     @Override
@@ -60,7 +57,6 @@ public class OrderServiceImpl implements OrderService {
         new Thread(() -> {
             while (true) {
                 deleteOldOrders();
-                saveNewOrdersWithoutSubscriptions();
             }
         }).start();
     }
@@ -117,27 +113,13 @@ public class OrderServiceImpl implements OrderService {
                collect(Collectors.toList()).toArray(BigInteger[]::new);
     }
 
-    @Override
-    public synchronized void saveNewOrdersWithoutSubscriptions() {
-        if(!InitStatusService.init()) return ;
-        this.subscriptionService.getNotExistsSubscriptions().
-                forEach((sub) -> {
-                    Language language = Language.getLanguageByValue(sub.getSubLanguage());
-                    Map<Exchange, List<Order>> orders = this.task.getOrders(language);
-                    orders.values().forEach((list) -> {
-                        list.forEach(this::saveIfNotExist);
-                    });
-                }
-        );
-        waitDay();
-    }
 
     @Override
     public String getLatestOrdersMessage(Update update) {
         String input = update.getMessage().getText();
         Language language = Language.getLanguageByValue(input);
         List<OrderDto> dtos = OrderDto.toDtos(this.orderRepo.
-                getOrdersByLanguage(language)).subList(0,4);
+                getOrdersByLanguage(language)).subList(0,7);
         assert language != null;
         return createMessage(language, dtos);
     }
