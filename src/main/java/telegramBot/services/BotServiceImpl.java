@@ -62,11 +62,9 @@ public class BotServiceImpl implements BotService {
     private void pause() {
         try {
             Thread.sleep(420000);
-        }
-        catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.getCause();
         }
-
     }
 
 

@@ -12,9 +12,6 @@ import java.util.List;
 @Component
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    public static final String ADD_SUCCESS = "Subscription successfully added";
-    public static final String REMOVE_SUCCESS = "Subscription successfully removed";
-
     private final SubscriptionRepo subscriptionRepo = new SubscriptionRepoImpl();
 
 

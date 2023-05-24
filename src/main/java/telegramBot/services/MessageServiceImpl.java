@@ -1,5 +1,6 @@
 package telegramBot.services;
 
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import telegramBot.dto.OrderDto;
 import telegramBot.bot.TelegramBot;
 import org.springframework.context.annotation.Lazy;
@@ -25,32 +26,13 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void sendResponse(String userChatId, String message) {
-        org.telegram.telegrambots.meta.api.methods.send.SendMessage sendMessage =
-                new org.telegram.telegrambots.meta.api.methods.send.SendMessage();
-        sendMessage.setChatId(userChatId);
-        sendMessage.enableHtml(true);
-        sendMessage.setText(trimImgTag(message));
-        sendMessage.disableWebPagePreview();
-        try {
-            bot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        executeMessage(userChatId, message);
     }
 
     @Override
-    public void sendNotice(String userChatId, List<OrderDto> dto) {
-        org.telegram.telegrambots.meta.api.methods.send.SendMessage sendMessage =
-                new org.telegram.telegrambots.meta.api.methods.send.SendMessage();
-        sendMessage.setChatId(userChatId);
-        sendMessage.enableHtml(true);
-        sendMessage.setText(trimImgTag(createNotices(dto)));
-        sendMessage.disableWebPagePreview();
-        try {
-            bot.execute(sendMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void sendNotice(String userChatId, List<OrderDto> dtos) {
+        executeMessage(userChatId, createNotices(dtos));
+
     }
 
     private String createNotices(List<OrderDto> orderDtos) {
@@ -120,6 +102,25 @@ public class MessageServiceImpl implements MessageService {
 
     private String trimImgTag(String message){
         return message.replaceAll("(<img>)", "");
+    }
+
+    private SendMessage buildMessage(String chatId, String content){
+        org.telegram.telegrambots.meta.api.methods.send.SendMessage sendMessage =
+                new org.telegram.telegrambots.meta.api.methods.send.SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.enableHtml(true);
+        sendMessage.setText(trimImgTag(content));
+        sendMessage.disableWebPagePreview();
+    return sendMessage;
+    }
+
+
+    private void executeMessage(String userChatId, String message){
+        try {
+            bot.execute(buildMessage(userChatId, message));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

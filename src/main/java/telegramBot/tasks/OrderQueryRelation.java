@@ -24,38 +24,25 @@ public class OrderQueryRelation {
 
     public static Language correctRelation(OrderDto dto, Language language) {
         String title = dto.getTitle(), details = dto.getDetails();
-        String titleKeyword = findKeyword(title, language);
-        String detailsKeyword = findKeyword(details, language);
+        boolean containsInTitle = findKeyword(title, language);
+        boolean containsInDetails = findKeyword(details, language);
 
-        if (titleKeyword != null) return language;
-        else if (detailsKeyword != null) {
+        if (containsInTitle) return language;
+        else if (containsInDetails) {
             for(Language lang : Language.getLanguages()){
-                if(lang != language && findKeyword(title, lang) != null)
-                    return lang;
+                if(lang != language && findKeyword(title, lang)) return lang;
             }
             return language;
         }
         return Language.UNKNOWN;
     }
 
-    private static String findKeyword(String field, Language language) {
-        String[] words = field.split("\\s");
+    private static boolean findKeyword(String field, Language language) {
         for (String keyword : getKeywords(language)) {
-            if(containsSkipOrderPattern(field, keyword)) break;
-                for (int i = 0; i < words.length; i++) {
-                String word = words[i].replaceAll("\\,|((|))", "").trim();
-                if(language.equals(Language.JAVASCRIPT)) {
-                    int index = i + 1;
-                    if (index < words.length && keyword.equalsIgnoreCase((word + " " + words[index])))
-                        return word;
-                }
-
-                if(word.equalsIgnoreCase(keyword)) return word;
-
-            }
-
+            if (containsSkipOrderPattern(field, keyword)) break;
+            if (containsKeywordPattern(field, keyword)) return true;
         }
-        return null;
+        return false;
     }
 
     private static boolean containsSkipOrderPattern(String field, String keyword){
@@ -65,9 +52,11 @@ public class OrderQueryRelation {
        return skipPattern.matcher(field).find();
     }
 
+    private static boolean containsKeywordPattern(String field, String keyword){
+        Pattern keywordPattern = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(" + keyword + ")((\\p{P}|\\s)?)");
+        return keywordPattern.matcher(field).find();
 
-
-
+    }
 
 
 }

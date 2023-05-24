@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import telegramBot.services.InitStatusService;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class TaskImpl implements Task {
-    private static final String HABR_SELECTOR = ".task__title a";
+    private static final String HABR_SELECTOR = ".task__column_desc";
     private static final String FL_SELECTOR = ".search-item-body";
     private static final Map<String, String> habrLinks = new HashMap<>();
     private static final Map<String, String> flLinks = new HashMap<>();
@@ -77,9 +78,18 @@ public class TaskImpl implements Task {
             Document document = getDocument(link);
             Elements elements = document.select(HABR_SELECTOR);
             for (Element e : elements) {
-                String taskTitle = e.text();
-                String taskLink = e.attr("href");
-                orders.add(new Order(taskTitle, taskLink));
+                Element titleElement = e.child(0).child(0).child(0);
+                String taskTitle = titleElement.text();
+                String taskLink = titleElement.attr("href");
+                String taskDate = e.child(0).child(1).child(1).child(0).text();
+                String taskTags = extractTags(e);
+                
+                OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
+                if(OrderQueryRelation.correctRelation(dto, language).equals(language)){
+                    Order order = dto.doBuild();
+                    if(InitStatusService.init() && newOrder(taskDate)) orders.add(order);
+                    else if(!InitStatusService.init()) orders.add(order);
+                }
             }
         }
 
@@ -219,6 +229,20 @@ public class TaskImpl implements Task {
 
 
     return new OrderDto(title, link, description);
+    }
+
+    private boolean newOrder(String publishedDate){
+        String pattern = "(~)\\s\\d{1,2}\\s(часов назад|час назад)|\\d{1,2}\\s(минуты назад|минут назад)";
+        return publishedDate.matches(pattern);
+    }
+
+    private String extractTags(Element element){
+        Elements elements = element.child(1).child(0).children();
+        StringBuilder sb = new StringBuilder();
+        for(Element e : elements){
+            sb.append(e.text()).append(",");
+        }
+    return sb.toString();
     }
 
 

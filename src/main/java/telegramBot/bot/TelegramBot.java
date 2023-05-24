@@ -6,6 +6,7 @@ import telegramBot.command.CommandName;
 import telegramBot.command.UnknownCommand;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.User;
+import telegramBot.messages.SubscriptionMessage;
 import telegramBot.services.*;
 
 import telegramBot.validation.AbstractValidation;
@@ -21,14 +22,10 @@ import static telegramBot.services.SubscriptionServiceImpl.*;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
-    private final static Map<String, List<String>> commands;
+    private final static Map<String, List<String>> commands = new HashMap<>();
 
-    static {
-        commands = new HashMap<>();
-    }
 
     private static final String COMMAND_PREFIX = "/";
-    private static final String EMPTY = "";
 
     private final MessageService messageService;
     private final CommandContainer commandContainer;
@@ -69,22 +66,24 @@ public class TelegramBot extends TelegramLongPollingBot {
                 commands.get(chatId).add(command);
             }
             else {
-                String lastCommand = lastCommand(chatId);
-                if(lastCommand.equals(CommandName.ADD.getName())){
+                CommandName lastCommand = lastCommand(chatId);
+                if(lastCommand.equals(CommandName.ADD)){
                     if(validation.addCommandValidate(update)){
                         userService.addSubscription(user, update);
-                        this.messageService.sendResponse(chatId, ADD_SUCCESS);
+                        this.messageService.sendResponse(chatId, SubscriptionMessage.
+                                getMessage(lastCommand));
                         clearCommands(chatId);
                     }
                 }
-                else if(lastCommand.equals(CommandName.REMOVE.getName())){
+                else if(lastCommand.equals(CommandName.REMOVE)){
                     if(validation.removeCommandValidate(update)){
                         userService.removeSubscription(user, update);
-                        this.messageService.sendResponse(chatId, REMOVE_SUCCESS);
+                        this.messageService.sendResponse(chatId, SubscriptionMessage.
+                                getMessage(lastCommand));
                         clearCommands(chatId);
                     }
                 }
-                else if(lastCommand.equals(CommandName.LATEST.getName())){
+                else if(lastCommand.equals(CommandName.LATEST)){
                      if(validation.latestCommandValidate(update)) {
                        String latestOrdersMessage = this.orderService.
                                getLatestOrdersMessage(update);
@@ -117,19 +116,20 @@ public class TelegramBot extends TelegramLongPollingBot {
             this.commandContainer = new CommandContainer(this.messageService);
         }
 
-    private String lastCommand(String chatId) {
+    private CommandName lastCommand(String chatId) {
         int size = commands.get(chatId).size();
-        if (size == 0) return EMPTY;
+        if (size == 0) return CommandName.UNKNOWN;
         int lastIndex = size - 1;
-        return commands.get(chatId).get(lastIndex);
+        String command = commands.get(chatId).get(lastIndex);
+        return CommandName.getCommandByName(command);
     }
 
     public boolean unknownInput(String chatId) {
         if (commands.get(chatId).isEmpty()) return true;
-        String lastCommand = lastCommand(chatId);
-        return !lastCommand.equals(CommandName.ADD.getName()) ||
-                lastCommand.equals(CommandName.REMOVE.getName()) ||
-                lastCommand.equals(CommandName.LATEST.getName());
+        CommandName lastCommand = lastCommand(chatId);
+        return !(lastCommand.equals(CommandName.ADD) ||
+                lastCommand.equals(CommandName.REMOVE) ||
+                lastCommand.equals(CommandName.LATEST));
     }
 
     private void clearCommands(String chatId){
