@@ -146,7 +146,7 @@ public class OrderRepoImpl implements OrderRepo {
             session.beginTransaction();
             session.createSQLQuery("DELETE FROM ORDERS WHERE " +
                             "INIT_DATE <= cast(:date as date)").
-                    setParameter("date", currentDateMinusSevenDays()).
+                    setParameter("date", currentDateMinusMonth()).
                     executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -159,8 +159,8 @@ public class OrderRepoImpl implements OrderRepo {
     }
 
 
-    private String currentDateMinusSevenDays(){
-        return LocalDate.now().minusDays(7).toString();
+    private String currentDateMinusMonth(){
+        return LocalDate.now().minusDays(30).toString();
     }
 
     @Override
@@ -190,7 +190,7 @@ public class OrderRepoImpl implements OrderRepo {
             session.beginTransaction();
             count = (BigInteger) session.createSQLQuery("SELECT COUNT(ID) FROM ORDERS WHERE " +
                             "INIT_DATE <= cast(:date as date)").
-                    setParameter("date", currentDateMinusSevenDays()).
+                    setParameter("date", currentDateMinusMonth()).
                     getSingleResult();
             session.getTransaction().commit();
         } catch (Exception e) {

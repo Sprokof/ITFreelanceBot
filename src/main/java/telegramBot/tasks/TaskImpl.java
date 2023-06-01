@@ -81,14 +81,12 @@ public class TaskImpl implements Task {
                 Element titleElement = e.child(0).child(0).child(0);
                 String taskTitle = titleElement.text();
                 String taskLink = titleElement.attr("href");
-                String taskDate = e.child(0).child(1).child(1).child(0).text();
                 String taskTags = extractTags(e);
-                
+                //String taskDate = e.child(0).child(1).child(1).child(0).text();
+
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
-                if(OrderQueryRelation.correctRelation(dto, language).equals(language)){
-                    Order order = dto.doBuild();
-                    if(InitStatusService.init() && newOrder(taskDate)) orders.add(order);
-                    else if(!InitStatusService.init()) orders.add(order);
+                if(OrderQueryRelation.correctRelation(dto, language) == language){
+                    orders.add(dto.doBuild());
                 }
             }
         }
@@ -107,7 +105,7 @@ public class TaskImpl implements Task {
                 String taskDescription = trimHtml(e.child(2).text());
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
-                if (OrderQueryRelation.correctRelation(dto, language).equals(language)) {
+                if (OrderQueryRelation.correctRelation(dto, language) == language) {
                     orders.add(dto.doBuild());
                 }
             }
@@ -119,9 +117,13 @@ public class TaskImpl implements Task {
         List<Order> orders = new ArrayList<>();
         for (String link : kworkLinks.get(language.getName()).split("\\|")) {
             String kworkJson = getJSON(link, HttpMethod.POST);
-            List<Order> filteredOrders = extractKworkOrders(kworkJson).stream().filter(order ->
-                    OrderQueryRelation.correctRelation(order, language).equals(language)).
-                    map(OrderDto::doBuild).collect(Collectors.toList());
+            List<Order> filteredOrders = extractKworkOrders(kworkJson).stream().filter(order -> {
+                if (language.equals(Language.JAVA)) {
+                    return !OrderQueryRelation.jsOrder(order) &&
+                            OrderQueryRelation.correctRelation(order, language) == language;
+                }
+                return OrderQueryRelation.correctRelation(order, language) == language;
+            }).map(OrderDto::doBuild).collect(Collectors.toList());
             orders.addAll(filteredOrders);
         }
     return orders;
@@ -232,7 +234,8 @@ public class TaskImpl implements Task {
     }
 
     private boolean newOrder(String publishedDate){
-        String pattern = "(~)\\s\\d{1,2}\\s(часов назад|час назад)|\\d{1,2}\\s(минуты назад|минут назад)";
+        String pattern = "(~)\\s\\d{1,2}\\s(часов назад|час назад)" +
+                "|\\d{1,2}\\s(минуты назад|минут назад)";
         return publishedDate.matches(pattern);
     }
 

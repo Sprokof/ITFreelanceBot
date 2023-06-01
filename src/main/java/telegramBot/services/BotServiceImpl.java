@@ -9,7 +9,9 @@ import telegramBot.entity.User;
 import telegramBot.enums.Language;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,34 +31,45 @@ public class BotServiceImpl implements BotService {
 
     @Autowired
     private OrderService orderService;
-
-
-    @Override
-    public synchronized void executeNotices() {
-        if(!InitStatusService.init()) return ;
-            List<Order> orders = this.exchangeService.findNewOrders();
-            if(orders.isEmpty()) return ;
-            List<User> activeUsers = this.userService.getActiveUsers();
-            activeUsers.forEach(user -> {
-            List<OrderDto> filteredOrders = orders.stream().filter(o -> {
-                    Subscription orderSubscription = o.getSubscription();
-                    return user.getSubscriptions().contains(orderSubscription);
-                }).map(OrderDto :: toDto).collect(Collectors.toList());
-                if(!filteredOrders.isEmpty()) this.messageService.
-                        sendNotice(user.getChatId(), filteredOrders);
-            });
-            orders.forEach(order -> orderService.saveOrder(order));
-
-    }
+    
 
     @Override
     public void run(String... args) throws Exception {
         new Thread(() -> {
-            while(true){
-                executeNotices();
+            while (true) {
+                if (!InitStatusService.init()) return;
+                List<Order> newOrders = this.exchangeService.findNewOrders();
+                if (newOrders.isEmpty()) return;
+                Map<User, List<OrderDto>> orders = getFilteredOrders(newOrders);
+                executeNotices(orders);
                 pause();
             }
-        }).start();
+        });
+
+    }
+
+    @Override
+    public void executeNotices(Map<User, List<OrderDto>> orders) {
+        if(orders.isEmpty()) return;
+        for(User user : this.userService.getActiveUsers()){
+            List<OrderDto> userOrders = orders.get(user);
+            this.messageService.sendNotice(user.getChatId(), userOrders);
+        }
+    }
+
+    private Map<User, List<OrderDto>> getFilteredOrders(List<Order> newOrders){
+        Map<User, List<OrderDto>> orders = new HashMap<>();
+        if(newOrders.isEmpty()) return orders;
+        List<User> users = this.userService.getActiveUsers();
+        users.forEach(user -> {
+            List<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
+                Subscription sub = order.getSubscription();
+                return user.getSubscriptions().contains(sub);
+            }).map(OrderDto::toDto).collect(Collectors.toList());
+        orders.put(user, filteredOrders);
+        });
+
+    return orders;
     }
 
     private void pause() {

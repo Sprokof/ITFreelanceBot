@@ -1,6 +1,7 @@
 package telegramBot.tasks;
 
 import telegramBot.dto.OrderDto;
+import telegramBot.entity.Order;
 import telegramBot.enums.Language;
 
 import java.util.HashMap;
@@ -24,11 +25,9 @@ public class OrderQueryRelation {
 
     public static Language correctRelation(OrderDto dto, Language language) {
         String title = dto.getTitle(), details = dto.getDetails();
-        boolean containsInTitle = findKeyword(title, language);
-        boolean containsInDetails = findKeyword(details, language);
 
-        if (containsInTitle) return language;
-        else if (containsInDetails) {
+        if (findKeyword(title, language)) return language;
+        else if (findKeyword(details, language)) {
             for(Language lang : Language.getLanguages()){
                 if(lang != language && findKeyword(title, lang)) return lang;
             }
@@ -39,8 +38,8 @@ public class OrderQueryRelation {
 
     private static boolean findKeyword(String field, Language language) {
         for (String keyword : getKeywords(language)) {
-            if (containsSkipOrderPattern(field, keyword)) break;
-            if (containsKeywordPattern(field, keyword)) return true;
+            if (!containsSkipOrderPattern(field, keyword) &&
+                    containsKeywordPattern(field, keyword)) return true;
         }
         return false;
     }
@@ -56,6 +55,12 @@ public class OrderQueryRelation {
         Pattern keywordPattern = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(" + keyword + ")((\\p{P}|\\s)?)");
         return keywordPattern.matcher(field).find();
 
+    }
+
+    public static boolean jsOrder(OrderDto order){
+        String title = order.getTitle(), details = order.getDetails();
+        Pattern jsPattern = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(java script)((\\p{P}|\\s)?)");
+        return jsPattern.matcher(title).find() || jsPattern.matcher(details).find();
     }
 
 
