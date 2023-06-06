@@ -6,7 +6,8 @@ import telegramBot.entity.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface BotService extends CommandLineRunner {
-    void executeNotices(Map<User, List<OrderDto>> orders);
+    void executeNotices(Map<String, Set<OrderDto>> orders);
 }

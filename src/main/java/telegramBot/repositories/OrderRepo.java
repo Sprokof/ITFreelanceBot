@@ -12,9 +12,9 @@ public interface OrderRepo {
     boolean exist(String orderLink);
     void update(Order order);
     Order getOrderByLink(String link);
-    void deleteOldOrders();
+    void deleteExchangeOrders(Exchange exchange);
     void deleteOrderById(long id);
     List<Order> getOrdersByLanguage(Language language);
-    boolean containsOldOrders();
+
 
 }

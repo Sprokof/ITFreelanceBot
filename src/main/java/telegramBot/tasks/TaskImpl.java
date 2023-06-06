@@ -85,6 +85,7 @@ public class TaskImpl implements Task {
                 //String taskDate = e.child(0).child(1).child(1).child(0).text();
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
+                if(language == Language.JAVA && OrderQueryRelation.jsOrder(dto)) continue;
                 if(OrderQueryRelation.correctRelation(dto, language) == language){
                     orders.add(dto.doBuild());
                 }
@@ -105,6 +106,7 @@ public class TaskImpl implements Task {
                 String taskDescription = trimHtml(e.child(2).text());
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
+                if(language == Language.JAVA && OrderQueryRelation.jsOrder(dto)) continue;
                 if (OrderQueryRelation.correctRelation(dto, language) == language) {
                     orders.add(dto.doBuild());
                 }

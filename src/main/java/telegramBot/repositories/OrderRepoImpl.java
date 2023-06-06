@@ -6,6 +6,7 @@ import telegramBot.entity.Order;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
+import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
 import telegramBot.services.InitStatusService;
 
@@ -139,14 +140,16 @@ public class OrderRepoImpl implements OrderRepo {
 
 
     @Override
-    public void deleteOldOrders() {
+    public void deleteExchangeOrders(Exchange exchange) {
         Session session = null;
         try {
             session = this.sessionFactory.openSession();
             session.beginTransaction();
-            session.createSQLQuery("DELETE FROM ORDERS WHERE " +
+            session.createSQLQuery("DELETE FROM ORDERS WHERE exchange_id IN " +
+                    "(SELECT ID FROM EXCHANGES WHERE EXCHANGE_NAME =:name) and " +
                             "INIT_DATE <= cast(:date as date)").
-                    setParameter("date", currentDateMinusMonth()).
+                    setParameter("name", exchange.getName()).setParameter("date",
+                    currentDateMinusExchangeRefreshInterval(exchange.getRefreshInterval())).
                     executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -159,8 +162,8 @@ public class OrderRepoImpl implements OrderRepo {
     }
 
 
-    private String currentDateMinusMonth(){
-        return LocalDate.now().minusDays(30).toString();
+    private String currentDateMinusExchangeRefreshInterval(int interval){
+        return LocalDate.now().minusDays(interval).toString();
     }
 
     @Override
@@ -181,29 +184,6 @@ public class OrderRepoImpl implements OrderRepo {
         }
     }
 
-    @Override
-    public boolean containsOldOrders() {
-        Session session = null;
-        BigInteger count = null;
-        try {
-            session = this.sessionFactory.openSession();
-            session.beginTransaction();
-            count = (BigInteger) session.createSQLQuery("SELECT COUNT(ID) FROM ORDERS WHERE " +
-                            "INIT_DATE <= cast(:date as date)").
-                    setParameter("date", currentDateMinusMonth()).
-                    getSingleResult();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if (session != null && session.getTransaction() != null) {
-                session.getTransaction().rollback();
-                if(e instanceof NoResultException) return false;
-            }
-        } finally {
-            if (session != null) session.close();
-        }
-        assert count != null;
-        return count.intValue() > 0;
-    }
 
 
 

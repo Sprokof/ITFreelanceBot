@@ -8,10 +8,7 @@ import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,42 +28,43 @@ public class BotServiceImpl implements BotService {
 
     @Autowired
     private OrderService orderService;
-    
+
 
     @Override
     public void run(String... args) throws Exception {
         new Thread(() -> {
             while (true) {
-                if (!InitStatusService.init()) return;
-                List<Order> newOrders = this.exchangeService.findNewOrders();
-                if (newOrders.isEmpty()) return;
-                Map<User, List<OrderDto>> orders = getFilteredOrders(newOrders);
-                executeNotices(orders);
+                if (InitStatusService.init()) {
+                    List<Order> newOrders = this.exchangeService.findNewOrders();
+                    newOrders.forEach(order -> this.orderService.saveOrder(order));
+                    Map<String, Set<OrderDto>> orders = getFilteredOrders(newOrders);
+                    executeNotices(orders);
+                }
                 pause();
             }
-        });
+        }).start();
 
     }
 
     @Override
-    public void executeNotices(Map<User, List<OrderDto>> orders) {
-        if(orders.isEmpty()) return;
+    public void executeNotices(Map<String, Set<OrderDto>> orders) {
         for(User user : this.userService.getActiveUsers()){
-            List<OrderDto> userOrders = orders.get(user);
-            this.messageService.sendNotice(user.getChatId(), userOrders);
+            Set<OrderDto> usersOrders = orders.get(user.getChatId());
+            if(usersOrders != null) this.messageService.
+                    sendNotice(user.getChatId(), usersOrders);
         }
     }
 
-    private Map<User, List<OrderDto>> getFilteredOrders(List<Order> newOrders){
-        Map<User, List<OrderDto>> orders = new HashMap<>();
-        if(newOrders.isEmpty()) return orders;
+    private Map<String, Set<OrderDto>> getFilteredOrders(List<Order> newOrders){
+        Map<String, Set<OrderDto>> orders = new HashMap<>();
+        if(newOrders.isEmpty()) return new HashMap<>();
         List<User> users = this.userService.getActiveUsers();
         users.forEach(user -> {
-            List<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
+            Set<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
                 Subscription sub = order.getSubscription();
                 return user.getSubscriptions().contains(sub);
-            }).map(OrderDto::toDto).collect(Collectors.toList());
-        orders.put(user, filteredOrders);
+            }).map(OrderDto::toDto).collect(Collectors.toSet());
+            if(!filteredOrders.isEmpty()) orders.put(user.getChatId(), filteredOrders);
         });
 
     return orders;

@@ -9,10 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -30,25 +27,25 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void sendNotice(String userChatId, List<OrderDto> dtos) {
+    public void sendNotice(String userChatId, Set<OrderDto> dtos) {
         executeMessage(userChatId, createNotices(dtos));
-
     }
 
-    private String createNotices(List<OrderDto> orderDtos) {
-        Map<Exchange, List<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
-        List<StringBuilder> notices = new ArrayList<>();
+
+    private String createNotices(Set<OrderDto> orderDtos) {
         StringBuilder notice = new StringBuilder();
+        Map<Exchange, Set<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
+        List<StringBuilder> notices = new ArrayList<>();
         StringBuilder output = new StringBuilder();
         for(Exchange exchange : Exchange.getExchanges()){
             if(!exchangesDtos.containsKey(exchange)){ continue; }
-            List<OrderDto> eDtos = exchangesDtos.get(exchange);
+            Set<OrderDto> eDtos = exchangesDtos.get(exchange);
             String title = "Новые заказы на  " + exchange.getName() + ":";
             notice.append(title);
-            Map<Language, List<OrderDto>> languagesDtos = sortByLanguage(eDtos);
+            Map<Language, Set<OrderDto>> languagesDtos = sortByLanguage(eDtos);
             for(Language language : Language.getLanguages()){
                 if(!languagesDtos.containsKey(language)){ continue; }
-                    List<OrderDto> lDtos = languagesDtos.get(language);
+                    Set<OrderDto> lDtos = languagesDtos.get(language);
                     String subscription = "По запросу  " + language.getName() + ":";
                     notice.append("\n").append(subscription);
                     for(OrderDto orderDto : lDtos){
@@ -68,11 +65,11 @@ public class MessageServiceImpl implements MessageService {
 
     }
 
-    private Map<Exchange, List<OrderDto>> sortByExchange(List<OrderDto> orderDtos){
-        Map<Exchange, List<OrderDto>> result = new HashMap<>();
+    private Map<Exchange, Set<OrderDto>> sortByExchange(Set<OrderDto> orderDtos){
+        Map<Exchange, Set<OrderDto>> result = new HashMap<>();
         for(Exchange e : Exchange.getExchanges()){
-            List<OrderDto> dtos = orderDtos.stream().filter((o) ->
-                    o.getExchangeName().equals(e.getName())).collect(Collectors.toList());
+            Set<OrderDto> dtos = orderDtos.stream().filter((o) ->
+                    o.getExchangeName().equals(e.getName())).collect(Collectors.toSet());
 
             if(!dtos.isEmpty()) result.put(e, dtos);
         }
@@ -80,11 +77,11 @@ public class MessageServiceImpl implements MessageService {
         return result;
     }
 
-    private Map<Language, List<OrderDto>> sortByLanguage(List<OrderDto> orderDtos){
-        Map<Language, List<OrderDto>> result = new HashMap<>();
+    private Map<Language, Set<OrderDto>> sortByLanguage(Set<OrderDto> orderDtos){
+        Map<Language, Set<OrderDto>> result = new HashMap<>();
         for(Language l : Language.getLanguages()){
-            List<OrderDto> dtos = orderDtos.stream().filter((o) ->
-                    o.getSubscription().equals(l.getName())).collect(Collectors.toList());
+            Set<OrderDto> dtos = orderDtos.stream().filter((o) ->
+                    o.getSubscription().equals(l.getName())).collect(Collectors.toSet());
 
             if(!dtos.isEmpty()) result.put(l, dtos);
         }

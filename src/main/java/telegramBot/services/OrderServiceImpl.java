@@ -46,9 +46,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public synchronized void deleteOldOrders() {
-        if(orderRepo.containsOldOrders()) {
-            this.orderRepo.deleteOldOrders();
+        for(Exchange exchange : Exchange.getExchanges()) {
+            this.orderRepo.deleteExchangeOrders(exchange);
         }
+
         waitDay();
     }
 
