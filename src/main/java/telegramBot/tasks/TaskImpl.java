@@ -39,6 +39,7 @@ public class TaskImpl implements Task {
                 "https://freelance.habr.com/tasks?page=1&q=java%20script&fields=tags|" +
                 "https://freelance.habr.com/tasks?page=1&q=js&fields=tags");
         habrLinks.put(Language.PHP.getName(), "https://freelance.habr.com/tasks?page=1&q=php&fields=tags");
+        habrLinks.put(Language.C_SHARP.getName(), "https://freelance.habr.com/tasks?page=1&q=c#&fields=tags");
 
         flLinks.put(Language.JAVA.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=java&page=1");
@@ -50,6 +51,9 @@ public class TaskImpl implements Task {
                         "https://www.fl.ru/search/?action=search&type=projects&search_string=js&page=1");
         flLinks.put(Language.PHP.getName(),
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=php&page=1");
+        flLinks.put(Language.C_SHARP.getName(),
+                "https://www.fl.ru/search/?action=search&type=projects&search_string=c#&page=1");
+
 
         kworkLinks.put(Language.JAVA.getName(), "https://kwork.ru/projects?keyword=java&a=1.json");
         kworkLinks.put(Language.PYTHON.getName(), "https://kwork.ru/projects?keyword=python&a=1.json");
@@ -57,6 +61,7 @@ public class TaskImpl implements Task {
                 "https://kwork.ru/projects?keyword=java+script&a=1.json|" +
                 "https://kwork.ru/projects?keyword=js&a=1.json");
         kworkLinks.put(Language.PHP.getName(), "https://kwork.ru/projects?keyword=php&a=1.json");
+        kworkLinks.put(Language.C_SHARP.getName(), "https://kwork.ru/projects?keyword=c#&a=1.json");
 
     }
 
@@ -85,7 +90,7 @@ public class TaskImpl implements Task {
                 //String taskDate = e.child(0).child(1).child(1).child(0).text();
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
-                if(language == Language.JAVA && OrderQueryRelation.jsOrder(dto)) continue;
+                if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
                 if(OrderQueryRelation.correctRelation(dto, language) == language){
                     orders.add(dto.doBuild());
                 }
@@ -106,7 +111,7 @@ public class TaskImpl implements Task {
                 String taskDescription = trimHtml(e.child(2).text());
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
-                if(language == Language.JAVA && OrderQueryRelation.jsOrder(dto)) continue;
+                if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
                 if (OrderQueryRelation.correctRelation(dto, language) == language) {
                     orders.add(dto.doBuild());
                 }
@@ -121,7 +126,7 @@ public class TaskImpl implements Task {
             String kworkJson = getJSON(link, HttpMethod.POST);
             List<Order> filteredOrders = extractKworkOrders(kworkJson).stream().filter(order -> {
                 if (language.equals(Language.JAVA)) {
-                    return !OrderQueryRelation.jsOrder(order) &&
+                    return !OrderQueryRelation.falseJavaPattern(order) &&
                             OrderQueryRelation.correctRelation(order, language) == language;
                 }
                 return OrderQueryRelation.correctRelation(order, language) == language;
@@ -233,12 +238,6 @@ public class TaskImpl implements Task {
 
 
     return new OrderDto(title, link, description);
-    }
-
-    private boolean newOrder(String publishedDate){
-        String pattern = "(~)\\s\\d{1,2}\\s(часов назад|час назад)" +
-                "|\\d{1,2}\\s(минуты назад|минут назад)";
-        return publishedDate.matches(pattern);
     }
 
     private String extractTags(Element element){

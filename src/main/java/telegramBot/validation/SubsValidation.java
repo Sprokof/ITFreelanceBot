@@ -48,7 +48,7 @@ public class SubsValidation extends AbstractValidation {
     }
 
     private boolean languageSupports(String language){
-       return Language.getLanguageByValue(language) != null;
+        return Language.getLanguageByValue(language) != Language.UNKNOWN;
     }
 
     private boolean subscriptionExist(String chatId, String subLanguage){

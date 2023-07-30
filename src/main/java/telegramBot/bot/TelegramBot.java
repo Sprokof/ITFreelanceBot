@@ -3,8 +3,6 @@ package telegramBot.bot;
 
 import telegramBot.command.CommandContainer;
 import telegramBot.command.CommandName;
-import telegramBot.command.UnknownCommand;
-import telegramBot.dto.OrderDto;
 import telegramBot.entity.User;
 import telegramBot.messages.SubscriptionMessage;
 import telegramBot.services.*;
@@ -18,7 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.*;
 
-import static telegramBot.services.SubscriptionServiceImpl.*;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {

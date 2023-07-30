@@ -57,7 +57,7 @@ public class ExchangeServiceImpl implements ExchangeService {
             }
 
         }
-        InitStatusService.setInit(true);
+        InitStatusService.setInit();
 
     }
 

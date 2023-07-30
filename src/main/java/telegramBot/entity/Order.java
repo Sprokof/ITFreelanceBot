@@ -35,12 +35,9 @@ public class Order {
     @Setter
     private String link;
 
-
     @Column(name = "INIT_DATE")
     @Getter
     private LocalDate initDate;
-
-
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "exchange_id")
@@ -53,8 +50,6 @@ public class Order {
     @Getter
     @Setter
     private Subscription subscription;
-
-
 
 
     public Order(String title, String link) {
@@ -75,5 +70,15 @@ public class Order {
         return LocalDate.now();
     }
 
-
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", link='" + link + '\'' +
+                ", initDate=" + initDate +
+                ", exchange=" + exchange +
+                ", subscription=" + subscription +
+                '}';
+    }
 }
