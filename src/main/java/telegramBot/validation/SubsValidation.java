@@ -54,7 +54,9 @@ public class SubsValidation extends AbstractValidation {
     private boolean subscriptionExist(String chatId, String subLanguage){
         List<Subscription> subs = this.userService.getUserByChatId(chatId).getSubscriptions();
         for(Subscription s : subs){
-            if(s.getLanguage().equalsIgnoreCase(subLanguage)) return true;
+            if(s.getLanguage().equalsIgnoreCase(subLanguage)) {
+                return true;
+            }
         }
         return false;
     }
@@ -102,7 +104,6 @@ public class SubsValidation extends AbstractValidation {
             this.messageService.sendResponse(chatId, ValidationMessage.SUBSCRIPTION_NOT_EXIST.getMessage());
             return false;
         }
-
         return true;
     }
 }

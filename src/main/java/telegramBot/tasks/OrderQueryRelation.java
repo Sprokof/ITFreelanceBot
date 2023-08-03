@@ -11,11 +11,12 @@ public class OrderQueryRelation {
     private static final Map<String, String[]> keywords = new HashMap<>();
 
     static {
-         keywords.put(Language.JAVASCRIPT.getName(), new String[]{"JavaScript", "Java Script", "Java Скрипт", "Java Скрипте" , "JS"});
+         keywords.put(Language.JAVASCRIPT.getName(), new String[]{"JavaScript", "Java Script",
+                 "Java Скрипт", "Java Скрипте" , "JS"});
          keywords.put(Language.PYTHON.getName(), new String[]{"Python"});
          keywords.put(Language.JAVA.getName(), new String[]{"Java"});
          keywords.put(Language.PHP.getName(), new String[]{"PHP"});
-        keywords.put(Language.C_SHARP.getName(), new String[]{"C#"});
+         keywords.put(Language.C_SHARP.getName(), new String[]{"C#"});
     }
 
 

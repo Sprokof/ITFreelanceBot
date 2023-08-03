@@ -34,15 +34,6 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    private void pause() {
-        try {
-            wait(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
     @Override
     public synchronized void deleteOldOrders() {
@@ -119,8 +110,9 @@ public class OrderServiceImpl implements OrderService {
     public String getLatestOrdersMessage(Update update) {
         String input = update.getMessage().getText();
         Language language = Language.getLanguageByValue(input);
-        List<OrderDto> dtos = OrderDto.toDtos(this.orderRepo.
-                getOrdersByLanguage(language)).subList(0,7);
+        List<Order> orders = this.orderRepo.getOrdersByLanguage(language);
+        List<OrderDto> dtos = OrderDto.toDtos(orders).subList(0,
+                getEndIndex(orders.size()));
         assert language != null;
         return createMessage(language, dtos);
     }
@@ -131,6 +123,12 @@ public class OrderServiceImpl implements OrderService {
             sb.append(o.getOrderInfo()).append("\n").
                     append(MessageServiceImpl.delim());
         });
+
     return sb.toString();
+    }
+
+    private int getEndIndex(int collectionSize){
+        if(collectionSize < 8) return collectionSize;
+        return 7;
     }
 }
