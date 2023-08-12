@@ -6,6 +6,7 @@ import telegramBot.services.MessageService;
 import telegramBot.services.UserService;
 import telegramBot.services.UserServiceImpl;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class SubscriptionCommand implements Command {
@@ -26,8 +27,10 @@ public class SubscriptionCommand implements Command {
         String chatId = update.getMessage().getChatId().toString();
         List<Subscription> subscriptions = this.userService.
                 getUserByChatId(chatId).getSubscriptions();
+
         String command = null;
         if(!subscriptions.isEmpty()){
+            subscriptions.sort(Comparator.comparingInt(s -> s.getLanguage().length()));
             StringBuilder subs = new StringBuilder();
             for(int i = 0; i < subscriptions.size(); i ++){
                 if(i < subscriptions.size() - 1){

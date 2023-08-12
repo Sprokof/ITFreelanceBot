@@ -1,7 +1,6 @@
 package telegramBot.tasks;
 
 
-import com.google.gson.Gson;
 import org.apache.commons.text.StringEscapeUtils;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
@@ -12,13 +11,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
-import telegramBot.services.InitStatusService;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -219,7 +215,7 @@ public class TaskImpl implements Task {
             if(link != null && title != null && description != null) break;
 
             if (field.startsWith(idPrefix)) {
-                link = "/projects/" + field.substring(field.indexOf(":") + 1);
+                link = "/projects" + field.substring(field.indexOf(":") + 1);
             }
 
             if (field.startsWith(namePrefix)) {

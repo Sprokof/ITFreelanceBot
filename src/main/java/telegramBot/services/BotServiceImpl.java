@@ -6,7 +6,9 @@ import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
+import telegramBot.enums.BotStatus;
 import telegramBot.enums.Language;
+import telegramBot.repositories.BotStatusRepo;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +30,9 @@ public class BotServiceImpl implements BotService {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private BotStatusRepo botStatusRepo;
 
 
     @Override
@@ -76,6 +81,17 @@ public class BotServiceImpl implements BotService {
         } catch (InterruptedException e) {
             e.getCause();
         }
+    }
+
+    @Override
+    public BotStatus status() {
+        String status = this.botStatusRepo.getStatus();
+        return BotStatus.statusValueOf(status);
+    }
+
+    @Override
+    public void setBotStatus(BotStatus status) {
+        this.botStatusRepo.setStatus(status.getStatus());
     }
 
 

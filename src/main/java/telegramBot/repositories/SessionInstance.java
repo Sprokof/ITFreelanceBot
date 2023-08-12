@@ -1,9 +1,6 @@
 package telegramBot.repositories;
 
-import telegramBot.entity.InitStatus;
-import telegramBot.entity.Order;
-import telegramBot.entity.Subscription;
-import telegramBot.entity.User;
+import telegramBot.entity.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -14,7 +11,7 @@ public class SessionInstance {
         if(factory == null){
             factory = getSessionFactory(new Class[]{User.class, Order.class,
                     telegramBot.entity.Exchange.class,
-                    Subscription.class, InitStatus.class});
+                    Subscription.class, BotStatus.class});
         }
     return factory;
     }

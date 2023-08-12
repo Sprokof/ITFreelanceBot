@@ -1,19 +1,14 @@
 package telegramBot.repositories;
 
-import org.hibernate.type.StandardBasicTypeTemplate;
-import org.hibernate.type.StandardBasicTypes;
 import telegramBot.entity.Order;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
-import telegramBot.services.InitStatusService;
 
 import javax.persistence.NoResultException;
-import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

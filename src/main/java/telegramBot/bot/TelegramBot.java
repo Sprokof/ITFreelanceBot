@@ -37,7 +37,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private OrderService orderService;
 
 
-
     @Value("${token}")
     private String token;
     @Value("${username}")
@@ -92,6 +91,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 else if(unknownInput(chatId)){
                     this.commandContainer.retrieveCommand(CommandName.
                             UNKNOWN.getName()).execute(update);
+                    clearCommands(chatId);
                 }
             }
 

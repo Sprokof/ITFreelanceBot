@@ -15,13 +15,8 @@ public interface OrderService extends CommandLineRunner {
     boolean saveIfNotExist(Order order);
     void saveOrder(Order order);
     void updateOrder(Order order);
-
     boolean orderExist(Order order);
-
     void deleteOldOrders();
-
-    BigInteger getTaskNum(Order order);
-    BigInteger[] getTasksNums(List<Order> orders);
     String getLatestOrdersMessage(Update update);
 
 

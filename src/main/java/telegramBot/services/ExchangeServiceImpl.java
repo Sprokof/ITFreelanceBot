@@ -5,6 +5,7 @@ import telegramBot.dto.OrderDto;
 import telegramBot.entity.Exchange;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
+import telegramBot.enums.BotStatus;
 import telegramBot.enums.Language;
 import telegramBot.repositories.ExchangeRepo;
 import telegramBot.tasks.Task;
@@ -24,6 +25,8 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Autowired
     private SubscriptionService subscriptionService;
 
+    @Autowired
+    private BotService botService;
 
     @Autowired
     private OrderService orderService;
@@ -38,26 +41,27 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public void init() {
-        if(!initCondition()) return ;
-        Language[] languages = Language.getLanguages();
-        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
-        for(Language language : languages) {
-            Subscription subscription = this.subscriptionService.getSubscriptionByLanguage(language);
-            Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.task.getOrders(language);
-            for (telegramBot.enums.Exchange e : exchanges) {
-                List<Order> orders = exchangesOrders.get(e);
-                telegramBot.entity.Exchange exchange = getExchange(e);
-                for (Order order : orders) {
-                    if(orderService.saveIfNotExist(order)){
-                        exchange.addOrder(order);
-                        subscription.addOrder(order);
-                        this.orderService.updateOrder(order);
+        if(botService.status() == BotStatus.CREATE) {
+            Language[] languages = Language.getLanguages();
+            telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
+            for (Language language : languages) {
+                Subscription subscription = this.subscriptionService.getSubscriptionByLanguage(language);
+                Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.task.getOrders(language);
+                for (telegramBot.enums.Exchange e : exchanges) {
+                    List<Order> orders = exchangesOrders.get(e);
+                    telegramBot.entity.Exchange exchange = getExchange(e);
+                    for (Order order : orders) {
+                        if (orderService.saveIfNotExist(order)) {
+                            exchange.addOrder(order);
+                            subscription.addOrder(order);
+                            this.orderService.updateOrder(order);
+                        }
                     }
                 }
-            }
 
+            }
+            botService.setBotStatus(BotStatus.INIT);
         }
-        InitStatusService.setInit();
 
     }
 
@@ -70,10 +74,6 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Override
     public void run(String... args) throws Exception {
         new Thread(this::init).start();
-    }
-
-    private boolean initCondition() {
-        return !InitStatusService.init();
     }
 
     @Override

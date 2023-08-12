@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService {
 
     private final TelegramBot bot;
+
     public MessageServiceImpl(@Lazy TelegramBot bot){
         this.bot = bot;
     }
@@ -90,11 +91,7 @@ public class MessageServiceImpl implements MessageService {
 
 
     public static String delim() {
-        String delim = "\n.";
-        for(int i = 0; i < 70; i ++){
-            delim += ".";
-        }
-    return delim + "\n";
+    return "\n";
     }
 
     private String trimImgTag(String message){

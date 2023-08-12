@@ -25,6 +25,7 @@ public enum CommandName {
         for(CommandName command : CommandName.values()){
             if(command.getName().equalsIgnoreCase(name)) return command;
         }
-    return null;
+    return UNKNOWN;
     }
+
 }

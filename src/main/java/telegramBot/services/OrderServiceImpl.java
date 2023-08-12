@@ -77,34 +77,7 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrder(Order order) {
         this.orderRepo.update(order);
     }
-
-    @Override
-    public BigInteger getTaskNum(Order order) {
-        String link = order.getLink();
-        String digitPat = "\\d+";
-        String[] linksItems = link.split("");
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < linksItems.length; i++) {
-            String item = linksItems[i];
-            if (item.matches(digitPat)) {
-                int index = i;
-                while (linksItems[index].matches(digitPat)) {
-                    output.append(linksItems[index]);
-                    index++;
-                }
-            }
-
-        }
-        return (new BigInteger(output.toString()));
-
-    }
-
-    @Override
-    public BigInteger[] getTasksNums(List<Order> orders) {
-       return orders.stream().map(this::getTaskNum).sorted().
-               collect(Collectors.toList()).toArray(BigInteger[]::new);
-    }
-
+    
 
     @Override
     public String getLatestOrdersMessage(Update update) {
