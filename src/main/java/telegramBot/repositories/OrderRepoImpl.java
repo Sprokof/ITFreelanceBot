@@ -50,7 +50,6 @@ public class OrderRepoImpl implements OrderRepo {
     }
     catch (Exception e){
         if(session != null && session.getTransaction() != null){
-            session.getTransaction().rollback();
             if(e instanceof NoResultException) return false;
         }
     }

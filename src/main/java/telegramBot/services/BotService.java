@@ -12,6 +12,6 @@ import java.util.Set;
 public interface BotService extends CommandLineRunner {
     BotStatus status();
     void setBotStatus(BotStatus status);
-    void executeNotices(Map<String, Set<OrderDto>> orders);
+    void executeNotices(Map<String, List<OrderDto>> orders);
 
 }

@@ -28,31 +28,33 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void sendNotice(String userChatId, Set<OrderDto> dtos) {
+    public void sendNotice(String userChatId, List<OrderDto> dtos) {
         executeMessage(userChatId, createNotices(dtos));
     }
 
 
-    private String createNotices(Set<OrderDto> orderDtos) {
+    private String createNotices(List<OrderDto> orderDtos) {
         StringBuilder notice = new StringBuilder();
-        Map<Exchange, Set<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
+        Map<Exchange, List<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
         List<StringBuilder> notices = new ArrayList<>();
         StringBuilder output = new StringBuilder();
         for(Exchange exchange : Exchange.getExchanges()){
             if(!exchangesDtos.containsKey(exchange)){ continue; }
-            Set<OrderDto> eDtos = exchangesDtos.get(exchange);
+            List<OrderDto> eDtos = exchangesDtos.get(exchange);
             String title = "Новые заказы на  " + exchange.getName() + ":";
-            notice.append(title);
-            Map<Language, Set<OrderDto>> languagesDtos = sortByLanguage(eDtos);
+            notice.append(title).append("\n");
+            Map<Language, List<OrderDto>> languagesDtos = sortByLanguage(eDtos);
             for(Language language : Language.getLanguages()){
                 if(!languagesDtos.containsKey(language)){ continue; }
-                    Set<OrderDto> lDtos = languagesDtos.get(language);
+                    List<OrderDto> lDtos = languagesDtos.get(language);
                     String subscription = "По запросу  " + language.getName() + ":";
-                    notice.append("\n").append(subscription);
+                    notice.append("\n").append(subscription).append(delim());
                     for(OrderDto orderDto : lDtos){
                         String orderInfo = orderDto.getOrderInfo();
-                        notice.append("\n").append(orderInfo);
-                        notice.append(delim());
+                        notice.append("\n")
+                                .append(orderInfo)
+                                .append(delim())
+                                .append("\n");
                     }
             }
         }
@@ -66,11 +68,11 @@ public class MessageServiceImpl implements MessageService {
 
     }
 
-    private Map<Exchange, Set<OrderDto>> sortByExchange(Set<OrderDto> orderDtos){
-        Map<Exchange, Set<OrderDto>> result = new HashMap<>();
+    private Map<Exchange, List<OrderDto>> sortByExchange(List<OrderDto> orderDtos){
+        Map<Exchange, List<OrderDto>> result = new HashMap<>();
         for(Exchange e : Exchange.getExchanges()){
-            Set<OrderDto> dtos = orderDtos.stream().filter((o) ->
-                    o.getExchangeName().equals(e.getName())).collect(Collectors.toSet());
+            List<OrderDto> dtos = orderDtos.stream().filter((o) ->
+                    o.getExchangeName().equals(e.getName())).collect(Collectors.toList());
 
             if(!dtos.isEmpty()) result.put(e, dtos);
         }
@@ -78,11 +80,11 @@ public class MessageServiceImpl implements MessageService {
         return result;
     }
 
-    private Map<Language, Set<OrderDto>> sortByLanguage(Set<OrderDto> orderDtos){
-        Map<Language, Set<OrderDto>> result = new HashMap<>();
+    private Map<Language, List<OrderDto>> sortByLanguage(List<OrderDto> orderDtos){
+        Map<Language, List<OrderDto>> result = new HashMap<>();
         for(Language l : Language.getLanguages()){
-            Set<OrderDto> dtos = orderDtos.stream().filter((o) ->
-                    o.getSubscription().equals(l.getName())).collect(Collectors.toSet());
+            List<OrderDto> dtos = orderDtos.stream().filter((o) ->
+                    o.getSubscription().equals(l.getName())).collect(Collectors.toList());
 
             if(!dtos.isEmpty()) result.put(l, dtos);
         }
@@ -91,7 +93,7 @@ public class MessageServiceImpl implements MessageService {
 
 
     public static String delim() {
-    return "\n";
+        return ".".repeat(70);
     }
 
     private String trimImgTag(String message){

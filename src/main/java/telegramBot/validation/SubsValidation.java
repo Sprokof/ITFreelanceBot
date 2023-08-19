@@ -88,19 +88,20 @@ public class SubsValidation extends AbstractValidation {
     @Override
     public boolean latestCommandValidate(Update update) {
         String chatId = update.getMessage().getChatId().toString();
-        String subsLanguage = update.getMessage().getText();
-
-        if(subsLanguage.isEmpty()){
+        String input = update.getMessage().getText().replaceAll("(\\(\\))", "");
+        if(input.isEmpty()){
             this.messageService.sendResponse(chatId, ValidationMessage.EMPTY.getMessage());
             return false;
         }
 
-        if(!languageSupports(subsLanguage)){
+        String[] inputs = input.split(",");
+
+        if(inputs.length == 1 || !languageSupports(inputs[0].trim())){
             this.messageService.sendResponse(chatId, ValidationMessage.NOT_SUPPORTS.getMessage());
             return false;
         }
 
-        if(!subscriptionExist(chatId, subsLanguage)){
+        if(!subscriptionExist(chatId, inputs[0].trim())){
             this.messageService.sendResponse(chatId, ValidationMessage.SUBSCRIPTION_NOT_EXIST.getMessage());
             return false;
         }

@@ -81,27 +81,40 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String getLatestOrdersMessage(Update update) {
-        String input = update.getMessage().getText();
-        Language language = Language.getLanguageByValue(input);
+        String input = update.getMessage().getText().
+                replaceAll("\\s", "");
+        String[] items = extractItems(input);
+        Language language = Language.getLanguageByValue(items[0]);
+        int count = Integer.parseInt(items[1]);
         List<Order> orders = this.orderRepo.getOrdersByLanguage(language);
         List<OrderDto> dtos = OrderDto.toDtos(orders).subList(0,
-                getEndIndex(orders.size()));
+                getEndIndex(orders.size(), count));
         assert language != null;
         return createMessage(language, dtos);
     }
 
     private String createMessage(Language language, List<OrderDto> dtos){
-        StringBuilder sb = new StringBuilder("Последние заказы по запросу " + language.getName() + ":\n" );
+        StringBuilder sb = new StringBuilder("Последние заказы по запросу " +
+                language.getName() + ":\n" );
         dtos.forEach(o -> {
-            sb.append(o.getOrderInfo()).append("\n").
-                    append(MessageServiceImpl.delim());
+            sb.append(o.getOrderInfo()).append(" (").
+                    append(o.getExchangeName()).
+                    append(")").append("\n\n");
         });
 
     return sb.toString();
     }
 
-    private int getEndIndex(int collectionSize){
-        if(collectionSize < 8) return collectionSize;
-        return 7;
+    private int getEndIndex(int collectionSize, int count){
+        return Math.min(collectionSize, count);
+    }
+
+    private String[] extractItems(String input){
+        String[] items = input.split(",");
+        String language = items[0];
+        String count = (items[1].
+                matches("\\d+") &&
+                !items[1].equals("0")) ? items[1] : "1" ;
+        return new String[]{language, count};
     }
 }

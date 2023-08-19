@@ -3,7 +3,7 @@ package telegramBot.repositories;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
-import telegramBot.enums.BotStatus;
+import telegramBot.entity.BotStatus;
 import telegramBot.services.BotService;
 
 @Component
@@ -17,8 +17,9 @@ public class BotStatusRepoImpl implements BotStatusRepo {
     try {
         session = this.sessionFactory.openSession();
         session.beginTransaction();
-        status = (String) session.createSQLQuery("SELECT STATUS " +
-                "FROM BOT_STATUS").getSingleResult();
+        status = ((BotStatus) session.createSQLQuery("SELECT * " +
+                "FROM BOT_STATUS").addEntity(BotStatus.class).
+                getSingleResult()).getStatus();
         session.getTransaction().commit();
     }
     catch (Exception e){

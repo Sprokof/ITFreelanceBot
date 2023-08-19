@@ -7,8 +7,8 @@ import telegramBot.services.MessageService;
 import java.util.List;
 
 public class LatestCommand implements Command {
-    private static final String LATEST_COMMAND = "Введите название языка, " +
-            "последние заказы на который хотите получить";
+    private static final String LATEST_COMMAND = "Введите название языка и число " +
+            "последних заказов в формате (language, count)";
 
     private final MessageService messageService;
 

@@ -11,6 +11,9 @@ import telegramBot.enums.Language;
 import telegramBot.repositories.BotStatusRepo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,10 +42,10 @@ public class BotServiceImpl implements BotService {
     public void run(String... args) throws Exception {
         new Thread(() -> {
             while (true) {
-                if (InitStatusService.init()) {
+                if (status() == BotStatus.INIT) {
                     List<Order> newOrders = this.exchangeService.findNewOrders();
                     newOrders.forEach(order -> this.orderService.saveOrder(order));
-                    Map<String, Set<OrderDto>> orders = getFilteredOrders(newOrders);
+                    Map<String, List<OrderDto>> orders = getFilteredOrders(newOrders);
                     executeNotices(orders);
                 }
                 pause();
@@ -52,23 +55,26 @@ public class BotServiceImpl implements BotService {
     }
 
     @Override
-    public void executeNotices(Map<String, Set<OrderDto>> orders) {
+    public void executeNotices(Map<String, List<OrderDto>> orders) {
         for(User user : this.userService.getActiveUsers()){
-            Set<OrderDto> usersOrders = orders.get(user.getChatId());
+            List<OrderDto> usersOrders = orders.get(user.getChatId());
             if(usersOrders != null) this.messageService.
                     sendNotice(user.getChatId(), usersOrders);
         }
     }
 
-    private Map<String, Set<OrderDto>> getFilteredOrders(List<Order> newOrders){
-        Map<String, Set<OrderDto>> orders = new HashMap<>();
+    private Map<String, List<OrderDto>> getFilteredOrders(List<Order> newOrders){
+        Map<String, List<OrderDto>> orders = new HashMap<>();
         if(newOrders.isEmpty()) return new HashMap<>();
+        System.out.println(orders);
         List<User> users = this.userService.getActiveUsers();
         users.forEach(user -> {
-            Set<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
+            List<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
                 Subscription sub = order.getSubscription();
                 return user.getSubscriptions().contains(sub);
-            }).map(OrderDto::toDto).collect(Collectors.toSet());
+            }).filter(distinctByKey(Order :: getLink)).
+                    map(OrderDto :: toDto).
+                    collect(Collectors.toList());
             if(!filteredOrders.isEmpty()) orders.put(user.getChatId(), filteredOrders);
         });
 
@@ -94,5 +100,10 @@ public class BotServiceImpl implements BotService {
         this.botStatusRepo.setStatus(status.getStatus());
     }
 
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
 
 }

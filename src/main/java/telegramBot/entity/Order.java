@@ -63,7 +63,7 @@ public class Order {
         if(this == obj) return true;
         if(!(obj instanceof Order)) return false;
         Order order = (Order) obj;
-        return this.link.equals(order.link);
+        return this.title.equals(order.title);
     }
 
     private LocalDate now(){

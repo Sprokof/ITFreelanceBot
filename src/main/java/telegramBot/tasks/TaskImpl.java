@@ -83,7 +83,6 @@ public class TaskImpl implements Task {
                 String taskTitle = titleElement.text();
                 String taskLink = titleElement.attr("href");
                 String taskTags = extractTags(e);
-                //String taskDate = e.child(0).child(1).child(1).child(0).text();
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
                 if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
