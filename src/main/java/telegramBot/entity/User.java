@@ -34,7 +34,7 @@ public class User {
 
     public User(String chatId) {
         this.chatId = chatId;
-        this.active = false;
+        this.active = true;
     }
 
     @Override

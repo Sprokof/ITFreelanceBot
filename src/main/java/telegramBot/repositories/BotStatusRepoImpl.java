@@ -41,7 +41,7 @@ public class BotStatusRepoImpl implements BotStatusRepo {
     try {
         session = this.sessionFactory.openSession();
         session.beginTransaction();
-        session.createSQLQuery("UPDATE BOT_STATUS SET STATUS =: status").
+        session.createSQLQuery("UPDATE BOT_STATUS SET STATUS=:status").
                 setParameter("status", status).executeUpdate();
         session.getTransaction().commit();
     }

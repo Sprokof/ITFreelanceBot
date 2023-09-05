@@ -66,7 +66,6 @@ public class BotServiceImpl implements BotService {
     private Map<String, List<OrderDto>> getFilteredOrders(List<Order> newOrders){
         Map<String, List<OrderDto>> orders = new HashMap<>();
         if(newOrders.isEmpty()) return new HashMap<>();
-        System.out.println(orders);
         List<User> users = this.userService.getActiveUsers();
         users.forEach(user -> {
             List<OrderDto> filteredOrders = newOrders.stream().filter(order -> {

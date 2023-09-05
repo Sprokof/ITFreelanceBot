@@ -58,8 +58,8 @@ public class ExchangeServiceImpl implements ExchangeService {
                         }
                     }
                 }
-
             }
+            System.out.println("here");
             botService.setBotStatus(BotStatus.INIT);
         }
 
