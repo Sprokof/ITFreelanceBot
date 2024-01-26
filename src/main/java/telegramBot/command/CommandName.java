@@ -21,11 +21,6 @@ public enum CommandName {
         this.name = name;
     }
 
-    public static CommandName getCommandByName(String name){
-        for(CommandName command : CommandName.values()){
-            if(command.getName().equalsIgnoreCase(name)) return command;
-        }
-    return UNKNOWN;
-    }
+
 
 }

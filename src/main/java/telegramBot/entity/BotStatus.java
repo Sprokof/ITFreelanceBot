@@ -7,17 +7,12 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name = "BOT_STATUS")
+@Table(name = "Bot_status")
 @NoArgsConstructor
-public class BotStatus {
-
-    @Id
-    @Getter
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class BotStatus extends BaseEntity {
 
     @Getter
-    @Column(name = "STATUS")
+    @Column(name = "Status")
     private String status;
 
     public void setStatus(telegramBot.enums.BotStatus status) {

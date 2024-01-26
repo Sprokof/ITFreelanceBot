@@ -2,9 +2,8 @@ package telegramBot.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.entity.Subscription;
-import telegramBot.services.MessageService;
-import telegramBot.services.UserService;
-import telegramBot.services.UserServiceImpl;
+import telegramBot.service.MessageService;
+import telegramBot.service.UserService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +15,7 @@ public class SubscriptionCommand implements Command {
 
     private final MessageService messageService;
 
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService = new UserService();
 
     public SubscriptionCommand(MessageService service){
         this.messageService = service;
@@ -26,7 +25,7 @@ public class SubscriptionCommand implements Command {
     public void execute(Update update) {
         String chatId = update.getMessage().getChatId().toString();
         List<Subscription> subscriptions = this.userService.
-                getUserByChatId(chatId).getSubscriptions();
+                getByChatId(chatId).getSubscriptions();
 
         String command = null;
         if(!subscriptions.isEmpty()){

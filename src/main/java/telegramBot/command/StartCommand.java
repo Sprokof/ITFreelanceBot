@@ -1,10 +1,8 @@
 package telegramBot.command;
 
-import telegramBot.services.MessageService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.springframework.stereotype.Component;
-import telegramBot.services.UserService;
-import telegramBot.services.UserServiceImpl;
+import telegramBot.service.MessageService;
 
 @Component
 public class StartCommand implements Command {

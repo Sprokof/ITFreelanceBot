@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+//TODO rewrite it
 public class OrderDto implements OrderBuilder {
     private String title;
     private String link;

@@ -1,10 +1,7 @@
 package telegramBot.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.dto.OrderDto;
-import telegramBot.services.MessageService;
-
-import java.util.List;
+import telegramBot.service.MessageService;
 
 public class LatestCommand implements Command {
     private static final String LATEST_COMMAND = "Введите название языка и число " +

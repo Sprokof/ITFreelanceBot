@@ -1,6 +1,6 @@
 package telegramBot.command;
 
-import telegramBot.services.MessageService;
+import telegramBot.service.MessageService;
 
 import java.util.HashMap;
 import java.util.Map;

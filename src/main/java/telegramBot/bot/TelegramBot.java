@@ -3,16 +3,18 @@ package telegramBot.bot;
 
 import telegramBot.command.CommandContainer;
 import telegramBot.command.CommandName;
+import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
+import telegramBot.enums.Language;
 import telegramBot.messages.SubscriptionMessage;
-import telegramBot.services.*;
+import telegramBot.service.*;
 
-import telegramBot.validation.AbstractValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import telegramBot.validation.SubscriptionValidation;
 
 import java.util.*;
 
@@ -27,14 +29,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final MessageService messageService;
     private final CommandContainer commandContainer;
 
-    @Autowired
-    private AbstractValidation validation;
+    private final SubscriptionValidation validation;
 
     @Autowired
     private ExchangeService exchangeService;
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
 
 
     @Value("${token}")
@@ -53,7 +57,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         User user;
         if (update.hasMessage() && update.getMessage().hasText()) {
             chatId = update.getMessage().getChatId().toString();
-            user = userService.createUser(chatId);
+            user = userService.createOrGet(chatId);
             commands.putIfAbsent(chatId, new ArrayList<>());
             String message = update.getMessage().getText().trim();
             if(message.startsWith(COMMAND_PREFIX)){
@@ -64,23 +68,31 @@ public class TelegramBot extends TelegramLongPollingBot {
             else {
                 CommandName lastCommand = lastCommand(chatId);
                 if(lastCommand.equals(CommandName.ADD)){
-                    if(validation.addCommandValidate(update)){
-                        userService.addSubscription(user, update);
+                    if(validation.addCommand(update)){
+                        String value = update.getMessage().getText();
+                        Language language = Language.ignoreCaseValueOf(value);
+                        Subscription subscription = subscriptionService
+                                .getByLanguage(language);
+                        userService.addSubscription(user, subscription);
                         this.messageService.sendResponse(chatId, SubscriptionMessage.
                                 getMessage(lastCommand));
                         clearCommands(chatId);
                     }
                 }
                 else if(lastCommand.equals(CommandName.REMOVE)){
-                    if(validation.removeCommandValidate(update)){
-                        userService.removeSubscription(user, update);
+                    if(validation.removeCommand(update)){
+                        String value = update.getMessage().getText();
+                        Language language = Language.ignoreCaseValueOf(value);
+                        Subscription subscription = subscriptionService
+                                .getByLanguage(language);
+                        userService.removeSubscription(user, subscription);
                         this.messageService.sendResponse(chatId, SubscriptionMessage.
                                 getMessage(lastCommand));
                         clearCommands(chatId);
                     }
                 }
                 else if(lastCommand.equals(CommandName.LATEST)){
-                     if(validation.latestCommandValidate(update)) {
+                     if(validation.latestCommand(update)) {
                        String latestOrdersMessage = this.orderService.
                                getLatestOrdersMessage(update);
                        this.messageService.sendResponse(chatId, latestOrdersMessage);
@@ -99,18 +111,19 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
         @Override
-        public String getBotToken () {
+        public String getBotToken() {
             return this.token;
         }
 
         @Override
-        public String getBotUsername () {
+        public String getBotUsername() {
             return this.username;
         }
 
         public TelegramBot() {
-            this.messageService = new MessageServiceImpl(this);
+            this.messageService = new MessageService(this);
             this.commandContainer = new CommandContainer(this.messageService);
+            this.validation = new SubscriptionValidation(this.subscriptionService, this.messageService);
         }
 
     private CommandName lastCommand(String chatId) {
@@ -118,7 +131,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (size == 0) return CommandName.UNKNOWN;
         int lastIndex = size - 1;
         String command = commands.get(chatId).get(lastIndex);
-        return CommandName.getCommandByName(command);
+        return CommandName.valueOf(command);
     }
 
     public boolean unknownInput(String chatId) {

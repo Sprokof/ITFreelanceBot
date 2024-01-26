@@ -12,22 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "EXCHANGES")
+@Table(name = "Exchange")
 @NoArgsConstructor
-public class Exchange {
-    @Id
-    @Getter
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Exchange extends BaseEntity {
 
     @Getter
     @Setter
-    @Column(name = "EXCHANGE_NAME")
+    @Column(name = "Exchange_name")
     private String name;
 
     @Getter
     @Setter
-    @Column(name = "EXCHANGE_LINK")
+    @Column(name = "Exchange_link")
     private String link;
 
     public Exchange(telegramBot.enums.Exchange exchange) {
@@ -40,10 +36,9 @@ public class Exchange {
         this.name = name;
     }
 
-    @OneToMany(mappedBy = "exchange")
-    @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.REFRESH)
     private List<Order> orders;
 
     public void addOrder(Order order) {

@@ -31,7 +31,7 @@ public enum Language {
 
 
 
-    public static Language getLanguageByValue(String value){
+    public static Language ignoreCaseValueOf(String value){
         for(Language language : Language.values()){
             if(language.equals(JAVASCRIPT)){
                 if(language.getName().equalsIgnoreCase(value) ||

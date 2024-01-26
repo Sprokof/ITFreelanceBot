@@ -16,39 +16,33 @@ import java.util.List;
 import java.util.Locale;
 
 @Entity
-@Table(name = "ORDERS")
+@Table(name = "Order")
 @NoArgsConstructor
-public class Order {
+public class Order extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    private long id;
 
-    @Column(name = "ORDER_TITLE")
+    @Column(name = "Order_title")
     @Getter
     @Setter
     private String title;
 
-    @Column(name = "ORDER_LINK")
+    @Column(name = "Order_link")
     @Getter
     @Setter
     private String link;
 
-    @Column(name = "INIT_DATE")
+    @Column(name = "init_date")
     @Getter
     private LocalDate initDate;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "exchange_id")
     @Getter
-    @Setter
     private Exchange exchange;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "subscription_id")
     @Getter
-    @Setter
     private Subscription subscription;
 
 
@@ -68,6 +62,16 @@ public class Order {
 
     private LocalDate now(){
         return LocalDate.now();
+    }
+
+    public void setExchange(Exchange exchange) {
+        this.exchange = exchange;
+        exchange.addOrder(this);
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
+        subscription.addOrder(this);
     }
 
     @Override

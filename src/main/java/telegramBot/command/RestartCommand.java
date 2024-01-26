@@ -1,16 +1,15 @@
 package telegramBot.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.services.MessageService;
-import telegramBot.services.UserService;
-import telegramBot.services.UserServiceImpl;
+import telegramBot.service.MessageService;
+import telegramBot.service.UserService;
 
 public class RestartCommand implements Command {
     private static final String RESTART_COMMAND = "Вы возобновили уведомления. /stop - остановка";
 
     private final MessageService messageService;
 
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService = new UserService();
 
 
     public RestartCommand(MessageService messageService) {

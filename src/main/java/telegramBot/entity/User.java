@@ -4,8 +4,10 @@ package telegramBot.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.data.jpa.repository.EntityGraph;
 import telegramBot.enums.Language;
 
 import javax.persistence.*;
@@ -13,18 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "Users")
 @NoArgsConstructor
-public class User {
-
-    @Id
-    @Getter
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class User extends BaseEntity {
 
     @Getter
     @Setter
-    @Column(name = "CHAT_ID")
+    @Column(name = "chat_id")
     private String chatId;
 
     @Getter
@@ -37,17 +34,11 @@ public class User {
         this.active = true;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(!(obj instanceof User)) return false;
-        User user = (User) obj;
-        return this.id == user.id;
-    }
 
-    @Setter
-    @ManyToMany(mappedBy = "users")
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @ManyToMany()
+    @JoinTable(name = "Users_subscriptions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = {@JoinColumn(name = "subscription_id")})
     private List<Subscription> subscriptions;
 
     public void addSubscription(Subscription subscription){
@@ -63,7 +54,6 @@ public class User {
         }
 
     }
-
     public List<Subscription> getSubscriptions() {
         if(this.subscriptions == null) this.subscriptions = new ArrayList<>();
         return this.subscriptions;

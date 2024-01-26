@@ -2,7 +2,7 @@ package telegramBot.command;
 
 
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.services.MessageService;
+import telegramBot.service.MessageService;
 
 public class RemoveCommand implements Command {
     private static final String REMOVE_COMMAND = "Введите название языка, подписку на который хотите убрать";
