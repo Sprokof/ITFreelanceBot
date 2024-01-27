@@ -51,7 +51,7 @@ public class MessageService {
                 if(!languagesDtos.containsKey(language)){ continue; }
                     List<OrderDto> lDtos = languagesDtos.get(language);
                     String subscription = "По запросу  " + language.getName() + ":";
-                    notice.append("\n").append(subscription).append(delim());
+                    notice.append("\n").append(subscription).append("\n").append(delim()).append("\n");
                     for(OrderDto orderDto : lDtos){
                         String orderInfo = orderDto.getOrderInfo();
                         notice.append("\n")

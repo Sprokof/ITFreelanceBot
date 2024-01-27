@@ -3,8 +3,10 @@ package telegramBot.bot;
 
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import telegramBot.command.Command;
 import telegramBot.command.CommandContainer;
 import telegramBot.command.CommandName;
+import telegramBot.command.SubscriptionCommand;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
@@ -48,7 +50,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        String command = "", chatId = "";
+        String inputCommand = "", chatId = "";
         User user;
         if (update.hasMessage() && update.getMessage().hasText()) {
             chatId = update.getMessage().getChatId().toString();
@@ -56,9 +58,17 @@ public class TelegramBot extends TelegramLongPollingBot {
             commands.putIfAbsent(chatId, new ArrayList<>());
             String message = update.getMessage().getText().trim();
             if(message.startsWith(COMMAND_PREFIX)){
-                command = message.split(" ")[0].toLowerCase(Locale.ROOT);
-                this.commandContainer.retrieveCommand(command).execute(update);
-                commands.get(chatId).add(command);
+                inputCommand = message.split(" ")[0].toLowerCase(Locale.ROOT);
+                Command command = this.commandContainer.retrieveCommand(inputCommand);
+                if(command instanceof SubscriptionCommand){
+                    ((SubscriptionCommand) command)
+                            .setUserService(this.userService)
+                            .execute(update);
+                }
+                else {
+                    command.execute(update);
+                    commands.get(chatId).add(inputCommand);
+                }
             }
             else {
                 CommandName lastCommand = lastCommand(chatId);

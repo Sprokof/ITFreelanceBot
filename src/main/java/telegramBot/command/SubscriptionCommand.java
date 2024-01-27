@@ -15,11 +15,17 @@ public class SubscriptionCommand implements Command {
 
     private final MessageService messageService;
 
+    private UserService userService;
+
 
     public SubscriptionCommand(MessageService service){
         this.messageService = service;
     }
 
+    public SubscriptionCommand setUserService(UserService userService) {
+        this.userService = userService;
+        return this;
+    }
 
     @Override
     public void execute(Update update) {
@@ -45,4 +51,5 @@ public class SubscriptionCommand implements Command {
         }
         messageService.sendResponse(chatId, command);
     }
+
 }

@@ -53,21 +53,21 @@ public class SubscriptionValidation {
     }
 
     public boolean removeCommand(Update update) {
-        String userChatId = update.getMessage().getChatId().toString();
+        String chatId = update.getMessage().getChatId().toString();
         String subLanguage = update.getMessage().getText();
 
         if(subLanguage.isEmpty()){
-            this.messageService.sendResponse(userChatId, ValidationMessage.EMPTY.getMessage());
+            this.messageService.sendResponse(chatId, ValidationMessage.EMPTY.getMessage());
             return false;
         }
 
         if(!languageSupports(subLanguage)){
-            this.messageService.sendResponse(userChatId, ValidationMessage.NOT_SUPPORTS.getMessage());
+            this.messageService.sendResponse(chatId, ValidationMessage.NOT_SUPPORTS.getMessage());
             return false;
         }
 
-        if(!subscriptionExist(userChatId, subLanguage)){
-            this.messageService.sendResponse(userChatId, ValidationMessage.SUBSCRIPTION_NOT_EXIST.getMessage());
+        if(!subscriptionExist(subLanguage, chatId)){
+            this.messageService.sendResponse(chatId, ValidationMessage.SUBSCRIPTION_NOT_EXIST.getMessage());
             return false;
         }
 
