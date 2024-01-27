@@ -1,18 +1,24 @@
 package telegramBot.service;
 
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.dto.OrderDto;
 import telegramBot.bot.TelegramBot;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
+import telegramBot.repository.OrderRepository;
+import telegramBot.util.OrderUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Component
+@Service
 public class MessageService {
 
     private final TelegramBot bot;
@@ -120,6 +126,44 @@ public class MessageService {
         } catch (Exception e) {
             System.out.println(e.getCause().getMessage());
         }
+    }
+
+    public String getLatestOrdersMessage(Update update, OrderService service) {
+        String input = update.getMessage().getText().
+                replaceAll("\\s", "");
+        String[] items = extractItems(input);
+        Language language = Language.ignoreCaseValueOf(items[0]);
+        int count = Integer.parseInt(items[1]);
+        List<Order> orders = service.getAllByLanguage(language);
+        List<OrderDto> dtos = OrderUtil.toDtos(orders).subList(0,
+                getEndIndex(orders.size(), count));
+        assert language != null;
+        return createMessage(language, dtos);
+    }
+
+    private String createMessage(Language language, List<OrderDto> dtos){
+        StringBuilder sb = new StringBuilder("Последние заказы по запросу " +
+                language.getName() + ":\n" );
+        dtos.forEach(o -> {
+            sb.append(o.getOrderInfo()).append(" (").
+                    append(o.getExchangeName()).
+                    append(")").append("\n\n");
+        });
+
+        return sb.toString();
+    }
+
+    private int getEndIndex(int collectionSize, int count){
+        return Math.min(collectionSize, count);
+    }
+
+    private String[] extractItems(String input){
+        String[] items = input.split(",");
+        String language = items[0];
+        String count = (items[1].
+                matches("\\d+") &&
+                !items[1].equals("0")) ? items[1] : "1" ;
+        return new String[]{language, count};
     }
 
 }

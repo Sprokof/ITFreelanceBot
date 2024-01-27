@@ -1,6 +1,7 @@
 package telegramBot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
 import telegramBot.repository.SubscriptionRepository;
@@ -9,16 +10,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+@Service
 public class SubscriptionService {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
-
-
-    public boolean existByLanguageAndChatId(Language language, String chatId) {
-        return this.subscriptionRepository.existByLanguageAndChatId(language, chatId);
-    }
 
     public Subscription getByLanguage(Language language) {
         return this.subscriptionRepository.getByLanguage(language);
@@ -32,12 +28,6 @@ public class SubscriptionService {
         this.subscriptionRepository.save(subscription);
     }
 
-    public boolean exists(long userId) {
-        return this.subscriptionRepository.exists(userId);
-    }
 
-    public boolean delete(long id, long userId) {
-        return this.subscriptionRepository.delete(id, userId);
-    }
 
 }

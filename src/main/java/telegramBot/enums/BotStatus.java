@@ -3,8 +3,8 @@ package telegramBot.enums;
 import lombok.Getter;
 
 public enum BotStatus {
-    CREATE("Create"),
-    INIT("Init");
+    CREATE("create"),
+    INIT("init");
 
     @Getter
     private String status;

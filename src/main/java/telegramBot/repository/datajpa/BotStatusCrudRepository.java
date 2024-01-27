@@ -8,9 +8,8 @@ import telegramBot.entity.BotStatus;
 
 public interface BotStatusCrudRepository extends CrudRepository<BotStatus, Long> {
     @Query("SELECT s FROM BotStatus s")
-    String getStatus();
-
+    BotStatus get();
     @Modifying
     @Query("UPDATE BotStatus s SET s.status =:status")
-    void setBotStatus(@Param("status") String status);
+    int setBotStatus(@Param("status") String status);
 }

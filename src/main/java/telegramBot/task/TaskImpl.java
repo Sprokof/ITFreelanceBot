@@ -1,7 +1,7 @@
 package telegramBot.task;
 
 
-import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
@@ -87,7 +87,7 @@ public class TaskImpl implements Task {
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
                 if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
                 if(OrderQueryRelation.correctRelation(dto, language) == language){
-                    orders.add(dto.doBuild());
+                    orders.add(dto.toEntity());
                 }
             }
         }
@@ -108,7 +108,7 @@ public class TaskImpl implements Task {
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
                 if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
                 if (OrderQueryRelation.correctRelation(dto, language) == language) {
-                    orders.add(dto.doBuild());
+                    orders.add(dto.toEntity());
                 }
             }
         }
@@ -125,7 +125,7 @@ public class TaskImpl implements Task {
                             OrderQueryRelation.correctRelation(order, language) == language;
                 }
                 return OrderQueryRelation.correctRelation(order, language) == language;
-            }).map(OrderDto::doBuild).collect(Collectors.toList());
+            }).map(OrderDto::toEntity).collect(Collectors.toList());
             orders.addAll(filteredOrders);
         }
     return orders;
@@ -188,7 +188,7 @@ public class TaskImpl implements Task {
         return Arrays.stream(json.
                 split("(\\{|\\})")).
                 filter(this::filterCondition).
-                map(StringEscapeUtils :: unescapeJava).
+                map(StringEscapeUtils::unescapeJava).
                 map(this :: mapToKworkOrder).
                 collect(Collectors.toList());
     }

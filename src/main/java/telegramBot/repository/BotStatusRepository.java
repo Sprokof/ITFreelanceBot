@@ -1,9 +1,8 @@
 package telegramBot.repository;
 
-
 import telegramBot.enums.BotStatus;
 
 public interface BotStatusRepository {
-    String getStatus();
+    telegramBot.entity.BotStatus get();
     void setStatus(BotStatus status);
 }

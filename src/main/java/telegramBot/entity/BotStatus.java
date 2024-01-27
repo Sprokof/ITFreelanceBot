@@ -3,7 +3,7 @@ package telegramBot.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Entity
@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class BotStatus extends BaseEntity {
 
     @Getter
-    @Column(name = "Status")
+    @Column(name = "status")
     private String status;
 
     public void setStatus(telegramBot.enums.BotStatus status) {

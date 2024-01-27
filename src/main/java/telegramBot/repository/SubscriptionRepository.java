@@ -9,8 +9,6 @@ import java.util.List;
 public interface SubscriptionRepository {
     Subscription save(Subscription subscription);
     Subscription getByLanguage(Language language);
-    boolean existByLanguageAndChatId(Language language, String chatId);
     List<Subscription> getAll();
-    boolean exists(long userId);
-    boolean delete(long id, long userId);
+
 }

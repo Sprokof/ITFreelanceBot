@@ -1,6 +1,7 @@
 package telegramBot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
@@ -12,14 +13,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private SubscriptionService subscriptionService;
 
     public User save(User user) {
         return this.userRepository.save(user);

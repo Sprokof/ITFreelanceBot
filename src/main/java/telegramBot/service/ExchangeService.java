@@ -1,6 +1,8 @@
 package telegramBot.service;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import telegramBot.entity.Exchange;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
+@Service
 public class ExchangeService implements CommandLineRunner {
 
     @Autowired
@@ -23,7 +25,7 @@ public class ExchangeService implements CommandLineRunner {
     private SubscriptionService subscriptionService;
 
     @Autowired
-    private BotService botService;
+    private @Lazy BotService botService;
 
     @Autowired
     private OrderService orderService;

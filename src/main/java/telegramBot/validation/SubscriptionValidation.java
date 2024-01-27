@@ -1,28 +1,22 @@
 package telegramBot.validation;
 
-import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.service.MessageService;
-import telegramBot.service.SubscriptionService;
-
-import java.util.List;
+import telegramBot.service.UserService;
 
 @Component
-public class SubscriptionValidation{
-
-    private final SubscriptionService subscriptionService;
-
-    private final MessageService messageService;
+public class SubscriptionValidation {
 
     @Autowired
-    public SubscriptionValidation(SubscriptionService subscriptionService, MessageService service){
-        this.subscriptionService = subscriptionService;
+    private UserService userService;
+    private final MessageService messageService;
+
+    public SubscriptionValidation(MessageService service){
         this.messageService = service;
     }
-
 
 
     public boolean addCommand(Update update){
@@ -39,7 +33,7 @@ public class SubscriptionValidation{
             return false;
         }
 
-        if(subscriptionExist(chatId, subsLanguage)){
+        if(subscriptionExist(subsLanguage, chatId)){
             this.messageService.sendResponse(chatId, ValidationMessage.SUBSCRIPTION_EXIST.getMessage());
             return false;
         }
@@ -48,12 +42,14 @@ public class SubscriptionValidation{
     }
 
     private boolean languageSupports(String language){
-        return Language.ignoreCaseValueOf(language) == Language.UNKNOWN;
+        return Language.ignoreCaseValueOf(language) != Language.UNKNOWN;
     }
 
     private boolean subscriptionExist(String language, String chatId){
         Language lang = Language.ignoreCaseValueOf(language);
-        return subscriptionService.existByLanguageAndChatId(lang, chatId);
+        return userService.getByChatId(chatId).getSubscriptions()
+                .stream()
+                .anyMatch(s -> s.getLanguage().equals(lang.getName()));
     }
 
     public boolean removeCommand(Update update) {
@@ -65,7 +61,7 @@ public class SubscriptionValidation{
             return false;
         }
 
-        if(languageSupports(subLanguage)){
+        if(!languageSupports(subLanguage)){
             this.messageService.sendResponse(userChatId, ValidationMessage.NOT_SUPPORTS.getMessage());
             return false;
         }
@@ -93,7 +89,7 @@ public class SubscriptionValidation{
             return false;
         }
 
-        if(!subscriptionExist(chatId, inputs[0].trim())){
+        if(!subscriptionExist(inputs[0].trim(), chatId)){
             this.messageService.sendResponse(chatId, ValidationMessage.SUBSCRIPTION_NOT_EXIST.getMessage());
             return false;
         }

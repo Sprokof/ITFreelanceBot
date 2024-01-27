@@ -1,20 +1,22 @@
 package telegramBot.repository.datajpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.EntityGraph;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
 import telegramBot.entity.User;
-import org.springframework.stereotype.Component;
 import telegramBot.repository.UserRepository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class DataJpaUserRepository implements UserRepository {
 
-    @Autowired
-    private UserCrudRepository crudRepository;
+    private final UserCrudRepository crudRepository;
+    public DataJpaUserRepository(UserCrudRepository crudRepository){
+        this.crudRepository = crudRepository;
+    }
 
     @Override
+    @Transactional
     public User save(User user) {
         return crudRepository.save(user);
     }

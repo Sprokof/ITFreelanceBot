@@ -1,24 +1,27 @@
 package telegramBot.repository.datajpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import telegramBot.enums.BotStatus;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
+import telegramBot.entity.BotStatus;
 import telegramBot.repository.BotStatusRepository;
-import telegramBot.repository.datajpa.BotStatusCrudRepository;
 
-@Component
+@Repository
+@Transactional
 public class DataJpaBotStatusRepository implements BotStatusRepository {
 
-    @Autowired
-    private BotStatusCrudRepository crudRepository;
+    private final BotStatusCrudRepository crudRepository;
 
-    @Override
-    public String getStatus() {
-        return crudRepository.getStatus();
+    public DataJpaBotStatusRepository(BotStatusCrudRepository crudRepository){
+        this.crudRepository = crudRepository;
     }
 
     @Override
-    public void setStatus(BotStatus status) {
+    public BotStatus get() {
+        return crudRepository.get();
+    }
+
+    @Override
+    public void setStatus(telegramBot.enums.BotStatus status) {
         this.crudRepository.setBotStatus(status.name());
     }
 }

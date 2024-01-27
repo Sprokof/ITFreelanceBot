@@ -1,17 +1,22 @@
 package telegramBot.repository.datajpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import telegramBot.entity.Exchange;
-import org.springframework.stereotype.Component;
 import telegramBot.repository.ExchangeRepository;
 
-@Component
+import jakarta.transaction.Transactional;
+
+@Repository
 public class DataJpaExchangeRepository implements ExchangeRepository {
 
-    @Autowired
-    private ExchangeCrudRepository crudRepository;
+    private final ExchangeCrudRepository crudRepository;
+
+    public DataJpaExchangeRepository(ExchangeCrudRepository crudRepository){
+        this.crudRepository = crudRepository;
+    }
 
     @Override
+    @Transactional
     public Exchange save(Exchange exchange) {
         return this.crudRepository.save(exchange);
     }

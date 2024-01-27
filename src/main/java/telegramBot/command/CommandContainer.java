@@ -1,6 +1,9 @@
 package telegramBot.command;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import telegramBot.service.MessageService;
+import telegramBot.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +12,7 @@ public class CommandContainer {
     private final Map<String, Command> commandContainer = new HashMap<>();
 
     private final UnknownCommand unknownCommand;
+
 
     public CommandContainer(MessageService messageService) {
         this.commandContainer.put(CommandName.START.getName(), new StartCommand(messageService));

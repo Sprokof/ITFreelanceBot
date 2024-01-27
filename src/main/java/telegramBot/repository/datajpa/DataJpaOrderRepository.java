@@ -1,33 +1,35 @@
 package telegramBot.repository.datajpa;
 
+import org.springframework.stereotype.Repository;
 import telegramBot.entity.Order;
-import org.springframework.stereotype.Component;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
 import telegramBot.repository.OrderRepository;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-@Component
+@Repository
+@Transactional
 public class DataJpaOrderRepository implements OrderRepository {
 
-    private OrderCrudRepository crudRepository;
+    private final OrderCrudRepository crudRepository;
+
+    public DataJpaOrderRepository(OrderCrudRepository crudRepository){
+        this.crudRepository = crudRepository;
+    }
 
 
     @Override
+    @Transactional
     public Order save(Order order) {
         return this.crudRepository.save(order);
     }
 
     @Override
-    public boolean exist(String link) {
-        return this.crudRepository.exist(link) != 0;
-    }
-
-    @Override
-    public Order getByLink(String link) {
-        return this.crudRepository.getByLink(link);
+    public boolean existByLink(String link) {
+        return this.crudRepository.existByLink(link) != 0;
     }
 
     @Override

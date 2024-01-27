@@ -4,29 +4,21 @@ package telegramBot.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 @Entity
-@Table(name = "Order")
+@Table(name = "Orders")
 @NoArgsConstructor
 public class Order extends BaseEntity {
 
 
-    @Column(name = "Order_title")
+    @Column(name = "order_title")
     @Getter
     @Setter
     private String title;
 
-    @Column(name = "Order_link")
+    @Column(name = "order_link")
     @Getter
     @Setter
     private String link;

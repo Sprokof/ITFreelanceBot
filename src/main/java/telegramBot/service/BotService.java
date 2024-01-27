@@ -2,7 +2,9 @@ package telegramBot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
@@ -10,6 +12,7 @@ import telegramBot.entity.User;
 import telegramBot.enums.BotStatus;
 import telegramBot.repository.BotStatusRepository;
 import telegramBot.util.BotUtil;
+import telegramBot.util.OrderUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,11 +20,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class BotService implements CommandLineRunner {
 
     @Autowired
-    private ExchangeService exchangeService;
+    private @Lazy ExchangeService exchangeService;
 
     @Autowired
     private MessageService messageService;
@@ -69,7 +72,7 @@ public class BotService implements CommandLineRunner {
                 Subscription sub = order.getSubscription();
                 return user.getSubscriptions().contains(sub);
             }).filter(distinctByKey(Order :: getLink)).
-                    map(OrderDto :: toDto).
+                    map(OrderUtil::toDto).
                     collect(Collectors.toList());
             if(!filteredOrders.isEmpty()) orders.put(user.getChatId(), filteredOrders);
         });
@@ -86,8 +89,8 @@ public class BotService implements CommandLineRunner {
     }
 
     public BotStatus status() {
-        String status = this.botStatusRepository.getStatus();
-        return BotStatus.valueOf(status);
+        String status = this.botStatusRepository.get().getStatus();
+        return BotStatus.statusValueOf(status);
     }
 
     public void setBotStatus(BotStatus status) {

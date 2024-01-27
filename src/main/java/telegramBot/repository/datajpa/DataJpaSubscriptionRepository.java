@@ -1,21 +1,25 @@
 package telegramBot.repository.datajpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
-import org.springframework.stereotype.Component;
 import telegramBot.repository.SubscriptionRepository;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 
-@Component
+@Repository
 public class DataJpaSubscriptionRepository implements SubscriptionRepository {
 
-    @Autowired
-    private SubscriptionCrudRepository crudRepository;
+    private final SubscriptionCrudRepository crudRepository;
+
+    public DataJpaSubscriptionRepository(SubscriptionCrudRepository crudRepository){
+        this.crudRepository = crudRepository;
+    }
 
     @Override
+    @Transactional
     public Subscription save(Subscription subscription) {
         return this.crudRepository.save(subscription);
     }
@@ -26,22 +30,8 @@ public class DataJpaSubscriptionRepository implements SubscriptionRepository {
     }
 
     @Override
-    public boolean existByLanguageAndChatId(Language language, String chatId) {
-        return this.crudRepository.existByLanguageAndChatId(language.getName(), chatId) != 0;
-    }
-
-    @Override
     public List<Subscription> getAll() {
         return (List<Subscription>) this.crudRepository.findAll();
     }
 
-    @Override
-    public boolean exists(long userId) {
-        return this.crudRepository.exists(userId) != 0;
-    }
-
-    @Override
-    public boolean delete(long id, long userId) {
-        return this.crudRepository.delete(id, userId) != 0;
-    }
 }

@@ -1,6 +1,8 @@
 package telegramBot.bot;
 
 
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import telegramBot.command.CommandContainer;
 import telegramBot.command.CommandName;
 import telegramBot.entity.Subscription;
@@ -10,10 +12,10 @@ import telegramBot.messages.SubscriptionMessage;
 import telegramBot.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import telegramBot.util.BotUtil;
 import telegramBot.validation.SubscriptionValidation;
 
 import java.util.*;
@@ -22,17 +24,13 @@ import java.util.*;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
     private final static Map<String, List<String>> commands = new HashMap<>();
-
-
     private static final String COMMAND_PREFIX = "/";
-
-    private final MessageService messageService;
     private final CommandContainer commandContainer;
 
-    private final SubscriptionValidation validation;
+    private  MessageService messageService;
 
     @Autowired
-    private ExchangeService exchangeService;
+    private SubscriptionValidation validation;
 
     @Autowired
     private OrderService orderService;
@@ -40,19 +38,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private SubscriptionService subscriptionService;
 
-
-    @Value("${token}")
-    private String token;
-    @Value("${username}")
-    private String username;
-
-
     @Autowired
     private UserService userService;
 
+    private final String botToken = BotUtil.botToken;
+
+    private final String botUsername = BotUtil.botUsername;
+
+
     @Override
     public void onUpdateReceived(Update update) {
-        exchangeService.init();
         String command = "", chatId = "";
         User user;
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -71,9 +66,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                     if(validation.addCommand(update)){
                         String value = update.getMessage().getText();
                         Language language = Language.ignoreCaseValueOf(value);
-                        Subscription subscription = subscriptionService
+                        Subscription subscription = this.subscriptionService
                                 .getByLanguage(language);
-                        userService.addSubscription(user, subscription);
+                        this.userService.addSubscription(user, subscription);
                         this.messageService.sendResponse(chatId, SubscriptionMessage.
                                 getMessage(lastCommand));
                         clearCommands(chatId);
@@ -83,9 +78,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                     if(validation.removeCommand(update)){
                         String value = update.getMessage().getText();
                         Language language = Language.ignoreCaseValueOf(value);
-                        Subscription subscription = subscriptionService
+                        Subscription subscription = this.subscriptionService
                                 .getByLanguage(language);
-                        userService.removeSubscription(user, subscription);
+                        this.userService.removeSubscription(user, subscription);
                         this.messageService.sendResponse(chatId, SubscriptionMessage.
                                 getMessage(lastCommand));
                         clearCommands(chatId);
@@ -93,8 +88,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 else if(lastCommand.equals(CommandName.LATEST)){
                      if(validation.latestCommand(update)) {
-                       String latestOrdersMessage = this.orderService.
-                               getLatestOrdersMessage(update);
+                       String latestOrdersMessage = this.messageService
+                               .getLatestOrdersMessage(update, this.orderService);
                        this.messageService.sendResponse(chatId, latestOrdersMessage);
                        clearCommands(chatId);
                      }
@@ -112,18 +107,19 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         @Override
         public String getBotToken() {
-            return this.token;
+            return this.botToken;
         }
 
         @Override
         public String getBotUsername() {
-            return this.username;
+            return this.botUsername;
         }
 
-        public TelegramBot() {
+        @Autowired
+        public TelegramBot(TelegramBotsApi botsApi) throws TelegramApiException {
+            botsApi.registerBot(this);
             this.messageService = new MessageService(this);
             this.commandContainer = new CommandContainer(this.messageService);
-            this.validation = new SubscriptionValidation(this.subscriptionService, this.messageService);
         }
 
     private CommandName lastCommand(String chatId) {
@@ -131,7 +127,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (size == 0) return CommandName.UNKNOWN;
         int lastIndex = size - 1;
         String command = commands.get(chatId).get(lastIndex);
-        return CommandName.valueOf(command);
+        return CommandName.commandValueOf(command);
     }
 
     public boolean unknownInput(String chatId) {

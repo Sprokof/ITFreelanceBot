@@ -15,11 +15,11 @@ public class SubscriptionCommand implements Command {
 
     private final MessageService messageService;
 
-    private final UserService userService = new UserService();
 
     public SubscriptionCommand(MessageService service){
         this.messageService = service;
     }
+
 
     @Override
     public void execute(Update update) {

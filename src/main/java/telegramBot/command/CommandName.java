@@ -21,6 +21,15 @@ public enum CommandName {
         this.name = name;
     }
 
+    public static CommandName commandValueOf(String value){
+        for(CommandName name : CommandName.values()){
+            if(name.getName().equals(value)){
+                return name;
+            }
+        }
+    return UNKNOWN;
+    }
+
 
 
 }
