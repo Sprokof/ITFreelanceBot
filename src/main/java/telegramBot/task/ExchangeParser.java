@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 
 @Component
-public class TaskImpl implements Task {
+public class ExchangeParser {
     private static final String HABR_SELECTOR = ".task__column_desc";
     private static final String FL_SELECTOR = ".search-item-body";
     private static final Map<String, String> habrLinks = new HashMap<>();
@@ -62,7 +62,6 @@ public class TaskImpl implements Task {
     }
 
 
-    @Override
     public Map<Exchange, List<Order>> getOrders(Language language) {
         Map<Exchange, List<Order>> exchangeOrders = new HashMap<>();
         exchangeOrders.put(Exchange.HABR_FREELANCE, getHabrOrders(language));
@@ -131,13 +130,13 @@ public class TaskImpl implements Task {
     return orders;
     }
 
-    @Override
     public Document getDocument(String link) {
         Document document = null;
         try {
             document = SSLHelper.getConnection(link).get();
         } catch (IOException e) {
-            e.printStackTrace();
+            Throwable cause = e.getCause();
+            if(cause != null) System.out.println(cause.getMessage());
         }
         return document;
     }
@@ -147,7 +146,6 @@ public class TaskImpl implements Task {
                 replaceAll("(</em>)", "");
     }
 
-    @Override
     public String getJSON(String link, HttpMethod httpMethod) {
         HttpURLConnection c = null;
         try {
@@ -175,7 +173,7 @@ public class TaskImpl implements Task {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getCause().getMessage());
         } finally {
             if (c != null) {
                 c.disconnect();
@@ -185,9 +183,10 @@ public class TaskImpl implements Task {
     }
 
     private List<OrderDto> extractKworkOrders(String json){
+        if(json == null) return new ArrayList<>();
         return Arrays.stream(json.
                 split("(\\{|\\})")).
-                filter(this::filterCondition).
+                filter(this :: filterCondition).
                 map(StringEscapeUtils::unescapeJava).
                 map(this :: mapToKworkOrder).
                 collect(Collectors.toList());
@@ -214,7 +213,7 @@ public class TaskImpl implements Task {
             if(link != null && title != null && description != null) break;
 
             if (field.startsWith(idPrefix)) {
-                link = "/projects" + field.substring(field.indexOf(":") + 1);
+                link = "/projects/" + field.substring(field.indexOf(":") + 1);
             }
 
             if (field.startsWith(namePrefix)) {

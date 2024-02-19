@@ -2,17 +2,12 @@ package telegramBot.service;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
 import telegramBot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import telegramBot.task.Task;
 import telegramBot.util.BotUtil;
-import telegramBot.util.OrderUtil;
 
 import java.time.LocalDate;
 import java.util.*;

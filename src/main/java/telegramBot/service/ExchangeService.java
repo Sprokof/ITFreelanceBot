@@ -9,9 +9,8 @@ import telegramBot.entity.Subscription;
 import telegramBot.enums.BotStatus;
 import telegramBot.enums.Language;
 import telegramBot.repository.ExchangeRepository;
-import telegramBot.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import telegramBot.task.ExchangeParser;
 
 import java.util.*;
 
@@ -31,7 +30,7 @@ public class ExchangeService implements CommandLineRunner {
     private OrderService orderService;
 
     @Autowired
-    private Task task;
+    private ExchangeParser parser;
 
     public Exchange get(telegramBot.enums.Exchange exchange) {
         return this.exchangeRepository.getByName(exchange.getName());
@@ -43,7 +42,7 @@ public class ExchangeService implements CommandLineRunner {
             telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
             for (Language language : languages) {
                 Subscription subscription = this.subscriptionService.getByLanguage(language);
-                Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.task.getOrders(language);
+                Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.parser.getOrders(language);
                 for (telegramBot.enums.Exchange e : exchanges) {
                     List<Order> orders = exchangesOrders.get(e);
                     telegramBot.entity.Exchange exchange = get(e);
@@ -75,7 +74,7 @@ public class ExchangeService implements CommandLineRunner {
         List<Order> newOrders = new ArrayList<>();
         for(Language language : Language.getLanguages()) {
             telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
-            Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.task.getOrders(language);
+            Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.getOrders(language);
             for (telegramBot.enums.Exchange e : exchanges) {
                 List<Order> ordersByExchange = taskOrders.get(e);
                 for (Order order : ordersByExchange) {

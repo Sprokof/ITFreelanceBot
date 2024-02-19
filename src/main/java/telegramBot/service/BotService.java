@@ -71,9 +71,11 @@ public class BotService implements CommandLineRunner {
             List<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
                 Subscription sub = order.getSubscription();
                 return user.getSubscriptions().contains(sub);
-            }).filter(distinctByKey(Order :: getLink)).
-                    map(OrderUtil::toDto).
-                    collect(Collectors.toList());
+            })
+                    .filter(distinctByKey(Order::getLink))
+                    .filter(distinctByKey(Order::getTitle))
+                    .map(OrderUtil::toDto)
+                    .collect(Collectors.toList());
             if(!filteredOrders.isEmpty()) orders.put(user.getChatId(), filteredOrders);
         });
 

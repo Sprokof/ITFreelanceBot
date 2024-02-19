@@ -17,7 +17,6 @@ public class Subscription extends BaseEntity {
 
 
     @Getter
-    @Setter
     @Column(name = "lang")
     private String language;
 

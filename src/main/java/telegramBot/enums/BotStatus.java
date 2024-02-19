@@ -7,7 +7,7 @@ public enum BotStatus {
     INIT("INIT");
 
     @Getter
-    private String status;
+    private final String status;
 
     BotStatus(String status){
         this.status = status;

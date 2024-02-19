@@ -29,7 +29,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private static final String COMMAND_PREFIX = "/";
     private final CommandContainer commandContainer;
 
-    private  MessageService messageService;
+    private final MessageService messageService;
 
     @Autowired
     private SubscriptionValidation validation;

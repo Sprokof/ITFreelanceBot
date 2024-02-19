@@ -13,6 +13,8 @@ public class SubscriptionMessage {
         messages.put(CommandName.REMOVE.getName(), "Subscription successfully remove");
     }
 
+    private SubscriptionMessage () {}
+
     public static String getMessage(CommandName commandName){
         return messages.get(commandName.getName());
     }

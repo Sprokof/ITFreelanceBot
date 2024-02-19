@@ -20,7 +20,6 @@ public class DataJpaOrderRepository implements OrderRepository {
         this.crudRepository = crudRepository;
     }
 
-
     @Override
     @Transactional
     public Order save(Order order) {
@@ -45,5 +44,10 @@ public class DataJpaOrderRepository implements OrderRepository {
     @Override
     public List<Order> getAllByLanguage(Language language) {
         return this.crudRepository.getAllByLanguage(language.getName());
+    }
+
+    @Override
+    public boolean existByTitle(String title) {
+        return this.crudRepository.existByTitle(title) != 0;
     }
 }

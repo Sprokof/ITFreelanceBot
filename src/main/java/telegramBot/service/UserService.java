@@ -32,7 +32,6 @@ public class UserService {
         user.addSubscription(subscription);
         this.update(user);
     }
-
     public void update(User user){
         this.userRepository.save(user);
     }
@@ -43,21 +42,16 @@ public class UserService {
         return user;
 
     }
-
-
     public void removeSubscription(User user, Subscription subscription) {
         user.removeSubscription(subscription);
         if(user.getSubscriptions().isEmpty()) user.setActive(false);
         this.update(user);
     }
-
     public void setActive(String chatId, boolean flag) {
         User user = getByChatId(chatId);
         user.setActive(flag);
         update(user);
     }
-
-
     public List<User> getAllActive() {
         return this.userRepository.getAllActive();
     }
