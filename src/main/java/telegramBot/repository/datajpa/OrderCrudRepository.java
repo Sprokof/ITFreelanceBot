@@ -20,7 +20,7 @@ public interface OrderCrudRepository extends CrudRepository<Order, Long> {
     @Modifying
     @Query("DELETE FROM Order o WHERE o.id =:id")
     int delete(long id);
-    @Query("SELECT o FROM Order o WHERE o.subscription.language =:language")
+    @Query("SELECT o FROM Order o WHERE o.subscription.language =:language ORDER BY o.id DESC")
     List<Order> getAllByLanguage(String language);
     @Query("SELECT COUNT(o) FROM Order o WHERE o.title =:title")
     int existByTitle(@Param("title") String title);

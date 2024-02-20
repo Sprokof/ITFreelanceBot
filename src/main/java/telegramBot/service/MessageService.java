@@ -12,6 +12,7 @@ import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
 import telegramBot.enums.Language;
 import telegramBot.repository.OrderRepository;
+import telegramBot.util.BotUtil;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;

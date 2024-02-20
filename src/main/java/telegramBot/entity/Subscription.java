@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Subscription extends BaseEntity {
 
-
     @Getter
     @Column(name = "lang")
     private String language;

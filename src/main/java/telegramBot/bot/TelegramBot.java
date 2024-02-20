@@ -47,6 +47,22 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final String botUsername = BotUtil.botUsername;
 
+    @Autowired
+    public TelegramBot(TelegramBotsApi botsApi) throws TelegramApiException {
+        botsApi.registerBot(this);
+        this.messageService = new MessageService(this);
+        this.commandContainer = new CommandContainer(this.messageService);
+    }
+
+    @Override
+    public String getBotUsername() {
+        return this.botUsername;
+    }
+
+    @Override
+    public String getBotToken() {
+        return this.botToken;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -115,22 +131,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-        @Override
-        public String getBotToken() {
-            return this.botToken;
-        }
 
-        @Override
-        public String getBotUsername() {
-            return this.botUsername;
-        }
 
-        @Autowired
-        public TelegramBot(TelegramBotsApi botsApi) throws TelegramApiException {
-            botsApi.registerBot(this);
-            this.messageService = new MessageService(this);
-            this.commandContainer = new CommandContainer(this.messageService);
-        }
+
 
     private CommandName lastCommand(String chatId) {
         int size = commands.get(chatId).size();

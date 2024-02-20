@@ -3,7 +3,6 @@ package telegramBot.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
@@ -15,10 +14,8 @@ import telegramBot.util.BotUtil;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import static telegramBot.util.OrderUtil.distinctByKey;
 
 @Service
 public class BotService implements CommandLineRunner {
@@ -68,7 +65,8 @@ public class BotService implements CommandLineRunner {
         if(newOrders.isEmpty()) return new HashMap<>();
         List<User> users = this.userService.getAllActive();
         users.forEach(user -> {
-            List<OrderDto> filteredOrders = newOrders.stream().filter(order -> {
+            List<OrderDto> filteredOrders = newOrders.stream()
+                    .filter(order -> {
                 Subscription sub = order.getSubscription();
                 return user.getSubscriptions().contains(sub);
             })
@@ -99,10 +97,5 @@ public class BotService implements CommandLineRunner {
         this.botStatusRepository.setStatus(status);
     }
 
-
-    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
-    }
 
 }
