@@ -9,7 +9,7 @@ public class StopCommand implements Command {
 
     private final MessageService messageService;
 
-    private final UserService userService = new UserService();
+    private UserService userService;
 
     public StopCommand(MessageService messageService) {
         this.messageService = messageService;
@@ -21,5 +21,10 @@ public class StopCommand implements Command {
         userService.setActive(chatId, false);
         this.messageService.sendResponse(chatId, STOP_COMMAND);
 
+    }
+
+    public StopCommand setUserService(UserService userService){
+        this.userService = userService;
+        return this;
     }
 }

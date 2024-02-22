@@ -124,7 +124,9 @@ public class ExchangeParser {
                             OrderQueryRelation.correctRelation(order, language) == language;
                 }
                 return OrderQueryRelation.correctRelation(order, language) == language;
-            }).map(OrderDto::toEntity).collect(Collectors.toList());
+            })
+                    .map(OrderDto::toEntity)
+                    .collect(Collectors.toList());
             orders.addAll(filteredOrders);
         }
     return orders;

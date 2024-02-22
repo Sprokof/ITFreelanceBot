@@ -3,10 +3,7 @@ package telegramBot.bot;
 
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import telegramBot.command.Command;
-import telegramBot.command.CommandContainer;
-import telegramBot.command.CommandName;
-import telegramBot.command.SubscriptionCommand;
+import telegramBot.command.*;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
@@ -81,6 +78,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                             .setUserService(this.userService)
                             .execute(update);
                 }
+                
+                else if(command instanceof StopCommand){
+                    ((StopCommand) command)
+                            .setUserService(this.userService)
+                            .execute(update);
+                }
+
+                else if(command instanceof RestartCommand){
+                    ((RestartCommand) command)
+                            .setUserService(this.userService)
+                            .execute(update);
+                }
+
                 else {
                     command.execute(update);
                     commands.get(chatId).add(inputCommand);

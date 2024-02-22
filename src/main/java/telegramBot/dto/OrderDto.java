@@ -39,7 +39,7 @@ public class OrderDto {
 
 
     public Order toEntity(){
-        return new Order(this.title, this.link);
+        return new Order(this.title.replaceAll("(&ndash;)", "-"), this.link);
     }
 
     public OrderDto(String title, String link, String details) {

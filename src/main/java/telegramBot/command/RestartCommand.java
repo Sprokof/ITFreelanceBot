@@ -9,7 +9,7 @@ public class RestartCommand implements Command {
 
     private final MessageService messageService;
 
-    private final UserService userService = new UserService();
+    private UserService userService;
 
 
     public RestartCommand(MessageService messageService) {
@@ -22,5 +22,10 @@ public class RestartCommand implements Command {
         this.userService.setActive(chatId, true);
         this.messageService.sendResponse(chatId, RESTART_COMMAND);
 
+    }
+
+    public RestartCommand setUserService(UserService userService){
+        this.userService = userService;
+        return this;
     }
 }

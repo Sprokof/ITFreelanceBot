@@ -29,7 +29,6 @@ public class OrderUtil {
         }
         return result.stream()
                 .filter(distinctByKey(OrderDto::getLink))
-                .filter(distinctByKey(OrderDto::getTitle))
                 .collect(Collectors.toList());
     }
 
