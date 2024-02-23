@@ -2,16 +2,12 @@ package telegramBot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import telegramBot.enums.Role;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
-import telegramBot.enums.Language;
 import telegramBot.repository.UserRepository;
-import telegramBot.repository.datajpa.DataJpaUserRepository;
-import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -38,7 +34,7 @@ public class UserService {
 
     public User createOrGet(String chatId) {
         User user = getByChatId(chatId);
-        if(user == null) return save(new User(chatId));
+        if(user == null) return save(new User(chatId, (Role.isAdmin(chatId) ? Role.ADMIN : Role.USER)));
         return user;
 
     }

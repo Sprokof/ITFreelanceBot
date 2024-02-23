@@ -3,6 +3,7 @@ package telegramBot.repository.datajpa;
 import org.springframework.stereotype.Repository;
 import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
+import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.SubscriptionRepository;
 
 import jakarta.transaction.Transactional;
@@ -30,8 +31,8 @@ public class DataJpaSubscriptionRepository implements SubscriptionRepository {
     }
 
     @Override
-    public List<Subscription> getAll() {
-        return (List<Subscription>) this.crudRepository.findAll();
+    public List<Subscription> getAllByStatus(SubscriptionStatus status) {
+        return (List<Subscription>) this.crudRepository.getAllByStatus(status);
     }
 
 }

@@ -8,6 +8,7 @@ import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
 import telegramBot.enums.BotStatus;
 import telegramBot.enums.Language;
+import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import telegramBot.task.ExchangeParser;
@@ -37,27 +38,25 @@ public class ExchangeService implements CommandLineRunner {
     }
 
     public void init() {
-        if(botService.status() == BotStatus.CREATE) {
-            Language[] languages = Language.getLanguages();
-            telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
-            for (Language language : languages) {
-                Subscription subscription = this.subscriptionService.getByLanguage(language);
-                Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.parser.getOrders(language);
-                for (telegramBot.enums.Exchange e : exchanges) {
-                    List<Order> orders = exchangesOrders.get(e);
-                    telegramBot.entity.Exchange exchange = get(e);
-                    for (Order order : orders) {
-                        if (orderService.saveIfNotExist(order)) {
-                            order.setExchange(exchange);
-                            order.setSubscription(subscription);
-                            this.orderService.update(order);
-                        }
+        List<Subscription> subscriptions = subscriptionService.getAllByStatus(SubscriptionStatus.CREATE);
+        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
+        for (Subscription subscription : subscriptions) {
+            Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
+            Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.parser.getOrders(language);
+            for (telegramBot.enums.Exchange e : exchanges) {
+                List<Order> orders = exchangesOrders.get(e);
+                telegramBot.entity.Exchange exchange = get(e);
+                for (Order order : orders) {
+                    if (orderService.saveIfNotExist(order)) {
+                        order.setExchange(exchange);
+                        order.setSubscription(subscription);
+                        this.orderService.update(order);
                     }
                 }
             }
-            botService.setBotStatus(BotStatus.INIT);
+            subscription.setStatus(SubscriptionStatus.INIT);
+            subscriptionService.update(subscription);
         }
-
     }
 
 
@@ -70,29 +69,26 @@ public class ExchangeService implements CommandLineRunner {
         new Thread(this::init).start();
     }
 
-    public List<Order> findNewOrders() {
+    public List<Order> findNewOrders(Language language) {
         List<Order> newOrders = new ArrayList<>();
-        for(Language language : Language.getLanguages()) {
-            telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
-            Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.getOrders(language);
-            for (telegramBot.enums.Exchange e : exchanges) {
-                List<Order> ordersByExchange = taskOrders.get(e);
-                for (Order order : ordersByExchange) {
-                    if (!this.orderService.exist(order)) {
-                        Exchange exchange = this.exchangeRepository.getByName(e.getName());
-                        Subscription subscription = this.subscriptionService.getByLanguage(language);
+        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
+        Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.getOrders(language);
+        for (telegramBot.enums.Exchange e : exchanges) {
+            List<Order> ordersByExchange = taskOrders.get(e);
+            for (Order order : ordersByExchange) {
+                if (!this.orderService.exist(order)) {
+                    Exchange exchange = this.exchangeRepository.getByName(e.getName());
+                    Subscription subscription = this.subscriptionService.getByLanguage(language);
 
-                        order.setExchange(exchange);
-                        order.setSubscription(subscription);
-                        newOrders.add(order);
+                    order.setExchange(exchange);
+                    order.setSubscription(subscription);
+                    newOrders.add(order);
 
-                    }
                 }
             }
+
         }
-
         return newOrders;
-
     }
 
 

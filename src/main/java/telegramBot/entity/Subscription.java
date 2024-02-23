@@ -1,12 +1,14 @@
 package telegramBot.entity;
 
 
+import lombok.Setter;
 import telegramBot.enums.Language;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import jakarta.persistence.*;
+import telegramBot.enums.SubscriptionStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,15 @@ public class Subscription extends BaseEntity {
     @Column(name = "lang")
     private String language;
 
-    public Subscription(Language language){
+    @Getter
+    @Setter
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatus status;
+
+    public Subscription(Language language, SubscriptionStatus status){
         this.language = language.getName();
+        this.status = status;
     }
 
     @Getter

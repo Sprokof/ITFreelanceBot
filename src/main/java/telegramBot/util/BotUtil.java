@@ -15,7 +15,7 @@ public class BotUtil {
     public static int EXECUTE_NOTICE_TIMEOUT = 420000;
     public static String botToken = getProperty("bot.token");
     public static String botUsername = getProperty("bot.username");
-
+    public static String ADMIN_CHAT_ID = getProperty("admin.chat.id");
 
 
     private static Properties getApplicationProperties() throws IOException {

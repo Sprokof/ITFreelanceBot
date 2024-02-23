@@ -11,7 +11,10 @@ public enum Language {
     PYTHON("Python"),
     C_SHARP("C#"),
     JAVA("Java"),
+    RUBY("Ruby"),
     PHP("PHP"),
+    C_PP("C++"),
+    C("C"),
     UNKNOWN("Unknown");
 
     private final String name;
@@ -27,9 +30,6 @@ public enum Language {
         this.secondName = secondName;
         this.thirdName = thirdName;
     }
-
-
-
 
     public static Language ignoreCaseValueOf(String value){
         for(Language language : Language.values()){

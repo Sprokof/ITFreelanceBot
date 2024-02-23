@@ -8,13 +8,13 @@ import telegramBot.service.MessageService;
 import telegramBot.service.UserService;
 
 @Component
-public class SubscriptionValidation {
+public class CommandValidation {
 
     @Autowired
     private UserService userService;
     private final MessageService messageService;
 
-    public SubscriptionValidation(MessageService service){
+    public CommandValidation(MessageService service){
         this.messageService = service;
     }
 

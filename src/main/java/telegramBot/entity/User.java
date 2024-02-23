@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
+import telegramBot.enums.Role;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +25,20 @@ public class User extends BaseEntity {
     @Column(name = "active")
     private boolean active;
 
-    public User(String chatId) {
+    @Getter
+    @Setter
+    @Column(name = "user_role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public User(String chatId, Role role) {
         this.chatId = chatId;
+        this.role = role;
         this.active = true;
     }
 
 
-    @ManyToMany()
+    @ManyToMany
     @JoinTable(name = "Users_subscriptions",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = {@JoinColumn(name = "subscription_id")})

@@ -29,35 +29,34 @@ public class ExchangeParser {
 
 
     static {
-        habrLinks.put(Language.JAVA.getName(), "https://freelance.habr.com/tasks?page=1&q=java&fields=tags");
-        habrLinks.put(Language.PYTHON.getName(), "https://freelance.habr.com/tasks?page=1&q=python&fields=tags");
-        habrLinks.put(Language.JAVASCRIPT.getName(), "https://freelance.habr.com/tasks?page=1&q=javascript&fields=tags|" +
-                "https://freelance.habr.com/tasks?page=1&q=java%20script&fields=tags|" +
-                "https://freelance.habr.com/tasks?page=1&q=js&fields=tags");
-        habrLinks.put(Language.PHP.getName(), "https://freelance.habr.com/tasks?page=1&q=php&fields=tags");
-        habrLinks.put(Language.C_SHARP.getName(), "https://freelance.habr.com/tasks?page=1&q=c#&fields=tags");
+        habrLinks.put(Language.JAVA.getName(), habrLik(Language.JAVA));
+        habrLinks.put(Language.PYTHON.getName(), habrLik(Language.PYTHON));
+        habrLinks.put(Language.JAVASCRIPT.getName(), habrJavaScriptLink());
+        habrLinks.put(Language.PHP.getName(), habrLik(Language.PHP));
+        habrLinks.put(Language.C.getName(), habrLik(Language.C));
+        habrLinks.put(Language.C_PP.getName(), habrLik(Language.C_PP));
+        habrLinks.put(Language.RUBY.getName(), habrLik(Language.RUBY));
+        habrLinks.put(Language.C_SHARP.getName(), habrLik(Language.C_SHARP));
 
-        flLinks.put(Language.JAVA.getName(),
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=java&page=1");
-        flLinks.put(Language.PYTHON.getName(),
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=python&page=1");
-        flLinks.put(Language.JAVASCRIPT.getName(),
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=javascript&page=1|" +
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=java%20script&page=1|" +
-                        "https://www.fl.ru/search/?action=search&type=projects&search_string=js&page=1");
-        flLinks.put(Language.PHP.getName(),
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=php&page=1");
-        flLinks.put(Language.C_SHARP.getName(),
-                "https://www.fl.ru/search/?action=search&type=projects&search_string=c#&page=1");
+        flLinks.put(Language.JAVA.getName(), flLink(Language.JAVA));
+        flLinks.put(Language.PYTHON.getName(), flLink(Language.PYTHON));
+        flLinks.put(Language.JAVASCRIPT.getName(), flJavaScriptLink());
+        flLinks.put(Language.PHP.getName(), flLink(Language.PHP));
+        flLinks.put(Language.C.getName(), flLink(Language.C));
+        flLinks.put(Language.C_PP.getName(), flLink(Language.C_PP));
+        flLinks.put(Language.RUBY.getName(), flLink(Language.RUBY));
+        flLinks.put(Language.C_SHARP.getName(), flLink(Language.C_SHARP));
 
 
-        kworkLinks.put(Language.JAVA.getName(), "https://kwork.ru/projects?keyword=java&a=1.json");
-        kworkLinks.put(Language.PYTHON.getName(), "https://kwork.ru/projects?keyword=python&a=1.json");
-        kworkLinks.put(Language.JAVASCRIPT.getName(), "https://kwork.ru/projects?keyword=javascript&a=1.json|" +
-                "https://kwork.ru/projects?keyword=java+script&a=1.json|" +
-                "https://kwork.ru/projects?keyword=js&a=1.json");
-        kworkLinks.put(Language.PHP.getName(), "https://kwork.ru/projects?keyword=php&a=1.json");
-        kworkLinks.put(Language.C_SHARP.getName(), "https://kwork.ru/projects?keyword=c#&a=1.json");
+        kworkLinks.put(Language.JAVA.getName(), kworkLink(Language.JAVA));
+        kworkLinks.put(Language.PYTHON.getName(), kworkLink(Language.PYTHON));
+        kworkLinks.put(Language.JAVASCRIPT.getName(), kworkJavaScriptLink());
+        kworkLinks.put(Language.PHP.getName(), kworkLink(Language.PHP));
+        kworkLinks.put(Language.C_PP.getName(), kworkLink(Language.C_PP));
+        kworkLinks.put(Language.C.getName(), kworkLink(Language.C));
+        kworkLinks.put(Language.RUBY.getName(), kworkLink(Language.RUBY));
+        kworkLinks.put(Language.PHP.getName(), kworkLink(Language.PHP));
+        kworkLinks.put(Language.C_SHARP.getName(), kworkLink(Language.C_SHARP));
 
     }
 
@@ -245,6 +244,38 @@ public class ExchangeParser {
     return sb.toString();
     }
 
+    private static String habrLik(Language language){
+        String link = "https://freelance.habr.com/tasks?page=1&q=lang&fields=tags";
+        return link.replaceAll("(lang)", language.getName().toLowerCase());
+    }
+
+    private static String habrJavaScriptLink(){
+        return "https://freelance.habr.com/tasks?page=1&q=javascript&fields=tags|" +
+                "https://freelance.habr.com/tasks?page=1&q=java%20script&fields=tags|" +
+                "https://freelance.habr.com/tasks?page=1&q=js&fields=tags";
+    }
+
+    private static String flLink(Language language){
+        String link = "https://www.fl.ru/search/?action=search&type=projects&search_string=lang&page=1";
+        return link.replaceAll("(lang)", language.getName().toLowerCase());
+    }
+
+    private static String flJavaScriptLink(){
+        return "https://www.fl.ru/search/?action=search&type=projects&search_string=javascript&page=1|" +
+                "https://www.fl.ru/search/?action=search&type=projects&search_string=java%20script&page=1|" +
+                "https://www.fl.ru/search/?action=search&type=projects&search_string=js&page=1";
+    }
+
+    private static String kworkLink(Language language){
+        String link = "https://kwork.ru/projects?keyword=lang&a=1.json";
+        return link.replaceAll("(lang)", language.getName()).toLowerCase();
+    }
+
+    private static String kworkJavaScriptLink(){
+        return "https://kwork.ru/projects?keyword=javascript&a=1.json|" +
+                "https://kwork.ru/projects?keyword=java+script&a=1.json|" +
+                "https://kwork.ru/projects?keyword=js&a=1.json";
+    }
 
 
 }

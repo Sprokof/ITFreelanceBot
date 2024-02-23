@@ -10,7 +10,6 @@ public enum CommandName {
     UNKNOWN("/unknown"),
     SUBSCRIPTIONS("/subs"),
     LATEST("/latest");
-
     private final String name;
 
     public String getName() {

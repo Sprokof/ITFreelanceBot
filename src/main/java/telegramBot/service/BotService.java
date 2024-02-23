@@ -8,8 +8,8 @@ import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
-import telegramBot.enums.BotStatus;
-import telegramBot.repository.BotStatusRepository;
+import telegramBot.enums.Language;
+import telegramBot.enums.SubscriptionStatus;
 import telegramBot.util.BotUtil;
 import telegramBot.util.OrderUtil;
 
@@ -33,15 +33,15 @@ public class BotService implements CommandLineRunner {
     private OrderService orderService;
 
     @Autowired
-    private BotStatusRepository botStatusRepository;
-
+    private SubscriptionService subscriptionService;
 
     @Override
     public void run(String... args) throws Exception {
         new Thread(() -> {
             while (true) {
-                if (status() == BotStatus.INIT) {
-                    List<Order> newOrders = this.exchangeService.findNewOrders();
+                for(Subscription subscription : subscriptionService.getAllByStatus(SubscriptionStatus.INIT)){
+                    Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
+                    List<Order> newOrders = this.exchangeService.findNewOrders(language);
                     newOrders.forEach(order -> this.orderService.save(order));
                     Map<String, List<OrderDto>> orders = getFilteredOrders(newOrders);
                     executeNotices(orders);
@@ -86,15 +86,6 @@ public class BotService implements CommandLineRunner {
         } catch (InterruptedException e) {
             e.getCause();
         }
-    }
-
-    public BotStatus status() {
-        String status = this.botStatusRepository.get().getStatus();
-        return BotStatus.statusValueOf(status);
-    }
-
-    public void setBotStatus(BotStatus status) {
-        this.botStatusRepository.setStatus(status);
     }
 
 

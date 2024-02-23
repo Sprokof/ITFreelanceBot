@@ -6,8 +6,9 @@ import telegramBot.service.MessageService;
 
 public class InfoCommand implements Command {
     private static final String INFO_COMMAND = "Собираю заказы со следующих бирж: freelance.habr.com, fl.ru, kwork.ru"+
-            "\nпо следующим языкам: Java, Python, JavaScript, PHP, C# "+ MessageService.delim() +
-            "Поддерживаю следующие комманды" +
+            "\nпо следующим языкам: , JavaScript, Python, Java, Ruby, PHP, C#, C++, C" +
+            "\n" + MessageService.delim() +
+            "\nПоддерживаю следующие комманды" +
             "\nКоманда /add - добавление языка для подписки." +
             "\nКоманда /remove - удаления языка подписки." +
             "\nКоманда /latest - последние заказы." +

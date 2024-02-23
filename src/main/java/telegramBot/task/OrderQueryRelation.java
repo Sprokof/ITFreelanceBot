@@ -16,6 +16,9 @@ public class OrderQueryRelation {
          keywords.put(Language.PYTHON.getName(), new String[]{"Python"});
          keywords.put(Language.JAVA.getName(), new String[]{"Java"});
          keywords.put(Language.PHP.getName(), new String[]{"PHP"});
+         keywords.put(Language.RUBY.getName(), new String[]{"Ruby"});
+         keywords.put(Language.C_PP.getName(), new String[]{"C++"});
+         keywords.put(Language.C.getName(), new String[]{"C"});
          keywords.put(Language.C_SHARP.getName(), new String[]{"C#"});
     }
 

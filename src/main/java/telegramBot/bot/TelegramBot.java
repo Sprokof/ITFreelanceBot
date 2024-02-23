@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.util.BotUtil;
-import telegramBot.validation.SubscriptionValidation;
+import telegramBot.validation.CommandValidation;
 
 import java.util.*;
 
@@ -29,7 +29,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final MessageService messageService;
 
     @Autowired
-    private SubscriptionValidation validation;
+    private CommandValidation validation;
 
     @Autowired
     private OrderService orderService;
@@ -78,7 +78,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             .setUserService(this.userService)
                             .execute(update);
                 }
-                
+
                 else if(command instanceof StopCommand){
                     ((StopCommand) command)
                             .setUserService(this.userService)
