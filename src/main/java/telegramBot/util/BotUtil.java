@@ -3,6 +3,7 @@ package telegramBot.util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.AccessException;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
@@ -11,10 +12,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class BotUtil {
+    private BotUtil () throws AccessException {
+        throw new AccessException("Constructor can't be created");
+    }
     public static int DAY_MILLISECONDS = 86400000;
     public static int EXECUTE_NOTICE_TIMEOUT = 420000;
-    public static String botToken = getProperty("bot.token");
-    public static String botUsername = getProperty("bot.username");
+    public static String BOT_TOKEN = getProperty("bot.token");
+    public static String BOT_USERNAME = getProperty("bot.username");
     public static String ADMIN_CHAT_ID = getProperty("admin.chat.id");
 
 

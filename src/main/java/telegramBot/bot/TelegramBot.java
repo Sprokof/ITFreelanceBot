@@ -40,10 +40,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private UserService userService;
 
-    private final String botToken = BotUtil.botToken;
-
-    private final String botUsername = BotUtil.botUsername;
-
     @Autowired
     public TelegramBot(TelegramBotsApi botsApi) throws TelegramApiException {
         botsApi.registerBot(this);
@@ -53,12 +49,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return this.botUsername;
+        return BotUtil.BOT_USERNAME;
     }
 
     @Override
     public String getBotToken() {
-        return this.botToken;
+        return BotUtil.BOT_TOKEN;
     }
 
     @Override
