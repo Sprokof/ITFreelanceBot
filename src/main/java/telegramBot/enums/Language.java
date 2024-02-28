@@ -9,11 +9,9 @@ import java.util.Arrays;
 public enum Language {
     JAVASCRIPT("JavaScript", "Java Script", "JS"),
     PYTHON("Python"),
-    C_SHARP("C#"),
     JAVA("Java"),
     RUBY("Ruby"),
     PHP("PHP"),
-    C_PP("C++"),
     C("C"),
     UNKNOWN("Unknown");
 

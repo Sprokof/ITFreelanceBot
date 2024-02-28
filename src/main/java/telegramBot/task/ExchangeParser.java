@@ -34,30 +34,22 @@ public class ExchangeParser {
         habrLinks.put(Language.JAVASCRIPT.getName(), habrJavaScriptLink());
         habrLinks.put(Language.PHP.getName(), habrLik(Language.PHP));
         habrLinks.put(Language.C.getName(), habrLik(Language.C));
-        habrLinks.put(Language.C_PP.getName(), habrLik(Language.C_PP));
         habrLinks.put(Language.RUBY.getName(), habrLik(Language.RUBY));
-        habrLinks.put(Language.C_SHARP.getName(), habrLik(Language.C_SHARP));
 
         flLinks.put(Language.JAVA.getName(), flLink(Language.JAVA));
         flLinks.put(Language.PYTHON.getName(), flLink(Language.PYTHON));
         flLinks.put(Language.JAVASCRIPT.getName(), flJavaScriptLink());
         flLinks.put(Language.PHP.getName(), flLink(Language.PHP));
         flLinks.put(Language.C.getName(), flLink(Language.C));
-        flLinks.put(Language.C_PP.getName(), flLink(Language.C_PP));
         flLinks.put(Language.RUBY.getName(), flLink(Language.RUBY));
-        flLinks.put(Language.C_SHARP.getName(), flLink(Language.C_SHARP));
-
 
         kworkLinks.put(Language.JAVA.getName(), kworkLink(Language.JAVA));
         kworkLinks.put(Language.PYTHON.getName(), kworkLink(Language.PYTHON));
         kworkLinks.put(Language.JAVASCRIPT.getName(), kworkJavaScriptLink());
         kworkLinks.put(Language.PHP.getName(), kworkLink(Language.PHP));
-        kworkLinks.put(Language.C_PP.getName(), kworkLink(Language.C_PP));
         kworkLinks.put(Language.C.getName(), kworkLink(Language.C));
         kworkLinks.put(Language.RUBY.getName(), kworkLink(Language.RUBY));
         kworkLinks.put(Language.PHP.getName(), kworkLink(Language.PHP));
-        kworkLinks.put(Language.C_SHARP.getName(), kworkLink(Language.C_SHARP));
-
     }
 
 
