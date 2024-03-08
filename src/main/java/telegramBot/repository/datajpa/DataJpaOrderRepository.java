@@ -50,4 +50,9 @@ public class DataJpaOrderRepository implements OrderRepository {
     public boolean existByTitle(String title) {
         return this.crudRepository.existByTitle(title) != 0;
     }
+
+    @Override
+    public int count(Language language) {
+        return this.crudRepository.count(language.getName());
+    }
 }

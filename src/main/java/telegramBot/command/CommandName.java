@@ -9,7 +9,8 @@ public enum CommandName {
     REMOVE("/remove"),
     UNKNOWN("/unknown"),
     SUBSCRIPTIONS("/subs"),
-    LATEST("/latest");
+    LATEST("/latest"),
+    ADMIN("/admin");
     private final String name;
 
     public String getName() {

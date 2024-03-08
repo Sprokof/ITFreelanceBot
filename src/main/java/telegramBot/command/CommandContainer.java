@@ -20,6 +20,7 @@ public class CommandContainer {
         this.commandContainer.put(CommandName.REMOVE.getName(), new RemoveCommand(messageService));
         this.commandContainer.put(CommandName.STOP.getName(), new StopCommand(messageService));
         this.commandContainer.put(CommandName.RESTART.getName(), new RestartCommand(messageService));
+        this.commandContainer.put(CommandName.ADMIN.getName(), new AdminCommand(messageService));
         this.unknownCommand = new UnknownCommand(messageService);
 
     }

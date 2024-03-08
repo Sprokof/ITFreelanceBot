@@ -41,6 +41,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     private UserService userService;
 
     @Autowired
+    private AdminService adminService;
+
+    @Autowired
     public TelegramBot(TelegramBotsApi botsApi) throws TelegramApiException {
         botsApi.registerBot(this);
         this.messageService = new MessageService(this);
@@ -66,35 +69,33 @@ public class TelegramBot extends TelegramLongPollingBot {
             user = userService.createOrGet(chatId);
             commands.putIfAbsent(chatId, new ArrayList<>());
             String message = update.getMessage().getText().trim();
-            if(message.startsWith(COMMAND_PREFIX)){
+            if (message.startsWith(COMMAND_PREFIX)) {
                 inputCommand = message.split(" ")[0].toLowerCase(Locale.ROOT);
                 Command command = this.commandContainer.retrieveCommand(inputCommand);
-                if(command instanceof SubscriptionCommand){
+                if (command instanceof SubscriptionCommand) {
                     ((SubscriptionCommand) command)
                             .setUserService(this.userService)
                             .execute(update);
-                }
-
-                else if(command instanceof StopCommand){
+                } else if (command instanceof StopCommand) {
                     ((StopCommand) command)
                             .setUserService(this.userService)
                             .execute(update);
-                }
-
-                else if(command instanceof RestartCommand){
+                } else if (command instanceof RestartCommand) {
                     ((RestartCommand) command)
                             .setUserService(this.userService)
                             .execute(update);
-                }
-
-                else {
+                } else if (command instanceof AdminCommand) {
+                    ((AdminCommand) command)
+                            .setAdminService(this.adminService)
+                            .execute(update);
+                } else {
                     command.execute(update);
                     commands.get(chatId).add(inputCommand);
                 }
-            }
-            else {
+
+            } else {
                 CommandName lastCommand = lastCommand(chatId);
-                if(lastCommand.equals(CommandName.ADD)){
+                if (lastCommand.equals(CommandName.ADD)) {
                     if(validation.addCommand(update)){
                         String value = update.getMessage().getText();
                         Language language = Language.ignoreCaseValueOf(value);
@@ -105,9 +106,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                                 getMessage(lastCommand));
                         clearCommands(chatId);
                     }
-                }
-                else if(lastCommand.equals(CommandName.REMOVE)){
-                    if(validation.removeCommand(update)){
+                } else if (lastCommand.equals(CommandName.REMOVE)) {
+                    if (validation.removeCommand(update)) {
                         String value = update.getMessage().getText();
                         Language language = Language.ignoreCaseValueOf(value);
                         Subscription subscription = this.subscriptionService
@@ -117,30 +117,21 @@ public class TelegramBot extends TelegramLongPollingBot {
                                 getMessage(lastCommand));
                         clearCommands(chatId);
                     }
-                }
-                else if(lastCommand.equals(CommandName.LATEST)){
-                     if(validation.latestCommand(update)) {
+                } else if (lastCommand.equals(CommandName.LATEST)) {
+                     if (validation.latestCommand(update)) {
                        String latestOrdersMessage = this.messageService
                                .getLatestOrdersMessage(update, this.orderService);
                        this.messageService.sendResponse(chatId, latestOrdersMessage);
                        clearCommands(chatId);
                      }
-                }
-
-                else if(unknownInput(chatId)){
+                } else if (unknownInput(chatId)) {
                     this.commandContainer.retrieveCommand(CommandName.
                             UNKNOWN.getName()).execute(update);
                     clearCommands(chatId);
                 }
             }
-
         }
     }
-
-
-
-
-
     private CommandName lastCommand(String chatId) {
         int size = commands.get(chatId).size();
         if (size == 0) return CommandName.UNKNOWN;

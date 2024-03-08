@@ -25,9 +25,6 @@ public class ExchangeService implements CommandLineRunner {
     private SubscriptionService subscriptionService;
 
     @Autowired
-    private @Lazy BotService botService;
-
-    @Autowired
     private OrderService orderService;
 
     @Autowired

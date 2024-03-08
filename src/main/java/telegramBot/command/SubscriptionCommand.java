@@ -34,22 +34,21 @@ public class SubscriptionCommand implements Command {
                 getByChatId(chatId).getSubscriptions();
 
         String command = null;
-        if(!subscriptions.isEmpty()){
+        if (!subscriptions.isEmpty()){
             subscriptions.sort(Comparator.comparingInt(s -> s.getLanguage().length()));
             StringBuilder subs = new StringBuilder();
-            for(int i = 0; i < subscriptions.size(); i ++){
-                if(i < subscriptions.size() - 1){
+            for (int i = 0; i < subscriptions.size(); i ++){
+                if (i < subscriptions.size() - 1) {
                     subs.append(subscriptions.get(i).getLanguage()).append(", ");
+                } else {
+                    subs.append(subscriptions.get(i).getLanguage());
                 }
-                else subs.append(subscriptions.get(i).getLanguage());
             }
 
             command = String.format("%s %s", SUBSCRIPTION_COMMANDS[0], subs.toString());
-        }
-        else {
+        } else {
             command = SUBSCRIPTION_COMMANDS[1];
         }
         messageService.sendResponse(chatId, command);
     }
-
 }

@@ -14,6 +14,8 @@ public interface OrderRepository {
     boolean deleteByExchangeAndDate(Exchange exchange, LocalDate date);
     boolean delete(long id);
     List<Order> getAllByLanguage(Language language);
+    int count(Language language);
+
 
 
 }

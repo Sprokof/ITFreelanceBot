@@ -177,20 +177,18 @@ public class ExchangeParser {
 
     private List<OrderDto> extractKworkOrders(String json){
         if(json == null) return new ArrayList<>();
-        return Arrays.stream(json.
-                split("(\\{|\\})")).
-                filter(this :: filterCondition).
-                map(StringEscapeUtils::unescapeJava).
-                map(this :: mapToKworkOrder).
-                collect(Collectors.toList());
+        return Arrays.stream(json.split("(\\{|\\})"))
+                .filter(this::filterCondition)
+                .map(StringEscapeUtils::unescapeJava)
+                .map(this::mapToKworkOrder)
+                .collect(Collectors.toList());
     }
 
     private boolean filterCondition(String obj) {
         String idPat = "(\"id\")(:)\\d{7}";
         String langPat = "(\"lang\")(:)" + "\"" +"[a-z]{2}"+ "\"";
         int index = obj.indexOf(",");
-        if(index != -1 && obj.substring(0, index).
-                matches(idPat)){
+        if(index != -1 && obj.substring(0, index).matches(idPat)){
             return obj.split(",")[1].matches(langPat);
         }
         return false;
@@ -220,15 +218,14 @@ public class ExchangeParser {
                         replaceAll("\"", "").trim();
             }
             index ++ ;
-
         }
-
-
-    return new OrderDto(title, link, description);
+        return new OrderDto(title, link, description);
     }
 
     private String extractTags(Element element){
-        Elements elements = element.child(1).child(0).children();
+        Elements elements = element.child(1)
+                .child(0)
+                .children();
         StringBuilder sb = new StringBuilder();
         for(Element e : elements){
             sb.append(e.text()).append(",");

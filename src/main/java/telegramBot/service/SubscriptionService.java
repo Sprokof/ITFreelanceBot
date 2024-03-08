@@ -29,6 +29,4 @@ public class SubscriptionService {
         this.subscriptionRepository.save(subscription);
     }
 
-
-
 }

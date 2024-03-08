@@ -3,6 +3,7 @@ package telegramBot.repository.datajpa;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 import telegramBot.entity.User;
+import telegramBot.enums.Language;
 import telegramBot.repository.UserRepository;
 
 import java.util.List;
@@ -28,5 +29,15 @@ public class DataJpaUserRepository implements UserRepository {
     @Override
     public List<User> getAllActive() {
         return this.crudRepository.getAllActive();
+    }
+
+    @Override
+    public int countByStatus(boolean active) {
+        return this.crudRepository.countByStatus(active);
+    }
+
+    @Override
+    public int countSubscribed(Language language) {
+        return this.crudRepository.countSubscribed(language.getName());
     }
 }

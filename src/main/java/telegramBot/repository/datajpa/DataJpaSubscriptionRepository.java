@@ -34,5 +34,4 @@ public class DataJpaSubscriptionRepository implements SubscriptionRepository {
     public List<Subscription> getAllByStatus(SubscriptionStatus status) {
         return (List<Subscription>) this.crudRepository.getAllByStatus(status);
     }
-
 }

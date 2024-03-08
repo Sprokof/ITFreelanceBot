@@ -42,7 +42,7 @@ public class BotService implements CommandLineRunner {
                 for(Subscription subscription : subscriptionService.getAllByStatus(SubscriptionStatus.INIT)){
                     Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
                     List<Order> newOrders = this.exchangeService.findNewOrders(language);
-                    newOrders.forEach(order -> this.orderService.save(order));
+                    newOrders.forEach(order -> this.orderService.create(order));
                     Map<String, List<OrderDto>> orders = getFilteredOrders(newOrders);
                     executeNotices(orders);
                 }

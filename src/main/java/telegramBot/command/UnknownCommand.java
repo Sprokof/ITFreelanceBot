@@ -2,10 +2,11 @@ package telegramBot.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.service.MessageService;
+import telegramBot.util.BotUtil;
 
 public class UnknownCommand implements Command {
 
-    private static final String UNKNOWN_COMMAND = "Unknown command. /info - получение сводки";
+    private static final String UNKNOWN_COMMAND = BotUtil.UNKNOWN_COMMAND;
 
     private final MessageService messageService;
 

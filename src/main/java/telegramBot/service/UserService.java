@@ -2,6 +2,7 @@ package telegramBot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import telegramBot.enums.Language;
 import telegramBot.enums.Role;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
@@ -34,13 +35,16 @@ public class UserService {
 
     public User createOrGet(String chatId) {
         User user = getByChatId(chatId);
-        if(user == null) return save(new User(chatId, (Role.isAdmin(chatId) ? Role.ADMIN : Role.USER)));
+        if(user == null) {
+            return save(new User(chatId, (Role.isAdmin(chatId) ? Role.ADMIN : Role.USER)));
+        }
         return user;
-
     }
     public void removeSubscription(User user, Subscription subscription) {
         user.removeSubscription(subscription);
-        if(user.getSubscriptions().isEmpty()) user.setActive(false);
+        if(user.getSubscriptions().isEmpty()) {
+            user.setActive(false);
+        }
         this.update(user);
     }
     public void setActive(String chatId, boolean flag) {
@@ -51,4 +55,12 @@ public class UserService {
     public List<User> getAllActive() {
         return this.userRepository.getAllActive();
     }
+
+    public int countByStatus(boolean active){
+        return this.userRepository.countByStatus(active);
+    }
+    public int countSubscribed(Language language) {
+        return this.userRepository.countSubscribed(language);
+    }
+
 }

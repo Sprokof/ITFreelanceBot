@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import telegramBot.entity.Order;
+import telegramBot.enums.Language;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,5 +25,9 @@ public interface OrderCrudRepository extends CrudRepository<Order, Long> {
     List<Order> getAllByLanguage(String language);
     @Query("SELECT COUNT(o) FROM Order o WHERE o.title =:title")
     int existByTitle(@Param("title") String title);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.subscription.language =:language")
+    int count(@Param("language") String language);
+
 
 }

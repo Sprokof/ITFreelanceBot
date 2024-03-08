@@ -16,10 +16,12 @@ public class BotUtil {
         throw new AccessException("Constructor can't be created");
     }
     public static int DAY_MILLISECONDS = 86400000;
-    public static int EXECUTE_NOTICE_TIMEOUT = 420000;
+    public static int EXECUTE_NOTICE_TIMEOUT = 600000;
     public static String BOT_TOKEN = getProperty("bot.token");
     public static String BOT_USERNAME = getProperty("bot.username");
     public static String ADMIN_CHAT_ID = getProperty("admin.chat.id");
+
+    public static final String UNKNOWN_COMMAND = "Unknown command. /info - получение сводки";
 
 
     private static Properties getApplicationProperties() throws IOException {

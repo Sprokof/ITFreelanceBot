@@ -52,8 +52,7 @@ public class OrderService implements CommandLineRunner {
 
         }
     }
-
-    public Order save(Order order) {
+    public Order create(Order order) {
         return this.orderRepository.save(order);
     }
 
@@ -74,5 +73,10 @@ public class OrderService implements CommandLineRunner {
     private LocalDate currentDateMinusExchangeRefreshInterval(int interval){
         return LocalDate.now().minusDays(interval);
     }
+
+    public int getOrdersCount(Language language) {
+        return this.orderRepository.count(language);
+    }
+
 
 }

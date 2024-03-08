@@ -25,6 +25,7 @@ public class Order extends BaseEntity {
 
     @Column(name = "init_date")
     @Getter
+    @Setter
     private LocalDate initDate;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
@@ -50,6 +51,12 @@ public class Order extends BaseEntity {
         if(!(obj instanceof Order)) return false;
         Order order = (Order) obj;
         return this.title.equals(order.title);
+    }
+
+    public Order(Order order){
+        this.setTitle(order.getTitle());
+        this.setLink(order.getLink());
+        this.setInitDate(order.getInitDate());
     }
 
     private LocalDate now(){
