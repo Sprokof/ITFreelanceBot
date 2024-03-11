@@ -32,6 +32,6 @@ public class InfoCommand implements Command {
     @Override
     public void execute(Update update) {
         String chatId = update.getMessage().getChatId().toString();
-        this.messageService.sendResponse(chatId, (Role.isAdmin(chatId) ? (INFO_COMMAND.append(ADMIN_LINE).toString()) : INFO_COMMAND.toString()));
+        this.messageService.sendResponse(chatId, (Role.isAdmin(chatId) ? (INFO_COMMAND + ADMIN_LINE) : INFO_COMMAND.toString()));
     }
 }

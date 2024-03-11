@@ -9,10 +9,11 @@ public class StopCommand implements Command {
 
     private final MessageService messageService;
 
-    private UserService userService;
+    private final UserService userService;
 
-    public StopCommand(MessageService messageService) {
+    public StopCommand(MessageService messageService, UserService userService) {
         this.messageService = messageService;
+        this.userService = userService;
     }
 
     @Override
@@ -23,8 +24,4 @@ public class StopCommand implements Command {
 
     }
 
-    public StopCommand setUserService(UserService userService){
-        this.userService = userService;
-        return this;
-    }
 }

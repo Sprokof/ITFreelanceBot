@@ -9,11 +9,12 @@ public class RestartCommand implements Command {
 
     private final MessageService messageService;
 
-    private UserService userService;
+    private final UserService userService;
 
 
-    public RestartCommand(MessageService messageService) {
+    public RestartCommand(MessageService messageService, UserService userService) {
         this.messageService = messageService;
+        this.userService = userService;
     }
 
     @Override
@@ -24,8 +25,4 @@ public class RestartCommand implements Command {
 
     }
 
-    public RestartCommand setUserService(UserService userService){
-        this.userService = userService;
-        return this;
-    }
 }

@@ -5,23 +5,19 @@ import telegramBot.enums.Language;
 import telegramBot.enums.Role;
 import telegramBot.service.AdminService;
 import telegramBot.service.MessageService;
+import telegramBot.service.UserService;
 import telegramBot.util.BotUtil;
 
 import java.util.Map;
 
 public class AdminCommand implements Command {
     private final MessageService messageService;
-    private AdminService adminService;
+    private final AdminService adminService;
 
-    public AdminCommand(MessageService messageService){
+    public AdminCommand(MessageService messageService, AdminService adminService){
         this.messageService = messageService;
-    }
-
-    public AdminCommand setAdminService(AdminService adminService){
         this.adminService = adminService;
-        return this;
     }
-
 
     @Override
     public void execute(Update update) {
@@ -59,7 +55,7 @@ public class AdminCommand implements Command {
         adminCommand.append("Количество активных пользователей: ")
                 .append(countActiveUsers)
                 .append("\n")
-                .append("Количество не активных пользователей: ")
+                .append("Количество неактивных пользователей: ")
                 .append(countNonActiveUsers);
         return adminCommand.toString();
     }

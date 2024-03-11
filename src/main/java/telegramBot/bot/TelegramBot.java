@@ -26,28 +26,23 @@ public class TelegramBot extends TelegramLongPollingBot {
     private static final String COMMAND_PREFIX = "/";
     private final CommandContainer commandContainer;
 
-    private final MessageService messageService;
-
     @Autowired
     private CommandValidation validation;
 
     @Autowired
-    private OrderService orderService;
-
-    @Autowired
     private SubscriptionService subscriptionService;
+    private final MessageService messageService;
+    private final OrderService orderService;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AdminService adminService;
-
-    @Autowired
-    public TelegramBot(TelegramBotsApi botsApi) throws TelegramApiException {
+    public TelegramBot(TelegramBotsApi botsApi, OrderService orderService, UserService userService) throws TelegramApiException {
         botsApi.registerBot(this);
+        this.orderService = orderService;
+        this.userService = userService;
         this.messageService = new MessageService(this);
-        this.commandContainer = new CommandContainer(this.messageService);
+        this.commandContainer = new CommandContainer(this.messageService, this.userService,
+                new AdminService(this.orderService, this.userService));
     }
 
     @Override
@@ -71,28 +66,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             String message = update.getMessage().getText().trim();
             if (message.startsWith(COMMAND_PREFIX)) {
                 inputCommand = message.split(" ")[0].toLowerCase(Locale.ROOT);
-                Command command = this.commandContainer.retrieveCommand(inputCommand);
-                if (command instanceof SubscriptionCommand) {
-                    ((SubscriptionCommand) command)
-                            .setUserService(this.userService)
-                            .execute(update);
-                } else if (command instanceof StopCommand) {
-                    ((StopCommand) command)
-                            .setUserService(this.userService)
-                            .execute(update);
-                } else if (command instanceof RestartCommand) {
-                    ((RestartCommand) command)
-                            .setUserService(this.userService)
-                            .execute(update);
-                } else if (command instanceof AdminCommand) {
-                    ((AdminCommand) command)
-                            .setAdminService(this.adminService)
-                            .execute(update);
-                } else {
-                    command.execute(update);
-                    commands.get(chatId).add(inputCommand);
-                }
-
+                this.commandContainer.retrieveCommand(inputCommand).execute(update);
+                commands.get(chatId).add(inputCommand);
             } else {
                 CommandName lastCommand = lastCommand(chatId);
                 if (lastCommand.equals(CommandName.ADD)) {

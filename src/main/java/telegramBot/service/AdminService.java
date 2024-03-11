@@ -2,20 +2,21 @@ package telegramBot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import telegramBot.entity.Order;
 import telegramBot.enums.Language;
-import telegramBot.enums.SubscriptionStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
 public class AdminService {
 
-    @Autowired
-    private UserService userService;
+    private final OrderService orderService;
+    private final UserService userService;
 
-    @Autowired
-    private OrderService orderService;
+    public AdminService(OrderService orderService, UserService userService) {
+        this.orderService = orderService;
+        this.userService = userService;
+    }
 
     public int subscriptionsCount() {
         return Language.getLanguages().length;

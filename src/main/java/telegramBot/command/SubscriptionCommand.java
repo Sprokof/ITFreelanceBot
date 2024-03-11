@@ -15,23 +15,19 @@ public class SubscriptionCommand implements Command {
 
     private final MessageService messageService;
 
-    private UserService userService;
+    private final UserService userService;
 
 
-    public SubscriptionCommand(MessageService service){
+    public SubscriptionCommand(MessageService service, UserService userService){
         this.messageService = service;
-    }
-
-    public SubscriptionCommand setUserService(UserService userService) {
         this.userService = userService;
-        return this;
     }
 
     @Override
     public void execute(Update update) {
         String chatId = update.getMessage().getChatId().toString();
-        List<Subscription> subscriptions = this.userService.
-                getByChatId(chatId).getSubscriptions();
+        List<Subscription> subscriptions = this.userService
+                .getByChatId(chatId).getSubscriptions();
 
         String command = null;
         if (!subscriptions.isEmpty()){
