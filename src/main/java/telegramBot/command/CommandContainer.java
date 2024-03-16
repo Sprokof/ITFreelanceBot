@@ -2,7 +2,6 @@ package telegramBot.command;
 
 import telegramBot.service.AdminService;
 import telegramBot.service.MessageService;
-import telegramBot.service.SubscriptionService;
 import telegramBot.service.UserService;
 
 import java.util.HashMap;

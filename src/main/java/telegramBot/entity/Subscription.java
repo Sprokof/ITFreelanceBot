@@ -42,5 +42,4 @@ public class Subscription extends BaseEntity {
         orders.add(order);
     }
 
-
 }

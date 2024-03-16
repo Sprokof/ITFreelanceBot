@@ -1,8 +1,5 @@
 package telegramBot.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import telegramBot.entity.Order;
 import telegramBot.enums.Language;
 
 import java.util.HashMap;

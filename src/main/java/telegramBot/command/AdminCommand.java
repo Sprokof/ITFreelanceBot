@@ -5,7 +5,6 @@ import telegramBot.enums.Language;
 import telegramBot.enums.Role;
 import telegramBot.service.AdminService;
 import telegramBot.service.MessageService;
-import telegramBot.service.UserService;
 import telegramBot.util.BotUtil;
 
 import java.util.Map;
