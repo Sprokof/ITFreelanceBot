@@ -20,8 +20,10 @@ public class CommandValidation {
 
 
     public boolean addCommand(Update update){
-        String chatId = update.getMessage().getChatId().toString();
-        String subsLanguage = update.getMessage().getText();
+        String chatId;
+        chatId = update.getMessage().getChatId().toString();
+        String subsLanguage;
+        subsLanguage = update.getMessage().getText();
 
         if(subsLanguage.isEmpty()){
             this.messageService.sendResponse(chatId, ValidationMessage.EMPTY.getMessage());

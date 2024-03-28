@@ -34,4 +34,8 @@ public class DataJpaSubscriptionRepository implements SubscriptionRepository {
     public List<Subscription> getAllByStatus(SubscriptionStatus status) {
         return (List<Subscription>) this.crudRepository.getAllByStatus(status);
     }
+
+    public int getIdByLanguage(Language language) {
+       return this.crudRepository.getIdByLanguage(language.getName());
+    }
 }

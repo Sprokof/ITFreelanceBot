@@ -12,8 +12,8 @@ import java.util.List;
 
 public interface OrderCrudRepository extends CrudRepository<Order, Long> {
 
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.link =:link")
-    int existByLink(@Param("link") String link);
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.link =:link AND o.subscription.id =:id")
+    int existByLink(@Param("link") String link, @Param("id") int id);
     @Modifying
     @Query("DELETE FROM Order o WHERE o.exchange.id IN (SELECT e.id FROM Exchange e " +
             "WHERE e.name =:exchange) and o.initDate <=:date")
@@ -23,9 +23,8 @@ public interface OrderCrudRepository extends CrudRepository<Order, Long> {
     int delete(long id);
     @Query("SELECT o FROM Order o WHERE o.subscription.language =:language ORDER BY o.id DESC")
     List<Order> getAllByLanguage(String language);
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.title =:title")
-    int existByTitle(@Param("title") String title);
-
+    @Query("SELECT o FROM Order o WHERE o.link =:link")
+    Order getByLink(@Param("link") String link);
     @Query("SELECT COUNT(o) FROM Order o WHERE o.subscription.language =:language")
     int count(@Param("language") String language);
 

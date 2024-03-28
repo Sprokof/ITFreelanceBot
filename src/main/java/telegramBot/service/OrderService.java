@@ -19,8 +19,10 @@ public class OrderService implements CommandLineRunner {
     private OrderRepository orderRepository;
 
 
-    public boolean saveIfNotExist(Order order) {
-        if (this.orderRepository.existByLink(order.getLink())) return false;
+    public boolean saveIfNotExist(Order order, int id) {
+        if (this.orderRepository.existByLink(order.getLink(), id)) {
+            return false;
+        }
         this.orderRepository.save(order);
         return true;
     }
@@ -56,9 +58,8 @@ public class OrderService implements CommandLineRunner {
         return this.orderRepository.save(order);
     }
 
-    public boolean exist(Order order) {
-        String link = order.getLink();
-        return this.orderRepository.existByLink(link);
+    public boolean exist(String link, int subscriptionId) {
+        return this.orderRepository.existByLink(link, subscriptionId);
     }
 
     public List<Order> getAllByLanguage(Language language){
@@ -69,7 +70,6 @@ public class OrderService implements CommandLineRunner {
         this.orderRepository.save(order);
     }
     
-
     private LocalDate currentDateMinusExchangeRefreshInterval(int interval){
         return LocalDate.now().minusDays(interval);
     }

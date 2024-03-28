@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
-
     private final TelegramBot bot;
 
     public MessageService(@Lazy TelegramBot bot){
@@ -126,7 +125,10 @@ public class MessageService {
         try {
             bot.execute(buildMessage(userChatId, message));
         } catch (Exception e) {
-            System.out.println(e.getCause().getMessage());
+            Throwable cause = e.getCause();
+            if(cause != null) {
+                System.out.println(e.getCause().getMessage());
+            }
         }
     }
 

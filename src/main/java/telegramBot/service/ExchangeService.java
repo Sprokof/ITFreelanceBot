@@ -39,12 +39,13 @@ public class ExchangeService implements CommandLineRunner {
         telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
         for (Subscription subscription : subscriptions) {
             Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
+            int id = subscriptionService.getIdByLanguage(language);
             Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.parser.getOrders(language);
             for (telegramBot.enums.Exchange e : exchanges) {
                 List<Order> orders = exchangesOrders.get(e);
                 telegramBot.entity.Exchange exchange = get(e);
                 for (Order order : orders) {
-                    if (orderService.saveIfNotExist(order)) {
+                    if (orderService.saveIfNotExist(order, id)) {
                         order.setExchange(exchange);
                         order.setSubscription(subscription);
                         this.orderService.update(order);
@@ -73,7 +74,8 @@ public class ExchangeService implements CommandLineRunner {
         for (telegramBot.enums.Exchange e : exchanges) {
             List<Order> ordersByExchange = taskOrders.get(e);
             for (Order order : ordersByExchange) {
-                if (!this.orderService.exist(order)) {
+                int id = subscriptionService.getIdByLanguage(language);
+                if (!this.orderService.exist(order.getLink(), id)) {
                     Exchange exchange = this.exchangeRepository.getByName(e.getName());
                     Subscription subscription = this.subscriptionService.getByLanguage(language);
 

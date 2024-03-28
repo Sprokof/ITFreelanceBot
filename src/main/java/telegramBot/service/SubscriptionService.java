@@ -29,4 +29,8 @@ public class SubscriptionService {
         this.subscriptionRepository.save(subscription);
     }
 
+    public int getIdByLanguage(Language language) {
+        return this.subscriptionRepository.getIdByLanguage(language);
+    }
+
 }

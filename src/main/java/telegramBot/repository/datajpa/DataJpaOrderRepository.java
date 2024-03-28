@@ -27,8 +27,8 @@ public class DataJpaOrderRepository implements OrderRepository {
     }
 
     @Override
-    public boolean existByLink(String link) {
-        return this.crudRepository.existByLink(link) != 0;
+    public boolean existByLink(String link, int id) {
+        return this.crudRepository.existByLink(link, id) != 0;
     }
 
     @Override
@@ -45,12 +45,6 @@ public class DataJpaOrderRepository implements OrderRepository {
     public List<Order> getAllByLanguage(Language language) {
         return this.crudRepository.getAllByLanguage(language.getName());
     }
-
-    @Override
-    public boolean existByTitle(String title) {
-        return this.crudRepository.existByTitle(title) != 0;
-    }
-
     @Override
     public int count(Language language) {
         return this.crudRepository.count(language.getName());

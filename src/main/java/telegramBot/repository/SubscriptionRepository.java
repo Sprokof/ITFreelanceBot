@@ -10,5 +10,7 @@ public interface SubscriptionRepository {
     Subscription save(Subscription subscription);
     Subscription getByLanguage(Language language);
     List<Subscription> getAllByStatus(SubscriptionStatus status);
+    int getIdByLanguage(Language language);
+
 
 }

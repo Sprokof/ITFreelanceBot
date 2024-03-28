@@ -17,5 +17,7 @@ public interface SubscriptionCrudRepository extends CrudRepository<Subscription,
     @Query("SELECT s FROM Subscription s WHERE s.status =:status")
     @EntityGraph(attributePaths = "orders", type = EntityGraph.EntityGraphType.LOAD)
     List<Subscription> getAllByStatus(@Param("status") SubscriptionStatus status);
+    @Query("SELECT s.id FROM Subscription s WHERE s.language =:language")
+    int getIdByLanguage(@Param("language") String language);
 
 }

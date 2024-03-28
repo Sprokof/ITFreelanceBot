@@ -9,8 +9,7 @@ import java.util.List;
 
 public interface OrderRepository {
     Order save(Order order);
-    boolean existByLink(String link);
-    boolean existByTitle(String title);
+    boolean existByLink(String link, int subscriptionId);
     boolean deleteByExchangeAndDate(Exchange exchange, LocalDate date);
     boolean delete(long id);
     List<Order> getAllByLanguage(Language language);
