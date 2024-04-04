@@ -16,18 +16,13 @@ public class OrderUtil {
     public static OrderDto toDto(Order order){
         String title = order.getTitle();
         String link = order.getLink();
-        String exchangeName = order.getExchange().getName();
-        String exchangeLink = order.getExchange().getLink();
-        String subscription = order.getSubscription().getLanguage();
-        return new OrderDto(title, link, exchangeName, exchangeLink, subscription);
+        return new OrderDto(title, link, order.getExchange(), order.getSubscription());
     }
 
+
     public static List<OrderDto> toDtos(List<Order> orders) {
-        List<OrderDto> result = new ArrayList<>();
-        for (Order order : orders) {
-            result.add(toDto(order));
-        }
-        return result.stream()
+        return orders.stream()
+                .map(OrderUtil::toDto)
                 .filter(distinctByKey(OrderDto::getLink))
                 .collect(Collectors.toList());
     }

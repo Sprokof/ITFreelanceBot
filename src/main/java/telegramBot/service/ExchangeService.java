@@ -3,6 +3,7 @@ package telegramBot.service;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import telegramBot.dto.OrderDto;
 import telegramBot.entity.Exchange;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
@@ -12,6 +13,7 @@ import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import telegramBot.task.ExchangeParser;
+import telegramBot.util.OrderUtil;
 
 import java.util.*;
 
@@ -67,8 +69,8 @@ public class ExchangeService implements CommandLineRunner {
         new Thread(this::init).start();
     }
 
-    public List<Order> findNewOrders(Language language) {
-        List<Order> newOrders = new ArrayList<>();
+    public Set<OrderDto> findNewOrders(Language language) {
+        Set<OrderDto> newOrders = new HashSet<>();
         telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
         Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.getOrders(language);
         for (telegramBot.enums.Exchange e : exchanges) {
@@ -81,11 +83,10 @@ public class ExchangeService implements CommandLineRunner {
 
                     order.setExchange(exchange);
                     order.setSubscription(subscription);
-                    newOrders.add(order);
+                    newOrders.add(OrderUtil.toDto(order));
 
                 }
             }
-
         }
         return newOrders;
     }

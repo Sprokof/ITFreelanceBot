@@ -2,11 +2,15 @@ package telegramBot.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.entity.Subscription;
+import telegramBot.enums.SubscriptionStatus;
 import telegramBot.service.MessageService;
+import telegramBot.service.SubscriptionService;
 import telegramBot.service.UserService;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public class SubscriptionCommand implements Command {
     private static final String[] SUBSCRIPTION_COMMANDS = {
@@ -15,19 +19,18 @@ public class SubscriptionCommand implements Command {
 
     private final MessageService messageService;
 
-    private final UserService userService;
+    private final SubscriptionService subscriptionService;
 
 
-    public SubscriptionCommand(MessageService service, UserService userService){
+    public SubscriptionCommand(MessageService service, SubscriptionService subscriptionService){
         this.messageService = service;
-        this.userService = userService;
+        this.subscriptionService = subscriptionService;
     }
 
     @Override
     public void execute(Update update) {
         String chatId = update.getMessage().getChatId().toString();
-        List<Subscription> subscriptions = this.userService
-                .getByChatId(chatId).getSubscriptions();
+        List<Subscription> subscriptions =  this.subscriptionService.getAllByUserChatId(chatId);
 
         String command = null;
         if (!subscriptions.isEmpty()){

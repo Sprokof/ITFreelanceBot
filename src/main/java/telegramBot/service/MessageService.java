@@ -31,28 +31,27 @@ public class MessageService {
         executeMessage(userChatId, message);
     }
 
-    public void sendNotice(String userChatId, List<OrderDto> dtos) {
+    public void sendNotice(String userChatId, Set<OrderDto> dtos) {
         executeMessage(userChatId, createNotices(dtos));
     }
 
 
-    private String createNotices(List<OrderDto> orderDtos) {
-        StringBuilder notice = new StringBuilder();
-        Map<Exchange, List<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
-        List<StringBuilder> notices = new ArrayList<>();
-        StringBuilder output = new StringBuilder();
+    private String createNotices(Set<OrderDto> orderDtos) {
+        Map<Exchange, Set<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
+        StringBuilder result = new StringBuilder();
         for(Exchange exchange : Exchange.getExchanges()){
+            StringBuilder notice = new StringBuilder();
             if(!exchangesDtos.containsKey(exchange)){ continue; }
-            List<OrderDto> eDtos = exchangesDtos.get(exchange);
+            Set<OrderDto> eDtos = exchangesDtos.get(exchange);
             String title = "Новые заказы на  " + exchange.getName() + ":";
             notice.append(title).append("\n");
-            Map<Language, List<OrderDto>> languagesDtos = sortByLanguage(eDtos);
+            Map<Language, Set<OrderDto>> languagesDtos = sortByLanguage(eDtos);
             for(Language language : Language.getLanguages()){
                 if(!languagesDtos.containsKey(language)){ continue; }
-                    List<OrderDto> lDtos = languagesDtos.get(language);
+                    Set<OrderDto> lDtos = languagesDtos.get(language);
                     String subscription = "По запросу  " + language.getName() + ":";
                     notice.append("\n").append(subscription).append("\n").append(delim());
-                    for(OrderDto orderDto : lDtos){
+                    for(OrderDto orderDto : lDtos) {
                         String orderInfo = orderDto.getOrderInfo();
                         notice.append("\n")
                                 .append(orderInfo)
@@ -61,38 +60,32 @@ public class MessageService {
                                 .append("\n");
                     }
             }
+            result.append(notice).append("\n");
         }
-        notices.add(notice);
-
-        for(StringBuilder n : notices){
-            output.append(n).append("\n");
-        }
-
-    return output.toString();
+    return result.toString();
 
     }
 
-    private Map<Exchange, List<OrderDto>> sortByExchange(List<OrderDto> orderDtos){
-        Map<Exchange, List<OrderDto>> result = new HashMap<>();
+    private Map<Exchange, Set<OrderDto>> sortByExchange(Set<OrderDto> orderDtos){
+        Map<Exchange, Set<OrderDto>> result = new HashMap<>();
         for(Exchange e : Exchange.getExchanges()){
-            List<OrderDto> dtos = orderDtos.stream()
-                    .filter((o) -> o.getExchangeName().equals(e.getName()))
-                    .collect(Collectors.toList());
+            Set<OrderDto> dtos = orderDtos.stream()
+                    .filter((o) -> o.getExchange().getName().equals(e.getName()))
+                    .collect(Collectors.toSet());
 
             if(!dtos.isEmpty()) {
                 result.put(e, dtos);
             }
         }
-
         return result;
     }
 
-    private Map<Language, List<OrderDto>> sortByLanguage(List<OrderDto> orderDtos){
-        Map<Language, List<OrderDto>> result = new HashMap<>();
+    private Map<Language, Set<OrderDto>> sortByLanguage(Set<OrderDto> orderDtos){
+        Map<Language, Set<OrderDto>> result = new HashMap<>();
         for(Language l : Language.getLanguages()){
-            List<OrderDto> dtos = orderDtos.stream()
-                    .filter((o) -> o.getSubscription().equals(l.getName()))
-                    .collect(Collectors.toList());
+            Set<OrderDto> dtos = orderDtos.stream()
+                    .filter((o) -> o.getSubscription().getLanguage().equals(l.getName()))
+                    .collect(Collectors.toSet());
 
             if(!dtos.isEmpty()) {
                 result.put(l, dtos);
@@ -150,7 +143,7 @@ public class MessageService {
                 language.getName() + ":\n" );
         dtos.forEach(o -> {
             sb.append(o.getOrderInfo()).append(" (").
-                    append(o.getExchangeName()).
+                    append(o.getExchange().getName()).
                     append(")").append("\n\n");
         });
 

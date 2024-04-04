@@ -38,4 +38,9 @@ public class DataJpaSubscriptionRepository implements SubscriptionRepository {
     public int getIdByLanguage(Language language) {
        return this.crudRepository.getIdByLanguage(language.getName());
     }
+
+    @Override
+    public List<Subscription> getAllByUserChatId(String chatId) {
+        return this.crudRepository.getAllByUserChatId(chatId);
+    }
 }

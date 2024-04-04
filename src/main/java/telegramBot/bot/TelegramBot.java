@@ -28,20 +28,19 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Autowired
     private CommandValidation validation;
-
-    @Autowired
-    private SubscriptionService subscriptionService;
+    private final SubscriptionService subscriptionService;
     private final MessageService messageService;
     private final OrderService orderService;
     private final UserService userService;
 
     @Autowired
-    public TelegramBot(TelegramBotsApi botsApi, OrderService orderService, UserService userService) throws TelegramApiException {
+    public TelegramBot(TelegramBotsApi botsApi, OrderService orderService, UserService userService, SubscriptionService subscriptionService) throws TelegramApiException {
         botsApi.registerBot(this);
         this.orderService = orderService;
         this.userService = userService;
+        this.subscriptionService = subscriptionService;
         this.messageService = new MessageService(this);
-        this.commandContainer = new CommandContainer(this.messageService, this.userService,
+        this.commandContainer = new CommandContainer(this.messageService, this.subscriptionService, this.userService,
                 new AdminService(this.orderService, this.userService));
     }
 

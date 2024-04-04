@@ -5,17 +5,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import telegramBot.dto.OrderDto;
-import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
-import telegramBot.entity.User;
 import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.util.BotUtil;
-import telegramBot.util.OrderUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import static telegramBot.util.OrderUtil.distinctByKey;
 
 @Service
 public class BotService implements CommandLineRunner {
@@ -38,45 +34,38 @@ public class BotService implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         new Thread(() -> {
+            Set<OrderDto> all = new HashSet<>();
             while (true) {
-                for(Subscription subscription : subscriptionService.getAllByStatus(SubscriptionStatus.INIT)){
+                for (Subscription subscription : this.subscriptionService.getAllByStatus(SubscriptionStatus.INIT)) {
                     Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
-                    List<Order> newOrders = this.exchangeService.findNewOrders(language);
-                    newOrders.forEach(order -> this.orderService.create(order));
-                    Map<String, List<OrderDto>> orders = getFilteredOrders(newOrders);
-                    executeNotices(orders);
+                    all.addAll(this.exchangeService.findNewOrders(language));
                 }
+                    all.forEach(dto -> orderService.create(dto.toEntity(true)));
+                    executeNotices(getFilteredOrderDtos(all));
+                    all.clear();
                 pause();
             }
         }).start();
 
     }
 
-    public void executeNotices(Map<String, List<OrderDto>> orders) {
-        for(User user : this.userService.getAllActive()){
-            List<OrderDto> usersOrders = orders.get(user.getChatId());
-            if(usersOrders != null) this.messageService.
-                    sendNotice(user.getChatId(), usersOrders);
+    public void executeNotices(Map<String, Set<OrderDto>> orders) {
+        for (Map.Entry<String, Set<OrderDto>> entry : orders.entrySet()) {
+            this.messageService.sendNotice(entry.getKey(), entry.getValue());
         }
     }
 
-    private Map<String, List<OrderDto>> getFilteredOrders(List<Order> newOrders){
-        Map<String, List<OrderDto>> orders = new HashMap<>();
-        if(newOrders.isEmpty()) return new HashMap<>();
-        List<User> users = this.userService.getAllActive();
-        users.forEach(user -> {
-            List<OrderDto> filteredOrders = newOrders.stream()
-                    .filter(order -> {
-                Subscription sub = order.getSubscription();
-                return user.getSubscriptions().contains(sub);
-            })
-                    .filter(distinctByKey(Order::getLink))
-                    .filter(distinctByKey(Order::getTitle))
-                    .map(OrderUtil::toDto)
-                    .collect(Collectors.toList());
-            if(!filteredOrders.isEmpty()) orders.put(user.getChatId(), filteredOrders);
+    private Map<String, Set<OrderDto>> getFilteredOrderDtos(Set<OrderDto> newDtos){
+        Map<String, Set<OrderDto>> orders = new HashMap<>();
+        if(newDtos.isEmpty()) return new HashMap<>();
+        this.userService.getAllActive().forEach(user -> {
+            Set<OrderDto> filteredOrders = newDtos.stream()
+                    .filter(dto -> user.subscriptionExist(dto.getSubscription()))
+                    .collect(Collectors.toSet());
+            if (!filteredOrders.isEmpty()) {
+                orders.put(user.getChatId(), filteredOrders);
+            }
         });
-
     return orders;
     }
 

@@ -77,7 +77,7 @@ public class ExchangeParser {
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
                 if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
                 if(OrderQueryRelation.correctRelation(dto, language) == language){
-                    orders.add(dto.toEntity());
+                    orders.add(dto.toEntity(false));
                 }
             }
         }
@@ -98,7 +98,7 @@ public class ExchangeParser {
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
                 if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
                 if (OrderQueryRelation.correctRelation(dto, language) == language) {
-                    orders.add(dto.toEntity());
+                    orders.add(dto.toEntity(false));
                 }
             }
         }
@@ -116,7 +116,7 @@ public class ExchangeParser {
                 }
                 return OrderQueryRelation.correctRelation(order, language) == language;
             })
-                    .map(OrderDto::toEntity)
+                    .map(orderDto -> orderDto.toEntity(false))
                     .collect(Collectors.toList());
             orders.addAll(filteredOrders);
         }

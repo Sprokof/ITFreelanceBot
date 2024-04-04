@@ -33,4 +33,8 @@ public class SubscriptionService {
         return this.subscriptionRepository.getIdByLanguage(language);
     }
 
+    public List<Subscription> getAllByUserChatId(String chatId) {
+        return this.subscriptionRepository.getAllByUserChatId(chatId);
+    }
+
 }

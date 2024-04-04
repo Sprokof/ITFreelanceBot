@@ -11,6 +11,6 @@ public interface SubscriptionRepository {
     Subscription getByLanguage(Language language);
     List<Subscription> getAllByStatus(SubscriptionStatus status);
     int getIdByLanguage(Language language);
-
+    List<Subscription> getAllByUserChatId(String chatId);
 
 }

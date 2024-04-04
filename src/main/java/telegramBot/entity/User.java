@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import telegramBot.enums.Role;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Users")
@@ -42,10 +44,10 @@ public class User extends BaseEntity {
     @JoinTable(name = "Users_subscriptions",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = {@JoinColumn(name = "subscription_id")})
-    private List<Subscription> subscriptions;
+    private Set<Subscription> subscriptions;
 
     public void addSubscription(Subscription subscription){
-        if(this.subscriptions == null) this.subscriptions = new ArrayList<>();
+        if(this.subscriptions == null) this.subscriptions = new HashSet<>();
         this.subscriptions.add(subscription);
     }
 
@@ -55,11 +57,13 @@ public class User extends BaseEntity {
         }
 
     }
-    public List<Subscription> getSubscriptions() {
-        if(this.subscriptions == null) this.subscriptions = new ArrayList<>();
+    public Set<Subscription> getSubscriptions() {
+        if(this.subscriptions == null) this.subscriptions = new HashSet<>();
         return this.subscriptions;
     }
 
-
+    public boolean subscriptionExist(Subscription subscription) {
+        return this.subscriptions.contains(subscription);
+    }
 
 }

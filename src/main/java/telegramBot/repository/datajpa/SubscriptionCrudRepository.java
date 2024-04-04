@@ -19,5 +19,9 @@ public interface SubscriptionCrudRepository extends CrudRepository<Subscription,
     List<Subscription> getAllByStatus(@Param("status") SubscriptionStatus status);
     @Query("SELECT s.id FROM Subscription s WHERE s.language =:language")
     int getIdByLanguage(@Param("language") String language);
+    @Query(nativeQuery = true, value = "SELECT * FROM Subscription WHERE id IN (SELECT subscription_id " +
+            "FROM Users_subscriptions WHERE user_id = (SELECT id FROM Users WHERE chat_id =:chatId))")
+    List<Subscription> getAllByUserChatId(@Param("chatId") String chatId);
+
 
 }
