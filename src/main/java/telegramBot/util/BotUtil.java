@@ -1,8 +1,6 @@
 package telegramBot.util;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.rmi.AccessException;
 import java.util.Objects;
 import java.util.Properties;
@@ -25,13 +23,11 @@ public class BotUtil {
 
 
     private static Properties getApplicationProperties() throws IOException {
-        String rootPath = Objects.requireNonNull(Thread.currentThread()
-                .getContextClassLoader().getResource("")).getPath();
-        String appConfigPath = rootPath + "application.properties";
-
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(appConfigPath));
-        return properties;
+        try (InputStream is = BotUtil.class.getClassLoader().getResourceAsStream("application.properties")) {
+            Properties properties = new Properties();
+            properties.load(is);
+            return properties;
+        }
     }
 
     private static String getProperty(String key) {

@@ -22,7 +22,7 @@ import java.util.*;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
-    private final static Map<String, List<String>> commands = new HashMap<>();
+    private final static Map<String, List<String>> commands = new Hashtable<>();
     private static final String COMMAND_PREFIX = "/";
     private final CommandContainer commandContainer;
 

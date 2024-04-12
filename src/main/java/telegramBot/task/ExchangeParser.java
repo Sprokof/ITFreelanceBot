@@ -16,11 +16,14 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
 @Component
 public class ExchangeParser {
+    private static final Logger LOGGER = Logger.getAnonymousLogger();
     private static final String HABR_SELECTOR = ".task__column_desc";
     private static final String FL_SELECTOR = ".search-item-body";
     private static final Map<String, String> habrLinks = new HashMap<>();
@@ -75,8 +78,10 @@ public class ExchangeParser {
                 String taskTags = extractTags(e);
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskTags);
-                if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
-                if(OrderQueryRelation.correctRelation(dto, language) == language){
+                if (language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) {
+                    continue;
+                }
+                if (OrderQueryRelation.correctRelation(dto, language) == language) {
                     orders.add(dto.toEntity(false));
                 }
             }
@@ -96,7 +101,9 @@ public class ExchangeParser {
                 String taskDescription = trimHtml(e.child(2).text());
 
                 OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
-                if(language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) continue;
+                if (language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) {
+                    continue;
+                }
                 if (OrderQueryRelation.correctRelation(dto, language) == language) {
                     orders.add(dto.toEntity(false));
                 }
@@ -109,7 +116,8 @@ public class ExchangeParser {
         List<Order> orders = new ArrayList<>();
         for (String link : kworkLinks.get(language.getName()).split("\\|")) {
             String kworkJson = getJSON(link, HttpMethod.POST);
-            List<Order> filteredOrders = extractKworkOrders(kworkJson).stream().filter(order -> {
+            List<Order> filteredOrders = extractKworkOrders(kworkJson).stream()
+                    .filter(order -> {
                 if (language.equals(Language.JAVA)) {
                     return !OrderQueryRelation.falseJavaPattern(order) &&
                             OrderQueryRelation.correctRelation(order, language) == language;
@@ -128,8 +136,7 @@ public class ExchangeParser {
         try {
             document = SSLHelper.getConnection(link).get();
         } catch (IOException e) {
-            Throwable cause = e.getCause();
-            if(cause != null) System.out.println(cause.getMessage());
+            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
         }
         return document;
     }
@@ -140,22 +147,22 @@ public class ExchangeParser {
     }
 
     public String getJSON(String link, HttpMethod httpMethod) {
-        HttpURLConnection c = null;
+        HttpURLConnection connection = null;
         try {
             URL u = new URL(link);
-            c = (HttpURLConnection) u.openConnection();
-            c.setRequestMethod(httpMethod.getMethodName());
-            c.setRequestProperty("Content-length", "0");
-            c.setRequestProperty("Content-Type", "application/json");
-            c.setUseCaches(false);
-            c.setAllowUserInteraction(false);
-            c.connect();
-            int status = c.getResponseCode();
+            connection = (HttpURLConnection) u.openConnection();
+            connection.setRequestMethod(httpMethod.getMethodName());
+            connection.setRequestProperty("Content-length", "0");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.connect();
+            int status = connection.getResponseCode();
 
             switch (status) {
                 case 200:
                 case 201:
-                    BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     StringBuilder sb = new StringBuilder();
                     String line;
                     while ((line = br.readLine()) != null) {
@@ -166,10 +173,10 @@ public class ExchangeParser {
             }
 
         } catch (IOException e) {
-            System.out.println(e.getCause().getMessage());
+            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
         } finally {
-            if (c != null) {
-                c.disconnect();
+            if (connection != null) {
+                connection.disconnect();
             }
         }
         return null;

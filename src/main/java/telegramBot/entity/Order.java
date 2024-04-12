@@ -86,4 +86,8 @@ public class Order extends BaseEntity {
                 '}';
     }
 
+    @Override
+    public int hashCode() {
+        return this.subscription.hashCode();
+    }
 }

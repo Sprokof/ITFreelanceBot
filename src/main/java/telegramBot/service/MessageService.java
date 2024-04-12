@@ -16,11 +16,14 @@ import telegramBot.util.BotUtil;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
 @Service
 public class MessageService {
+    private static final Logger LOGGER = Logger.getAnonymousLogger();
     private final TelegramBot bot;
 
     public MessageService(@Lazy TelegramBot bot){
@@ -118,10 +121,7 @@ public class MessageService {
         try {
             bot.execute(buildMessage(userChatId, message));
         } catch (Exception e) {
-            Throwable cause = e.getCause();
-            if(cause != null) {
-                System.out.println(e.getCause().getMessage());
-            }
+            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
         }
     }
 
