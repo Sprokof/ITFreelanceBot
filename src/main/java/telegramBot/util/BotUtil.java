@@ -30,7 +30,7 @@ public class BotUtil {
         }
     }
 
-    private static String getProperty(String key) {
+    public static String getProperty(String key) {
         String property = null;
         try {
             property = getApplicationProperties().getProperty(key);

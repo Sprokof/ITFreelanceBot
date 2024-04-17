@@ -9,6 +9,7 @@ import telegramBot.entity.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -62,6 +63,11 @@ public class OrderDto {
                 ", exchangeLink='" + exchange.getLink() + '\'' +
                 ", subscription='" + subscription + '\'' +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.title, this.link, this.subscription);
     }
 
     @Override

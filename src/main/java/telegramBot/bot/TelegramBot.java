@@ -7,6 +7,7 @@ import telegramBot.command.*;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
+import telegramBot.list.SingleLinkedList;
 import telegramBot.messages.SubscriptionMessage;
 import telegramBot.service.*;
 
@@ -22,7 +23,7 @@ import java.util.*;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
-    private final static Map<String, List<String>> commands = new Hashtable<>();
+    private final static Map<String, SingleLinkedList<String>> commands = new Hashtable<>();
     private static final String COMMAND_PREFIX = "/";
     private final CommandContainer commandContainer;
 
@@ -57,11 +58,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         String inputCommand = "", chatId = "";
-        User user;
         if (update.hasMessage() && update.getMessage().hasText()) {
             chatId = update.getMessage().getChatId().toString();
-            user = userService.createOrGet(chatId);
-            commands.putIfAbsent(chatId, new ArrayList<>());
+            User user = userService.createOrGet(chatId);
+            commands.putIfAbsent(chatId, new SingleLinkedList<>());
             String message = update.getMessage().getText().trim();
             if (message.startsWith(COMMAND_PREFIX)) {
                 inputCommand = message.split(" ")[0].toLowerCase(Locale.ROOT);
@@ -109,8 +109,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private CommandName lastCommand(String chatId) {
         int size = commands.get(chatId).size();
         if (size == 0) return CommandName.UNKNOWN;
-        int lastIndex = size - 1;
-        String command = commands.get(chatId).get(lastIndex);
+        String command = commands.get(chatId).last();
         return CommandName.commandValueOf(command);
     }
 

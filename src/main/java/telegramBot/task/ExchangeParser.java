@@ -2,6 +2,7 @@ package telegramBot.task;
 
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.glassfish.jersey.server.Uri;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
@@ -14,7 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,19 +98,21 @@ public class ExchangeParser {
     private List<Order> getFlOrders(Language language) {
         List<Order> orders = new ArrayList<>();
         for (String link : flLinks.get(language.getName()).split("\\|")) {
-            Document document = getDocument(link);
-            Elements elements = document.select(FL_SELECTOR);
-            for (Element e : elements) {
-                String taskTitle = trimHtml(e.child(1).child(0).text());
-                String taskLink = e.child(1).child(0).attr("href");
-                String taskDescription = trimHtml(e.child(2).text());
+            Optional<Document> document = Optional.of(getDocument(link));
+            if (document.isPresent()) {
+                Elements elements = document.get().select(FL_SELECTOR);
+                for (Element e : elements) {
+                    String taskTitle = trimHtml(e.child(1).child(0).text());
+                    String taskLink = e.child(1).child(0).attr("href");
+                    String taskDescription = trimHtml(e.child(2).text());
 
-                OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
-                if (language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) {
-                    continue;
-                }
-                if (OrderQueryRelation.correctRelation(dto, language) == language) {
-                    orders.add(dto.toEntity(false));
+                    OrderDto dto = new OrderDto(taskTitle, taskLink, taskDescription);
+                    if (language == Language.JAVA && OrderQueryRelation.falseJavaPattern(dto)) {
+                        continue;
+                    }
+                    if (OrderQueryRelation.correctRelation(dto, language) == language) {
+                        orders.add(dto.toEntity(false));
+                    }
                 }
             }
         }
@@ -115,7 +122,7 @@ public class ExchangeParser {
     private List<Order> getKworkOrders(Language language) {
         List<Order> orders = new ArrayList<>();
         for (String link : kworkLinks.get(language.getName()).split("\\|")) {
-            String kworkJson = getJSON(link, HttpMethod.POST);
+            String kworkJson = getJson(link);
             List<Order> filteredOrders = extractKworkOrders(kworkJson).stream()
                     .filter(order -> {
                 if (language.equals(Language.JAVA)) {
@@ -146,44 +153,30 @@ public class ExchangeParser {
                 replaceAll("(</em>)", "");
     }
 
-    public String getJSON(String link, HttpMethod httpMethod) {
-        HttpURLConnection connection = null;
-        try {
-            URL u = new URL(link);
-            connection = (HttpURLConnection) u.openConnection();
-            connection.setRequestMethod(httpMethod.getMethodName());
-            connection.setRequestProperty("Content-length", "0");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.connect();
-            int status = connection.getResponseCode();
 
-            switch (status) {
-                case 200:
-                case 201:
-                    BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line).append("\n");
-                    }
-                    br.close();
-                    return sb.toString();
-            }
-
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return null;
+    public String getJson(String link) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(link))
+                .version(HttpClient.Version.HTTP_1_1)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+        String responseBody = "";
+    try {
+        HttpResponse<String> response = HttpClient
+                .newBuilder()
+                .build()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+       responseBody = response.body();
+    }
+    catch (InterruptedException | IOException e) {
+        LOGGER.log(Level.SEVERE, "an exception was thrown", e);
+    }
+    return responseBody;
     }
 
     private List<OrderDto> extractKworkOrders(String json){
-        if(json == null) return new ArrayList<>();
+        if (json == null) return new ArrayList<>();
         return Arrays.stream(json.split("(\\{|\\})"))
                 .filter(this::filterCondition)
                 .map(StringEscapeUtils::unescapeJava)

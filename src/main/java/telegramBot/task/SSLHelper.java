@@ -2,6 +2,7 @@ package telegramBot.task;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import telegramBot.util.BotUtil;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -12,9 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
 public class SSLHelper {
+    private static final String USER_AGENT_KEY = "user.agent";
     static public Connection getConnection(String url){
-        return Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) Edg/112.0.1722.48")
+        return Jsoup.connect(url).userAgent(BotUtil.getProperty(USER_AGENT_KEY))
                 .sslSocketFactory(SSLHelper.socketFactory());
     }
 
