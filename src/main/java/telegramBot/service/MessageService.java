@@ -20,10 +20,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static telegramBot.util.BotUtil.MAX_ORDERS_COUNT;
+
 
 @Service
-public class MessageService {
+public final class MessageService {
+
     private static final Logger LOGGER = Logger.getAnonymousLogger();
+
     private final TelegramBot bot;
 
     public MessageService(@Lazy TelegramBot bot){
@@ -40,9 +44,15 @@ public class MessageService {
 
 
     private String createNotices(Set<OrderDto> orderDtos) {
+        if(orderDtos.size() > MAX_ORDERS_COUNT) {
+            orderDtos = orderDtos.stream()
+                    .skip(0)
+                    .limit(MAX_ORDERS_COUNT)
+                    .collect(Collectors.toSet());
+        }
         Map<Exchange, Set<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
         StringBuilder result = new StringBuilder();
-        for(Exchange exchange : Exchange.getExchanges()){
+        for(Exchange exchange : Exchange.get()){
             StringBuilder notice = new StringBuilder();
             if(!exchangesDtos.containsKey(exchange)){ continue; }
             Set<OrderDto> eDtos = exchangesDtos.get(exchange);
@@ -71,12 +81,12 @@ public class MessageService {
 
     private Map<Exchange, Set<OrderDto>> sortByExchange(Set<OrderDto> orderDtos){
         Map<Exchange, Set<OrderDto>> result = new HashMap<>();
-        for(Exchange e : Exchange.getExchanges()){
+        for (Exchange e : Exchange.get()) {
             Set<OrderDto> dtos = orderDtos.stream()
                     .filter((o) -> o.getExchange().getName().equals(e.getName()))
                     .collect(Collectors.toSet());
 
-            if(!dtos.isEmpty()) {
+            if (!dtos.isEmpty()) {
                 result.put(e, dtos);
             }
         }
@@ -85,7 +95,7 @@ public class MessageService {
 
     private Map<Language, Set<OrderDto>> sortByLanguage(Set<OrderDto> orderDtos){
         Map<Language, Set<OrderDto>> result = new HashMap<>();
-        for(Language l : Language.getLanguages()){
+        for (Language l : Language.getLanguages()){
             Set<OrderDto> dtos = orderDtos.stream()
                     .filter((o) -> o.getSubscription().getLanguage().equals(l.getName()))
                     .collect(Collectors.toSet());
@@ -130,7 +140,7 @@ public class MessageService {
                 replaceAll("\\s", "");
         String[] items = extractItems(input);
         Language language = Language.ignoreCaseValueOf(items[0]);
-        int count = Integer.parseInt(items[1]);
+        int count = Math.min(Integer.parseInt(items[1]), MAX_ORDERS_COUNT);
         List<Order> orders = service.getAllByLanguage(language);
         List<OrderDto> dtos = OrderUtil.toDtos(orders).subList(0,
                 getEndIndex(orders.size(), count));
@@ -157,8 +167,7 @@ public class MessageService {
     private String[] extractItems(String input){
         String[] items = input.split(",");
         String language = items[0];
-        String count = (items[1].
-                matches("\\d+") &&
+        String count = (items[1].matches("\\d+") &&
                 !items[1].equals("0")) ? items[1] : "1" ;
         return new String[]{language, count};
     }

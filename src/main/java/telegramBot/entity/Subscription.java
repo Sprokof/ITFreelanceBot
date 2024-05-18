@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import telegramBot.enums.SubscriptionStatus;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Table(name = "Subscription")
@@ -38,7 +39,9 @@ public class Subscription extends BaseEntity {
 
 
     public void addOrder(Order order){
-        if(this.orders == null) this.orders = new ArrayList<>();
+        if (this.orders == null) {
+            this.orders = new LinkedList<>();
+        }
         orders.add(order);
     }
 

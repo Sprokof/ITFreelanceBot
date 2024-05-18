@@ -1,13 +1,11 @@
 package telegramBot.service;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Exchange;
 import telegramBot.entity.Order;
 import telegramBot.entity.Subscription;
-import telegramBot.enums.BotStatus;
 import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
@@ -38,7 +36,7 @@ public class ExchangeService implements CommandLineRunner {
 
     public void init() {
         List<Subscription> subscriptions = subscriptionService.getAllByStatus(SubscriptionStatus.CREATE);
-        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
+        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.get();
         for (Subscription subscription : subscriptions) {
             Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
             int id = subscriptionService.getIdByLanguage(language);
@@ -66,12 +64,12 @@ public class ExchangeService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        new Thread(this::init).start();
+        this.init();
     }
 
     public Set<OrderDto> findNewOrders(Language language) {
         Set<OrderDto> newOrders = new HashSet<>();
-        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.getExchanges();
+        telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.get();
         Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.getOrders(language);
         for (telegramBot.enums.Exchange e : exchanges) {
             List<Order> ordersByExchange = taskOrders.get(e);

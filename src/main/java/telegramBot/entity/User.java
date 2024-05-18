@@ -58,7 +58,9 @@ public class User extends BaseEntity {
 
     }
     public Set<Subscription> getSubscriptions() {
-        if(this.subscriptions == null) this.subscriptions = new HashSet<>();
+        if (this.subscriptions == null) {
+            this.subscriptions = new HashSet<>();
+        }
         return this.subscriptions;
     }
 

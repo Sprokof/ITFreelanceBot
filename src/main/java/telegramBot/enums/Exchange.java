@@ -20,7 +20,7 @@ public enum Exchange {
     }
 
 
-    public static Exchange[] getExchanges(){
+    public static Exchange[] get(){
         return Exchange.values();
     }
 

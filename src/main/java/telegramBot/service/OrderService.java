@@ -29,7 +29,7 @@ public class OrderService implements CommandLineRunner {
 
 
     public synchronized void deleteOld() {
-        for(Exchange exchange : Exchange.getExchanges()) {
+        for(Exchange exchange : Exchange.get()) {
             LocalDate deleteDate = currentDateMinusExchangeRefreshInterval(exchange.getRefreshInterval());
             this.orderRepository.deleteByExchangeAndDate(exchange, deleteDate);
         }

@@ -1,6 +1,7 @@
 package telegramBot.list;
 
-public class SingleLinkedList<Element> {
+public class SingleLinkedList<Element>
+{
     private Node<Element> head;
     private Node<Element> tail;
     private int size = 0;
@@ -12,7 +13,6 @@ public class SingleLinkedList<Element> {
             this.element = element;
             this.next = next;
         }
-
     }
 
     public void add(Element element) {
