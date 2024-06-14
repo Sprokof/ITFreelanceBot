@@ -2,6 +2,7 @@ package telegramBot.task;
 
 import telegramBot.dto.OrderDto;
 import telegramBot.enums.Language;
+import telegramBot.util.BotUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,14 +50,12 @@ public class OrderQueryRelation {
     }
 
     private static boolean containsSkipOrderPattern(String field, String keyword){
-        Pattern skipPattern = Pattern.compile("(((не нужны)|(не нужно)|(без)|(кроме))(\\s|(\\s\\W+\\s))(?i)(" + keyword + "))|" +
-                "((?i)(" + keyword + ")((\\s|(\\s?\\p{P}\\s?))|(\\s\\W+\\s))((не нужны)|(не нужно)))");
-
-       return skipPattern.matcher(field).find();
+        Pattern skipPattern = Pattern.compile(BotUtil.skipOrderPattern(keyword));
+        return skipPattern.matcher(field).find();
     }
 
     private static boolean containsKeywordPattern(String field, String keyword){
-        Pattern keywordPattern = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(" + keyword + ")((\\p{P}|\\s)?)");
+        Pattern keywordPattern = Pattern.compile(BotUtil.keywordPattern(keyword));
         return keywordPattern.matcher(field).find();
 
     }
@@ -66,6 +65,5 @@ public class OrderQueryRelation {
         Pattern jsPattern = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(java script)((\\p{P}|\\s)?)");
         return jsPattern.matcher(title).find() || jsPattern.matcher(details).find();
     }
-
 
 }

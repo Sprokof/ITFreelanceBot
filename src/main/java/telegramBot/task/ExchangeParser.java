@@ -1,12 +1,10 @@
 package telegramBot.task;
 
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.glassfish.jersey.server.Uri;
+import converter.UnicodeConverter;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
-import telegramBot.enums.HttpMethod;
 import telegramBot.enums.Language;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,9 +12,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -28,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class ExchangeParser {
+
     private static final Logger LOGGER = Logger.getAnonymousLogger();
     private static final String HABR_SELECTOR = ".task__column_desc";
     private static final String FL_SELECTOR = ".search-item-body";
@@ -37,6 +34,7 @@ public class ExchangeParser {
 
 
     static {
+
         habrLinks.put(Language.JAVA.getName(), habrLik(Language.JAVA));
         habrLinks.put(Language.PYTHON.getName(), habrLik(Language.PYTHON));
         habrLinks.put(Language.JAVASCRIPT.getName(), habrJavaScriptLink());
@@ -58,6 +56,7 @@ public class ExchangeParser {
         kworkLinks.put(Language.C.getName(), kworkLink(Language.C));
         kworkLinks.put(Language.RUBY.getName(), kworkLink(Language.RUBY));
         kworkLinks.put(Language.PHP.getName(), kworkLink(Language.PHP));
+
     }
 
 
@@ -161,6 +160,7 @@ public class ExchangeParser {
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
+
         String responseBody = "";
     try {
         HttpResponse<String> response = HttpClient
@@ -176,10 +176,10 @@ public class ExchangeParser {
     }
 
     private List<OrderDto> extractKworkOrders(String json){
-        if (json == null) return new ArrayList<>();
+        if (json.isEmpty()) return new ArrayList<>();
         return Arrays.stream(json.split("(\\{|\\})"))
                 .filter(this::filterCondition)
-                .map(StringEscapeUtils::unescapeJava)
+                .map(UnicodeConverter :: unicodeToCyrillic)
                 .map(this::mapToKworkOrder)
                 .collect(Collectors.toList());
     }
@@ -194,14 +194,16 @@ public class ExchangeParser {
         return false;
     }
 
-    private OrderDto mapToKworkOrder(String json){
+    private OrderDto mapToKworkOrder(String json) {
         String idPrefix = "\"id\"", namePrefix = "\"name\"", descPrefix = "\"description\"";
         String title = null, link = null, description = null;
         String[] fields = json.split("(,\"|\",)");
         int index = 0;
         while(index != fields.length){
             String field = fields[index];
-            if(link != null && title != null && description != null) break;
+            if (link != null && title != null && description != null) {
+                break;
+            }
 
             if (field.startsWith(idPrefix)) {
                 link = "/projects/" + field.substring(field.indexOf(":") + 1);
@@ -222,15 +224,15 @@ public class ExchangeParser {
         return new OrderDto(title, link, description);
     }
 
-    private String extractTags(Element element){
+    private String extractTags(Element element) {
         Elements elements = element.child(1)
                 .child(0)
                 .children();
         StringBuilder sb = new StringBuilder();
-        for(Element e : elements){
+        for (Element e : elements) {
             sb.append(e.text()).append(",");
         }
-    return sb.toString();
+        return sb.toString();
     }
 
     private static String habrLik(Language language){
@@ -238,33 +240,31 @@ public class ExchangeParser {
         return link.replaceAll("(lang)", language.getName().toLowerCase());
     }
 
-    private static String habrJavaScriptLink(){
+    private static String habrJavaScriptLink() {
         return "https://freelance.habr.com/tasks?page=1&q=javascript&fields=tags|" +
                 "https://freelance.habr.com/tasks?page=1&q=java%20script&fields=tags|" +
                 "https://freelance.habr.com/tasks?page=1&q=js&fields=tags";
     }
 
-    private static String flLink(Language language){
+    private static String flLink(Language language) {
         String link = "https://www.fl.ru/search/?action=search&type=projects&search_string=lang&page=1";
         return link.replaceAll("(lang)", language.getName().toLowerCase());
     }
 
-    private static String flJavaScriptLink(){
+    private static String flJavaScriptLink() {
         return "https://www.fl.ru/search/?action=search&type=projects&search_string=javascript&page=1|" +
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=java%20script&page=1|" +
                 "https://www.fl.ru/search/?action=search&type=projects&search_string=js&page=1";
     }
 
-    private static String kworkLink(Language language){
+    private static String kworkLink(Language language) {
         String link = "https://kwork.ru/projects?keyword=lang&a=1.json";
         return link.replaceAll("(lang)", language.getName()).toLowerCase();
     }
 
-    private static String kworkJavaScriptLink(){
+    private static String kworkJavaScriptLink() {
         return "https://kwork.ru/projects?keyword=javascript&a=1.json|" +
                 "https://kwork.ru/projects?keyword=java+script&a=1.json|" +
                 "https://kwork.ru/projects?keyword=js&a=1.json";
     }
-
-
 }

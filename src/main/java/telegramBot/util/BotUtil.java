@@ -49,5 +49,14 @@ public class BotUtil {
         return property;
     }
 
+    public static String skipOrderPattern(String keyword) {
+        return String.format("(((не нужны)|(не нужно)|(без)|(кроме))(\\s|(\\s\\W+\\s))(?i)(" + keyword + "))|" +
+        "((?i)(%s)((\\s|(\\s?\\p{P}\\s?))|(\\s\\W+\\s))((не нужны)|(не нужно)))", keyword);
+    }
+
+    public static String keywordPattern(String keyword) {
+        return String.format("(\\s|(\\p{P}\\s)?)(?i)(%s)((\\p{P}|\\s)?)", keyword);
+    }
+
 
 }

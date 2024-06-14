@@ -37,9 +37,9 @@ public class OrderDto {
     }
 
 
-    public Order toEntity(boolean withRelation){
+    public Order toEntity(boolean withRelations){
         Order order = new Order(this.title.replaceAll("(&ndash;)", "-"), this.link);
-        if (withRelation) {
+        if (withRelations) {
             order.setExchange(this.exchange);
             order.setSubscription(this.subscription);
         }

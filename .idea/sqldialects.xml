@@ -2,8 +2,6 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/database/initDB.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/src/test/java/telegramBot/h2/sql/initDb.sql" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/src/test/java/telegramBot/h2/sql/populateDb.sql" dialect="H2" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>
