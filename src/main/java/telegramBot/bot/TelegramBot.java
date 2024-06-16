@@ -2,7 +2,6 @@ package telegramBot.bot;
 
 
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import telegramBot.command.*;
 import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
@@ -37,7 +36,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Autowired
     public TelegramBot(TelegramBotsApi botsApi, OrderService orderService,
-                       UserService userService, SubscriptionService subscriptionService, ExchangeService exchangeService) throws Exception {
+                       UserService userService, SubscriptionService subscriptionService) throws Exception {
         botsApi.registerBot(this);
         this.orderService = orderService;
         this.userService = userService;
@@ -45,7 +44,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.messageService = new MessageService(this);
         this.commandContainer = new CommandContainer(this.messageService, this.subscriptionService, this.userService,
                 new AdminService(this.orderService, this.userService));
-        exchangeService.run();
     }
 
 

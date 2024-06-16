@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static telegramBot.util.KworkUtil.SKIP_PATTERN;
+
 
 @Component
 public class ExchangeParser {
@@ -183,41 +185,30 @@ public class ExchangeParser {
 
     private List<OrderDto> extractKworkOrders(String json) {
         if (json.isEmpty()) return new ArrayList<>();
-        List<String> filteredJsons = Arrays.stream(json.split("(\\{|\\})"))
-                .map(StringEscapeUtils::unescapeJava)
-                .filter(this::filterCondition)
-                .collect(Collectors.toList());
 
-        String concatJson = getConcatJson(filteredJsons);
-        String[] jsonArray = concatJson.split(KworkUtil.ORDER_KWORK_PATTERN.pattern());
+        String convertedJson = StringEscapeUtils
+                .unescapeJava(json.replaceAll("(\\{|\\})", ""));
+        String[] jsonArray = convertedJson.split(KworkUtil.SPLIT_PATTERN);
+
+
         return Arrays.stream(jsonArray)
+                .filter(this::filterCondition)
                 .map(this::mapToKworkOrder)
                 .collect(Collectors.toList());
     }
 
     private boolean filterCondition(String record) {
-        Pattern idPattern = KworkUtil.LINE_WITH_ID_PATTERN;
-        Pattern orderPattern = KworkUtil.ORDER_KWORK_PATTERN;
-        return idPattern.matcher(record).find() || orderPattern.matcher(record).find();
+        return !SKIP_PATTERN.matcher(record).find();
     }
-
-    private String getConcatJson(List<String> jsons) {
-        StringBuilder newJson = new StringBuilder();
-        for (String json : jsons) {
-            newJson.append(json);
-        }
-        return newJson.toString();
-    }
-
 
     private OrderDto mapToKworkOrder(String json) {
-        String idPrefix = "id\"", titlePrefix = "\"name\"", descPrefix = "\"description\"";
-        String title = KworkUtil.DEFAULT_ORDER_TITLE, link = null, description = null;
-        String[] fields = json.split("(,\"|\",)");
+        String idPrefix = "id\"", descPrefix = "description\"", titlePrefix = "name\"";
+        String link = null, description = null, title = null;
+        String[] fields = json.split("(,\")");
         int index = 0;
         while (index != fields.length) {
             String field = fields[index];
-            if (link != null && description != null) {
+            if (link != null && description != null && title != null) {
                 break;
             }
 
@@ -225,16 +216,17 @@ public class ExchangeParser {
                 link = "/projects/" + field.substring(field.indexOf(":") + 1);
             }
 
-            if (field.startsWith(titlePrefix)) {
-                title = field.substring(field.indexOf(":") + 1).
-                        replaceAll("\"", "").trim();
-            }
-
             if (field.startsWith(descPrefix)) {
                 int subIndex = field.indexOf(":") + 1;
                 description = field.substring(subIndex).
                         replaceAll("\"", "").trim();
             }
+
+            if (field.startsWith(titlePrefix)) {
+                title = field.substring(field.indexOf(":") + 1).
+                        replaceAll("\"", "").trim();
+            }
+
             index++;
         }
         return new OrderDto(title, link, description);
@@ -274,13 +266,13 @@ public class ExchangeParser {
     }
 
     private static String kworkLink(Language language) {
-        String link = "https://kwork.ru/projects?keyword=lang&a=1.json";
+        String link = "https://kwork.ru/projects?keyword=lang&c=all.json";
         return link.replaceAll("(lang)", language.getName()).toLowerCase();
     }
 
     private static String kworkJavaScriptLink() {
-        return "https://kwork.ru/projects?keyword=javascript&a=1.json|" +
-                "https://kwork.ru/projects?keyword=java+script&a=1.json|" +
-                "https://kwork.ru/projects?keyword=js&a=1.json";
+        return "https://kwork.ru/projects?keyword=javascript&c=all.json|" +
+                "https://kwork.ru/projects?keyword=java+script&c=all.json|" +
+                "https://kwork.ru/projects?keyword=js&c=all.json";
     }
 }

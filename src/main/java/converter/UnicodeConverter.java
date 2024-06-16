@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class UnicodeConverter {
     public static String convertCyrillic(String input) {
+        //TODO make it work correct
         String unescape = "\\";
         String escape = "n";
         char[] inputChars = input.toCharArray();
