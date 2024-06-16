@@ -2,6 +2,7 @@ package telegramBot.task;
 
 
 import converter.UnicodeConverter;
+import org.apache.commons.lang3.StringEscapeUtils;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
@@ -10,6 +11,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import telegramBot.util.BotUtil;
+import telegramBot.util.KworkUtil;
+import telegramBot.util.ListUtil;
+import telegramBot.util.OrderUtil;
 
 import java.io.*;
 import java.net.URI;
@@ -19,6 +24,7 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -124,11 +130,11 @@ public class ExchangeParser {
             String kworkJson = getJson(link);
             List<Order> filteredOrders = extractKworkOrders(kworkJson).stream()
                     .filter(order -> {
-                if (language.equals(Language.JAVA)) {
+                if (!order.containsNull() && language.equals(Language.JAVA)) {
                     return !OrderQueryRelation.falseJavaPattern(order) &&
                             OrderQueryRelation.correctRelation(order, language) == language;
                 }
-                return OrderQueryRelation.correctRelation(order, language) == language;
+                return !order.containsNull() && OrderQueryRelation.correctRelation(order, language) == language;
             })
                     .map(orderDto -> orderDto.toEntity(false))
                     .collect(Collectors.toList());
@@ -175,33 +181,43 @@ public class ExchangeParser {
     return responseBody;
     }
 
-    private List<OrderDto> extractKworkOrders(String json){
+    private List<OrderDto> extractKworkOrders(String json) {
         if (json.isEmpty()) return new ArrayList<>();
-        return Arrays.stream(json.split("(\\{|\\})"))
+        List<String> filteredJsons = Arrays.stream(json.split("(\\{|\\})"))
+                .map(StringEscapeUtils::unescapeJava)
                 .filter(this::filterCondition)
-                .map(UnicodeConverter :: unicodeToCyrillic)
+                .collect(Collectors.toList());
+
+        String concatJson = getConcatJson(filteredJsons);
+        String[] jsonArray = concatJson.split(KworkUtil.ORDER_KWORK_PATTERN.pattern());
+        return Arrays.stream(jsonArray)
                 .map(this::mapToKworkOrder)
                 .collect(Collectors.toList());
     }
 
-    private boolean filterCondition(String obj) {
-        String idPat = "(\"id\")(:)\\d{7}";
-        String langPat = "(\"lang\")(:)" + "\"" +"[a-z]{2}"+ "\"";
-        int index = obj.indexOf(",");
-        if(index != -1 && obj.substring(0, index).matches(idPat)){
-            return obj.split(",")[1].matches(langPat);
-        }
-        return false;
+    private boolean filterCondition(String record) {
+        Pattern idPattern = KworkUtil.LINE_WITH_ID_PATTERN;
+        Pattern orderPattern = KworkUtil.ORDER_KWORK_PATTERN;
+        return idPattern.matcher(record).find() || orderPattern.matcher(record).find();
     }
 
+    private String getConcatJson(List<String> jsons) {
+        StringBuilder newJson = new StringBuilder();
+        for (String json : jsons) {
+            newJson.append(json);
+        }
+        return newJson.toString();
+    }
+
+
     private OrderDto mapToKworkOrder(String json) {
-        String idPrefix = "\"id\"", namePrefix = "\"name\"", descPrefix = "\"description\"";
-        String title = null, link = null, description = null;
+        String idPrefix = "id\"", titlePrefix = "\"name\"", descPrefix = "\"description\"";
+        String title = KworkUtil.DEFAULT_ORDER_TITLE, link = null, description = null;
         String[] fields = json.split("(,\"|\",)");
         int index = 0;
-        while(index != fields.length){
+        while (index != fields.length) {
             String field = fields[index];
-            if (link != null && title != null && description != null) {
+            if (link != null && description != null) {
                 break;
             }
 
@@ -209,17 +225,17 @@ public class ExchangeParser {
                 link = "/projects/" + field.substring(field.indexOf(":") + 1);
             }
 
-            if (field.startsWith(namePrefix)) {
+            if (field.startsWith(titlePrefix)) {
                 title = field.substring(field.indexOf(":") + 1).
                         replaceAll("\"", "").trim();
             }
 
-            if(field.startsWith(descPrefix)){
+            if (field.startsWith(descPrefix)) {
                 int subIndex = field.indexOf(":") + 1;
                 description = field.substring(subIndex).
                         replaceAll("\"", "").trim();
             }
-            index ++ ;
+            index++;
         }
         return new OrderDto(title, link, description);
     }

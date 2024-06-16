@@ -58,11 +58,7 @@ public class OrderDto {
         return "OrderDto{" +
                 "title='" + title + '\'' +
                 ", link='" + link + '\'' +
-                ", details='" + details + '\'' +
-                ", exchangeName='" + exchange.getName() + '\'' +
-                ", exchangeLink='" + exchange.getLink() + '\'' +
-                ", subscription='" + subscription + '\'' +
-                '}';
+                ", details='" + details + '\'';
     }
 
     @Override
@@ -78,5 +74,9 @@ public class OrderDto {
         return orderDto.title.equals(this.title)
                 && orderDto.link.equals(this.link)
                 && orderDto.subscription.equals(this.subscription);
+    }
+
+    public boolean containsNull() {
+        return this.title == null || this.link == null || this.details == null;
     }
 }

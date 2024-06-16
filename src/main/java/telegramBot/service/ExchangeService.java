@@ -16,7 +16,7 @@ import telegramBot.util.OrderUtil;
 import java.util.*;
 
 @Service
-public class ExchangeService implements CommandLineRunner {
+public class ExchangeService {
 
     @Autowired
     private ExchangeRepository exchangeRepository;
@@ -62,7 +62,6 @@ public class ExchangeService implements CommandLineRunner {
         this.exchangeRepository.save(exchange);
     }
 
-    @Override
     public void run(String... args) throws Exception {
         this.init();
     }

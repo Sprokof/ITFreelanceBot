@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 @Service
 public class BotService implements CommandLineRunner {
 
-    private static final Map<String, Set<OrderDto>> ORDERS = new Hashtable<>();
-
     @Autowired
     private @Lazy ExchangeService exchangeService;
     @Autowired

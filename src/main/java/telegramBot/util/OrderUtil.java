@@ -2,6 +2,7 @@ package telegramBot.util;
 
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
+import telegramBot.enums.Language;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +10,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class OrderUtil {
-
     public static OrderDto toDto(Order order){
         String title = order.getTitle();
         String link = order.getLink();
@@ -31,5 +32,6 @@ public class OrderUtil {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
     }
+
 
 }
