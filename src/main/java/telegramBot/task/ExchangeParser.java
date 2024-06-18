@@ -1,7 +1,6 @@
 package telegramBot.task;
 
 
-import converter.UnicodeConverter;
 import org.apache.commons.lang3.StringEscapeUtils;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
@@ -11,10 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
-import telegramBot.util.BotUtil;
 import telegramBot.util.KworkUtil;
-import telegramBot.util.ListUtil;
-import telegramBot.util.OrderUtil;
 
 import java.io.*;
 import java.net.URI;
@@ -24,7 +20,6 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static telegramBot.util.KworkUtil.SKIP_PATTERN;
@@ -186,8 +181,8 @@ public class ExchangeParser {
     private List<OrderDto> extractKworkOrders(String json) {
         if (json.isEmpty()) return new ArrayList<>();
 
-        String convertedJson = StringEscapeUtils
-                .unescapeJava(json.replaceAll("(\\{|\\})", ""));
+        String convertedJson = KworkUtil.convertToCyrillic(json
+                .replaceAll("(\\{|\\})", ""));
         String[] jsonArray = convertedJson.split(KworkUtil.SPLIT_PATTERN);
 
 
