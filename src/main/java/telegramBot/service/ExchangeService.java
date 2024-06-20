@@ -40,7 +40,7 @@ public class ExchangeService implements CommandLineRunner {
         for (Subscription subscription : subscriptions) {
             Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
             int id = subscriptionService.getIdByLanguage(language);
-            Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.parser.getOrders(language);
+            Map<telegramBot.enums.Exchange, List<Order>> exchangesOrders = this.parser.parseAndGetOrders(language);
             for (telegramBot.enums.Exchange e : exchanges) {
                 List<Order> orders = exchangesOrders.get(e);
                 telegramBot.entity.Exchange exchange = get(e);
