@@ -69,7 +69,7 @@ public class ExchangeService implements CommandLineRunner {
     public Set<OrderDto> findNewOrders(Language language) {
         Set<OrderDto> newOrders = new HashSet<>();
         telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.get();
-        Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.getOrders(language);
+        Map<telegramBot.enums.Exchange, List<Order>> taskOrders = this.parser.parseAndGetOrders(language);
         for (telegramBot.enums.Exchange e : exchanges) {
             List<Order> ordersByExchange = taskOrders.get(e);
             for (Order order : ordersByExchange) {

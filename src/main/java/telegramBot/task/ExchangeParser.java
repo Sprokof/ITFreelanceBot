@@ -1,7 +1,6 @@
 package telegramBot.task;
 
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Exchange;
@@ -10,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import telegramBot.util.BotUtil;
 import telegramBot.util.KworkUtil;
 
 import java.io.*;
@@ -18,6 +18,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -34,7 +36,7 @@ public class ExchangeParser {
     private static final Map<String, String> habrLinks = new HashMap<>();
     private static final Map<String, String> flLinks = new HashMap<>();
     private static final Map<String, String> kworkLinks = new HashMap<>();
-
+    private final ExecutorService executorService = Executors.newFixedThreadPool(BotUtil.COUNT_EXCHANGES);
 
     static {
 
@@ -63,13 +65,24 @@ public class ExchangeParser {
     }
 
 
-    public Map<Exchange, List<Order>> getOrders(Language language) {
-        Map<Exchange, List<Order>> exchangeOrders = new HashMap<>();
-        exchangeOrders.put(Exchange.HABR_FREELANCE, getHabrOrders(language));
-        exchangeOrders.put(Exchange.FL_RU, getFlOrders(language));
-        exchangeOrders.put(Exchange.KWORK, getKworkOrders(language));
-
-        return exchangeOrders;
+    public Map<Exchange, List<Order>> parseAndGetOrders(Language language) {
+        Map<Exchange, List<Order>> exchangesOrders = new ConcurrentHashMap<>();
+        Future<List<Order>> habrOrders = executorService.submit(() -> getHabrOrders(language));
+        Future<List<Order>> flOrders = executorService.submit(() -> getFlOrders(language));
+        Future<List<Order>> kworkOrders = executorService.submit(() -> getKworkOrders(language));
+        boolean isDone = false;
+        while (!isDone) {
+            isDone = habrOrders.isDone() && flOrders.isDone() && kworkOrders.isDone();
+        }
+        try {
+            exchangesOrders.put(Exchange.HABR_FREELANCE, habrOrders.get());
+            exchangesOrders.put(Exchange.FL_RU, flOrders.get());
+            exchangesOrders.put(Exchange.KWORK, kworkOrders.get());
+        }
+        catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return exchangesOrders;
 
     }
 

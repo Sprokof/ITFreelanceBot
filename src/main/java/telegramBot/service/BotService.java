@@ -30,7 +30,6 @@ public class BotService implements CommandLineRunner {
     private OrderService orderService;
     @Autowired
     private SubscriptionService subscriptionService;
-
     private final ExecutorService executorService = Executors.newFixedThreadPool(BotUtil.SIZE);
 
     @Override

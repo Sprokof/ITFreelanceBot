@@ -30,6 +30,8 @@ public class BotUtil {
 
     public static final int MAX_ORDERS_COUNT = 25;
 
+    public static final int COUNT_EXCHANGES = 3;
+
     public static final int SIZE = Integer.parseInt(getProperty("size"));
 
     private static Properties getApplicationProperties() throws IOException {
