@@ -19,7 +19,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -37,6 +36,9 @@ public class ExchangeParser {
     private static final Map<String, String> flLinks = new HashMap<>();
     private static final Map<String, String> kworkLinks = new HashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(BotUtil.COUNT_EXCHANGES);
+    private Future<List<Order>> habrOrders;
+    private Future<List<Order>> flOrders;
+    private Future<List<Order>> kworkOrders;
 
     static {
 
@@ -65,15 +67,8 @@ public class ExchangeParser {
     }
 
 
-    public Map<Exchange, List<Order>> parseAndGetOrders(Language language) {
+    public Map<Exchange, List<Order>> get() {
         Map<Exchange, List<Order>> exchangesOrders = new ConcurrentHashMap<>();
-        Future<List<Order>> habrOrders = executorService.submit(() -> getHabrOrders(language));
-        Future<List<Order>> flOrders = executorService.submit(() -> getFlOrders(language));
-        Future<List<Order>> kworkOrders = executorService.submit(() -> getKworkOrders(language));
-        boolean isDone = false;
-        while (!isDone) {
-            isDone = habrOrders.isDone() && flOrders.isDone() && kworkOrders.isDone();
-        }
         try {
             exchangesOrders.put(Exchange.HABR_FREELANCE, habrOrders.get());
             exchangesOrders.put(Exchange.FL_RU, flOrders.get());
@@ -83,7 +78,28 @@ public class ExchangeParser {
             throw new RuntimeException(e);
         }
         return exchangesOrders;
+    }
 
+    public ExchangeParser findOrders(Language language) {
+        this.habrOrders = executorService.submit(() -> getHabrOrders(language));
+        this.flOrders = executorService.submit(() -> getFlOrders(language));
+        this.kworkOrders = executorService.submit(() -> getKworkOrders(language));
+        return this;
+    }
+
+    private boolean isDone() {
+        return habrOrders.isDone() && flOrders.isDone() && kworkOrders.isDone();
+    }
+
+    public ExchangeParser waitFinish() {
+        while (!isDone()) {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return this;
     }
 
     private List<Order> getHabrOrders(Language language) {
