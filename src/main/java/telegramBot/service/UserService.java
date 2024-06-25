@@ -25,7 +25,9 @@ public class UserService {
     }
 
     public void addSubscription(User user, Subscription subscription) {
-        if(!user.isActive()) user.setActive(true);
+        if (!user.isActive()) {
+            user.setActive(true);
+        }
         user.addSubscription(subscription);
         this.update(user);
     }

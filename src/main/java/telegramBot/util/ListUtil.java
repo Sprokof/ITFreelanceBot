@@ -17,9 +17,7 @@ public class ListUtil {
         int start = 0;
         List<List<T>> output = new ArrayList<>();
         do {
-            input.subList(start, end);
             output.add(input.subList(start, end));
-            input.subList(start, end);
             start += partLimit;
         } while ((end += partLimit) < size);
         if (!sizeEven) {
