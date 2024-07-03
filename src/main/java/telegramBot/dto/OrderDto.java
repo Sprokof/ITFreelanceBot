@@ -24,11 +24,6 @@ public class OrderDto {
     private Subscription subscription;
 
 
-    public String getOrderInfo() {
-        return "<a href=" + "'" + this.exchange.getLink() +
-                this.getLink() + "'" + ">" + this.getTitle() + "</a>";
-    }
-
     public OrderDto(String title, String link, Exchange exchange, Subscription subscription) {
         this.title = title;
         this.link = link;
@@ -76,7 +71,4 @@ public class OrderDto {
                 && orderDto.subscription.equals(this.subscription);
     }
 
-    public boolean containsNull() {
-        return this.title == null || this.link == null || this.details == null;
-    }
 }

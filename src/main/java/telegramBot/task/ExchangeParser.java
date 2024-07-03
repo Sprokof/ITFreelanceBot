@@ -156,11 +156,11 @@ public class ExchangeParser {
             String kworkJson = getJson(link);
             List<Order> filteredOrders = extractKworkOrders(kworkJson).stream()
                     .filter(order -> {
-                if (!order.containsNull() && language.equals(Language.JAVA)) {
+                if (language.equals(Language.JAVA)) {
                     return !OrderQueryRelation.falseJavaPattern(order) &&
                             OrderQueryRelation.correctRelation(order, language) == language;
                 }
-                return !order.containsNull() && OrderQueryRelation.correctRelation(order, language) == language;
+                return OrderQueryRelation.correctRelation(order, language) == language;
             })
                     .map(orderDto -> orderDto.toEntity(false))
                     .collect(Collectors.toList());

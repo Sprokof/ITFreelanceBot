@@ -44,12 +44,7 @@ public final class MessageService {
 
 
     private String createNotices(Set<OrderDto> orderDtos) {
-        if(orderDtos.size() > MAX_ORDERS_COUNT) {
-            orderDtos = orderDtos.stream()
-                    .skip(0)
-                    .limit(MAX_ORDERS_COUNT)
-                    .collect(Collectors.toSet());
-        }
+        orderDtos = OrderUtil.extractMaxOrdersCount(orderDtos);
         Map<Exchange, Set<OrderDto>> exchangesDtos = sortByExchange(orderDtos);
         StringBuilder result = new StringBuilder();
         for(Exchange exchange : Exchange.get()){
@@ -65,9 +60,9 @@ public final class MessageService {
                     String subscription = "По запросу  " + language.getName() + ":";
                     notice.append("\n").append(subscription).append("\n").append(delim());
                     for(OrderDto orderDto : lDtos) {
-                        String orderInfo = orderDto.getOrderInfo();
+                        String info = OrderUtil.buildNotice(orderDto);
                         notice.append("\n")
-                                .append(orderInfo)
+                                .append(info)
                                 .append("\n")
                                 .append(delim())
                                 .append("\n");
@@ -152,7 +147,7 @@ public final class MessageService {
         StringBuilder sb = new StringBuilder("Последние заказы по запросу " +
                 language.getName() + ":\n" );
         dtos.forEach(o -> {
-            sb.append(o.getOrderInfo()).append(" (").
+            sb.append(OrderUtil.buildNotice(o)).append(" (").
                     append(o.getExchange().getName()).
                     append(")").append("\n\n");
         });
@@ -171,5 +166,7 @@ public final class MessageService {
                 !items[1].equals("0")) ? items[1] : "1" ;
         return new String[]{language, count};
     }
+
+
 
 }
