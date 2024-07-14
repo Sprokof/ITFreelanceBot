@@ -39,7 +39,6 @@ public class User extends BaseEntity {
         this.active = true;
     }
 
-
     @ManyToMany
     @JoinTable(name = "Users_subscriptions",
             joinColumns = @JoinColumn(name = "user_id"),

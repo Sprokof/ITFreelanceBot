@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: pg_fr_bot
+    image: postgres:13.3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: FreelanceBot
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - spring-cloud-network
+
+  freelance-bot:
+    container_name: fr_bot
+    build:
+      dockerfile: ../Dockerfile
+    image: fr_bot:latest
+    ports:
+      - "8085:8085"
+    networks:
+      spring-cloud-network:
+
+networks:
+  spring-cloud-network:
+    driver: bridge
+
