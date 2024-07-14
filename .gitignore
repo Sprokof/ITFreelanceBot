@@ -1,2 +1,4 @@
 *.properties
-target/
+target
+.idea
+build
