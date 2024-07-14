@@ -5,6 +5,8 @@
 * spring.datasource.url
 * spring.datasource.username
 * spring.datasource.password
+* spring.datasource.driver-class-name
+* spring.jpa.properties.hibernate.dialect (org.hibernate.dialect.PostgreSQLDialect)
 * bot.username
 * bot.token
 ## Build dockerfile
