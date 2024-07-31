@@ -4,12 +4,11 @@ import java.util.regex.Pattern;
 
 public class KworkUtil {
     public static final String SPLIT_PATTERN = "\"userAlreadyWork\":null";
-
     public static final Pattern SKIP_PATTERN = Pattern.compile("\"success\":true");
 
     public static String convertToCyrillic(String input) {
         Pattern unicodeCyrillicPattern = Pattern.compile("4(\\d{2}|(\\d\\w))");
-        String splitPattern = "(\\\\u0|\\\"u0)";
+        String splitPattern = "(\\\\u0|\\\\\"u0)";
         String prefix = "0";
         String[] inputItems = input.split(splitPattern);
         StringBuilder result = new StringBuilder(inputItems[0]);

@@ -163,7 +163,7 @@ public class ExchangeParser {
                 return OrderQueryRelation.correctRelation(order, language) == language;
             })
                     .map(orderDto -> orderDto.toEntity(false))
-                    .collect(Collectors.toList());
+                    .toList();
             orders.addAll(filteredOrders);
         }
     return orders;
@@ -194,17 +194,16 @@ public class ExchangeParser {
                 .build();
 
         String responseBody = "";
-    try {
-        HttpResponse<String> response = HttpClient
-                .newBuilder()
-                .build()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-       responseBody = response.body();
-    }
-    catch (InterruptedException | IOException e) {
-        LOGGER.log(Level.SEVERE, "an exception was thrown", e);
-    }
-    return responseBody;
+        try {
+            HttpResponse<String> response = HttpClient
+                    .newBuilder()
+                    .build()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            responseBody = response.body();
+        } catch (InterruptedException | IOException e) {
+            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
+        }
+        return responseBody;
     }
 
     private List<OrderDto> extractKworkOrders(String json) {

@@ -22,14 +22,19 @@ public class BotService implements CommandLineRunner {
 
     @Autowired
     private @Lazy ExchangeService exchangeService;
+
     @Autowired
     private MessageService messageService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private OrderService orderService;
+
     @Autowired
     private SubscriptionService subscriptionService;
+
     private final ExecutorService executorService = Executors.newFixedThreadPool(BotUtil.SIZE);
 
     @Override
@@ -59,7 +64,7 @@ public class BotService implements CommandLineRunner {
         }
     }
 
-    private void filterAndExecute(List<User> activeUsers, Set<OrderDto> newDtos){
+    private void filterAndExecute(List<User> activeUsers, Set<OrderDto> newDtos) {
         if (newDtos.isEmpty()) return ;
         activeUsers.forEach(user -> {
             Set<OrderDto> filteredOrders = newDtos.stream()

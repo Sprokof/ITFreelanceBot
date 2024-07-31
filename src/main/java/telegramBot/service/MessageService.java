@@ -166,7 +166,4 @@ public final class MessageService {
                 !items[1].equals("0")) ? items[1] : "1" ;
         return new String[]{language, count};
     }
-
-
-
 }

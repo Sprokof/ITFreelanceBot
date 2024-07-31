@@ -8,7 +8,6 @@ public enum Exchange {
     FL_RU("Fl.ru", "https://www.fl.ru", 14),
     KWORK("Kwork", "https://kwork.ru", 7);
 
-
     private final String name;
     private final String link;
     private final int refreshInterval;

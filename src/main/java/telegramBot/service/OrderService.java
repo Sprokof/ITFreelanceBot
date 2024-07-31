@@ -28,32 +28,27 @@ public class OrderService implements CommandLineRunner {
     }
 
 
-    public synchronized void deleteOld() {
+    public void deleteOld() {
         for(Exchange exchange : Exchange.get()) {
             LocalDate deleteDate = currentDateMinusExchangeRefreshInterval(exchange.getRefreshInterval());
             this.orderRepository.deleteByExchangeAndDate(exchange, deleteDate);
         }
-
         waitDay();
     }
 
     @Override
     public void run(String... args) throws Exception {
-        new Thread(() -> {
-            while (true) {
-                deleteOld();
-            }
-        }).start();
+        deleteOld();
     }
 
-    private synchronized void waitDay() {
+    public void waitDay() {
         try {
             Thread.sleep(BotUtil.DAY_MILLISECONDS);
         } catch (InterruptedException e) {
             e.getCause();
-
         }
     }
+
     public Order create(Order order) {
         return this.orderRepository.save(order);
     }
@@ -77,6 +72,4 @@ public class OrderService implements CommandLineRunner {
     public int getOrdersCount(Language language) {
         return this.orderRepository.count(language);
     }
-
-
 }
