@@ -1,17 +1,17 @@
 package telegramBot.command;
 
 public class LastCommandHolder {
-    private final String[] holder = new String[0];
+    private final String[] holder = new String[1];
 
     public String get() {
-        return holder[0];
+        return this.holder[0];
     }
 
     public boolean add(String command) {
         if (CommandName.commandValueOf(command) == CommandName.UNKNOWN) {
             throw new IllegalArgumentException(command + " not exist");
         }
-        if (this.holder[0].equals(command)) {
+        if (command.equals(this.holder[0])) {
             return false;
         }
         this.holder[0] = command;
