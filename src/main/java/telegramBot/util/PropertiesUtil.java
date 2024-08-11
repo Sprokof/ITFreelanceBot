@@ -12,14 +12,13 @@ public class PropertiesUtil {
     }
 
     static {
+        PROPERTIES = new Properties();
         init();
     }
     static Properties PROPERTIES;
 
     private static void init() {
-        try (InputStream is = PropertiesUtil
-                .class.getClassLoader()
-                .getResourceAsStream("application.properties")){
+        try (InputStream is = PropertiesUtil.class.getClassLoader().getResourceAsStream("application.properties")){
             PROPERTIES.load(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
