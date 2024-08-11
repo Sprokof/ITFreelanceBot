@@ -1,21 +1,31 @@
-package telegramBot.task;
+package telegramBot.parser.helper;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import telegramBot.parser.HabrFreelanceParser;
 import telegramBot.util.BotUtil;
+import telegramBot.util.PropertiesUtil;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SSLHelper {
     private static final String USER_AGENT_KEY = "user.agent";
+    private static final Logger LOGGER = Logger.getLogger(SSLHelper.class.getSimpleName());
+
+
     static public Connection getConnection(String url){
-        return Jsoup.connect(url).userAgent(BotUtil.getProperty(USER_AGENT_KEY))
+        return Jsoup.connect(url).userAgent(PropertiesUtil.get(USER_AGENT_KEY))
                 .sslSocketFactory(SSLHelper.socketFactory());
     }
 
@@ -40,5 +50,15 @@ public class SSLHelper {
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException("Failed to create a SSL socket factory", e);
         }
+    }
+
+    public static Document getDocument(String link) {
+        Document document = null;
+        try {
+            document = SSLHelper.getConnection(link).get();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "an exception was thrown", e);
+        }
+        return document;
     }
 }

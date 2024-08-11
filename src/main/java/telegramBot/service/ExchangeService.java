@@ -10,7 +10,7 @@ import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import telegramBot.task.ExchangeParser;
+import telegramBot.parser.job.ExchangesOrdersJob;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;
@@ -28,7 +28,7 @@ public class ExchangeService implements CommandLineRunner {
     private OrderService orderService;
 
     @Autowired
-    private ExchangeParser parser;
+    private ExchangesOrdersJob parser;
 
     public Exchange get(telegramBot.enums.Exchange exchange) {
         return this.exchangeRepository.getByName(exchange.getName());

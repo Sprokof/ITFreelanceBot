@@ -1,4 +1,4 @@
-package telegramBot.task;
+package telegramBot.parser.helper;
 
 import telegramBot.dto.OrderDto;
 import telegramBot.enums.Language;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class OrderQueryRelation {
+public class OrderQueryRelationHelper {
     private static final Map<String, String[]> keywords = new HashMap<>();
 
     static {
