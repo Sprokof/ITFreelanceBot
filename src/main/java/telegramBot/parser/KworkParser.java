@@ -25,7 +25,7 @@ public class KworkParser {
     private static final Pattern SKIP_PATTERN = Pattern.compile("\"success\":true");
     private static final Logger LOGGER = Logger.getLogger(KworkParser.class.getSimpleName());
 
-    private static String convertToCyrillic(String input) {
+    private String convertToCyrillic(String input) {
         Pattern unicodeCyrillicPattern = Pattern.compile("4(\\d{2}|(\\d\\w))");
         String splitPattern = "(\\\\u0|\\\\\"u0)";
         String prefix = "0";
@@ -66,7 +66,7 @@ public class KworkParser {
         String json = getJson(link);
         if (json.isEmpty()) return new ArrayList<>();
 
-        String convertedJson = KworkParser.convertToCyrillic(json
+        String convertedJson = this.convertToCyrillic(json
                 .replaceAll("(\\{|\\})", ""));
         String[] jsonArray = convertedJson.split(KworkParser.SPLIT_PATTERN);
 

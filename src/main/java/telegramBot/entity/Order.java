@@ -49,8 +49,7 @@ public class Order extends BaseEntity {
     @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;
-        if(!(obj instanceof Order)) return false;
-        Order order = (Order) obj;
+        if(!(obj instanceof Order order)) return false;
         return this.title.equals(order.title);
     }
 

@@ -14,8 +14,11 @@ import java.util.List;
 @Service
 public class SubscriptionService {
 
-    @Autowired
-    private SubscriptionRepository subscriptionRepository;
+    private final SubscriptionRepository subscriptionRepository;
+
+    public SubscriptionService(SubscriptionRepository subscriptionRepository) {
+        this.subscriptionRepository = subscriptionRepository;
+    }
 
     public Subscription getByLanguage(Language language) {
         return this.subscriptionRepository.getByLanguage(language);

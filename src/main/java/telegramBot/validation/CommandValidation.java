@@ -10,11 +10,11 @@ import telegramBot.service.UserService;
 @Component
 public class CommandValidation {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
     private final MessageService messageService;
 
-    public CommandValidation(MessageService service){
+    public CommandValidation(UserService userService, MessageService service) {
+        this.userService = userService;
         this.messageService = service;
     }
 
