@@ -41,6 +41,7 @@ public abstract class BaseEntity implements Persistable<Long> {
     }
 
     @Override
+    // not correct impl
     public boolean equals(Object obj) {
         if(this == obj) return true;
         if(!(obj instanceof BaseEntity entity)) return false;

@@ -1,9 +1,12 @@
 package telegramBot.util;
 
+import java.rmi.AccessException;
 import java.util.*;
 
-public class ListUtil {
-
+public final class ListUtil {
+    private ListUtil() throws AccessException {
+        throw new AccessException("Constructor can't be created");
+    }
     public static <T> List<List<T>> partition(List<T> input) throws IllegalAccessException {
         int partitionCount = BotUtil.SIZE;
         if (partitionCount > input.size()) {

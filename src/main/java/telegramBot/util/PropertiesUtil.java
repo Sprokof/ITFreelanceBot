@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.rmi.AccessException;
 import java.util.Properties;
 
-public class PropertiesUtil {
+public final class PropertiesUtil {
 
     private PropertiesUtil () throws AccessException {
         throw new AccessException("Constructor can't be created");
