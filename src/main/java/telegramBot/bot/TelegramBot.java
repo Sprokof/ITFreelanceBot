@@ -8,13 +8,12 @@ import telegramBot.entity.User;
 import telegramBot.enums.Language;
 import telegramBot.command.LastCommandHolder;
 import telegramBot.messages.SubscriptionMessage;
-import telegramBot.repository.helper.SqlExecuteHelper;
 import telegramBot.service.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import telegramBot.service.runner.ExchangeRunner;
 import telegramBot.util.BotUtil;
 import telegramBot.validation.CommandValidation;
 
@@ -34,12 +33,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final OrderService orderService;
     private final UserService userService;
 
-    @Autowired
+
     public TelegramBot (
             TelegramBotsApi botsApi, OrderService orderService, UserService userService,
-            SubscriptionService subscriptionService, CommandValidation validation
+            SubscriptionService subscriptionService, CommandValidation validation, ExchangeRunner exchangeRunner
     ) throws Exception {
         botsApi.registerBot(this);
+        exchangeRunner.run();
         this.orderService = orderService;
         this.userService = userService;
         this.subscriptionService = subscriptionService;
