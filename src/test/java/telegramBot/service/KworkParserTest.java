@@ -18,7 +18,6 @@ public class KworkParserTest {
         kworkParser = new KworkParser();
     }
 
-
     @Test
     void convertToCyrillic_shouldReturnConvertedString() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method toCyrillicMethod = kworkParser.getClass().getDeclaredMethod("convertToCyrillic", String.class);

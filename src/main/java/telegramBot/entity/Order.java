@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity
 @Table(name = "Orders")

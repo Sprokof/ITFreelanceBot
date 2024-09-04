@@ -4,6 +4,7 @@ import telegramBot.dto.OrderDto;
 import telegramBot.entity.Order;
 import telegramBot.enums.Language;
 
+import java.rmi.AccessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,11 @@ import java.util.stream.Collectors;
 
 import static telegramBot.util.BotUtil.MAX_ORDERS_COUNT;
 
-public class OrderUtil {
+public final class OrderUtil {
+
+    private OrderUtil () throws AccessException {
+        throw new AccessException("Constructor can't be created");
+    }
     public static OrderDto toDto(Order order){
         String title = order.getTitle();
         String link = order.getLink();

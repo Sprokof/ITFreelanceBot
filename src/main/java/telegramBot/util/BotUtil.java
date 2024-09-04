@@ -4,8 +4,7 @@ import java.rmi.AccessException;
 
 import static telegramBot.util.PropertiesUtil.get;
 
-public class BotUtil {
-
+public final class BotUtil {
     private BotUtil () throws AccessException {
         throw new AccessException("Constructor can't be created");
     }

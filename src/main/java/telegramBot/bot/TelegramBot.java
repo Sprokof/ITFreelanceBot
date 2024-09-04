@@ -18,16 +18,15 @@ import telegramBot.util.BotUtil;
 import telegramBot.validation.CommandValidation;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
-    private final static Map<String, LastCommandHolder> commands = new Hashtable<>();
+    private final static Map<String, LastCommandHolder> commands = new ConcurrentHashMap<>();
     private static final String COMMAND_PREFIX = "/";
     private final CommandContainer commandContainer;
-
-    @Autowired
-    private CommandValidation validation;
+    private final CommandValidation validation;
     private final SubscriptionService subscriptionService;
     private final MessageService messageService;
     private final OrderService orderService;
@@ -36,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Autowired
     public TelegramBot(TelegramBotsApi botsApi, OrderService orderService,
-                       UserService userService, SubscriptionService subscriptionService) throws Exception {
+                       UserService userService, SubscriptionService subscriptionService, CommandValidation validation) throws Exception {
         botsApi.registerBot(this);
         this.orderService = orderService;
         this.userService = userService;
@@ -44,6 +43,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.messageService = new MessageService(this);
         this.commandContainer = new CommandContainer(this.messageService, this.subscriptionService, this.userService,
                 new AdminService(this.orderService, this.userService));
+        this.validation = validation;
     }
 
 
