@@ -9,6 +9,7 @@ import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
+import telegramBot.service.runner.ExchangeRunner;
 import telegramBot.util.BotUtil;
 import telegramBot.util.ListUtil;
 
@@ -20,20 +21,24 @@ import java.util.stream.Collectors;
 @Service
 public class BotService implements CommandLineRunner {
 
-    @Autowired
-    private @Lazy ExchangeService exchangeService;
+    private final @Lazy ExchangeRunner exchangeRunner;
 
-    @Autowired
-    private MessageService messageService;
+    private final MessageService messageService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    @Autowired
-    private SubscriptionService subscriptionService;
+    private final SubscriptionService subscriptionService;
+
+    public BotService(ExchangeRunner exchangeRunner, MessageService messageService, UserService userService,
+                      OrderService orderService, SubscriptionService subscriptionService) {
+        this.exchangeRunner = exchangeRunner;
+        this.messageService = messageService;
+        this.userService = userService;
+        this.orderService = orderService;
+        this.subscriptionService = subscriptionService;
+    }
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(BotUtil.SIZE);
 
@@ -43,7 +48,7 @@ public class BotService implements CommandLineRunner {
         while (true) {
             for (Subscription subscription : this.subscriptionService.getAllByStatus(SubscriptionStatus.INIT)) {
                 Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
-                all.addAll(this.exchangeService.findNewOrders(language));
+                all.addAll(this.exchangeRunner.findNewOrders(language));
             }
             all.forEach(dto -> orderService.create(dto.toEntity(true)));
             List<User> activeUsers = this.userService.getAllActive();

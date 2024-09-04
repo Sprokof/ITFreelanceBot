@@ -1,7 +1,6 @@
-package telegramBot.service;
+package telegramBot.service.runner;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Exchange;
 import telegramBot.entity.Order;
@@ -9,32 +8,37 @@ import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import telegramBot.parser.job.ExchangesOrdersJob;
+import telegramBot.service.OrderService;
+import telegramBot.service.SubscriptionService;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;
 
-@Service
-public class ExchangeService implements CommandLineRunner {
+@Component
+public final class ExchangeRunner {
 
-    @Autowired
-    private ExchangeRepository exchangeRepository;
+    private final ExchangeRepository exchangeRepository;
 
-    @Autowired
-    private SubscriptionService subscriptionService;
+    private final SubscriptionService subscriptionService;
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    @Autowired
-    private ExchangesOrdersJob parser;
+    private final ExchangesOrdersJob parser;
+
+    public ExchangeRunner(ExchangeRepository exchangeRepository, SubscriptionService subscriptionService,
+                          OrderService orderService, ExchangesOrdersJob parser) {
+        this.exchangeRepository = exchangeRepository;
+        this.subscriptionService = subscriptionService;
+        this.orderService = orderService;
+        this.parser = parser;
+    }
 
     public Exchange get(telegramBot.enums.Exchange exchange) {
         return this.exchangeRepository.getByName(exchange.getName());
     }
 
-    public void init() {
+    private void init() {
         List<Subscription> subscriptions = subscriptionService.getAllByStatus(SubscriptionStatus.CREATE);
         telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.get();
         for (Subscription subscription : subscriptions) {
@@ -61,8 +65,8 @@ public class ExchangeService implements CommandLineRunner {
     public void update(Exchange exchange) {
         this.exchangeRepository.save(exchange);
     }
-    @Override
-    public void run(String... args) throws Exception {
+
+    public void run() {
         this.init();
     }
 
@@ -87,9 +91,4 @@ public class ExchangeService implements CommandLineRunner {
         }
         return newOrders;
     }
-
-
-
-
-
 }
