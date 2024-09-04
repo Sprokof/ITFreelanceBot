@@ -1,6 +1,7 @@
 package telegramBot.util;
 
 import java.rmi.AccessException;
+import java.util.regex.Pattern;
 
 import static telegramBot.util.PropertiesUtil.get;
 
@@ -27,6 +28,7 @@ public final class BotUtil {
 
     public static final int COUNT_EXCHANGES = 3;
 
+    public static final Pattern JS_PATTERN = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(java script)((\\p{P}|\\s)?)");
 
     public static String skipOrderPattern(String keyword) {
         return String.format("(((не нужны)|(не нужно)|(без)|(кроме))(\\s|(\\s\\W+\\s))(?i)(" + keyword + "))|" +

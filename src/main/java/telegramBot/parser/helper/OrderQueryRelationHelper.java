@@ -2,14 +2,14 @@ package telegramBot.parser.helper;
 
 import telegramBot.dto.OrderDto;
 import telegramBot.enums.Language;
-import telegramBot.util.BotUtil;
-
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import static telegramBot.util.BotUtil.*;
+
 public class OrderQueryRelationHelper {
-    private static final Map<String, String[]> keywords = new HashMap<>();
+    private static final Map<String, String[]> keywords = new ConcurrentHashMap<>();
 
     static {
          keywords.put(Language.JAVASCRIPT.getName(), new String[]{"JavaScript", "Java Script",
@@ -44,26 +44,27 @@ public class OrderQueryRelationHelper {
     private static boolean findKeyword(String field, Language language) {
         for (String keyword : getKeywords(language)) {
             if (!containsSkipOrderPattern(field, keyword) &&
-                    containsKeywordPattern(field, keyword)) return true;
+                    containsKeywordPattern(field, keyword)) {
+                return true;
+            }
         }
         return false;
     }
 
     private static boolean containsSkipOrderPattern(String field, String keyword){
-        Pattern skipPattern = Pattern.compile(BotUtil.skipOrderPattern(keyword));
+        Pattern skipPattern = Pattern.compile(skipOrderPattern(keyword));
         return skipPattern.matcher(field).find();
     }
 
     private static boolean containsKeywordPattern(String field, String keyword){
-        Pattern keywordPattern = Pattern.compile(BotUtil.keywordPattern(keyword));
+        Pattern keywordPattern = Pattern.compile(keywordPattern(keyword));
         return keywordPattern.matcher(field).find();
 
     }
 
     public static boolean falseJavaPattern(OrderDto order){
         String title = order.getTitle(), details = order.getDetails();
-        Pattern jsPattern = Pattern.compile("(\\s|(\\p{P}\\s)?)(?i)(java script)((\\p{P}|\\s)?)");
-        return jsPattern.matcher(title).find() || jsPattern.matcher(details).find();
+        return JS_PATTERN.matcher(title).find() || JS_PATTERN.matcher(details).find();
     }
 
 }
