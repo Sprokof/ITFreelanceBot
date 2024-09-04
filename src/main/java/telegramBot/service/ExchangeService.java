@@ -61,6 +61,7 @@ public class ExchangeService implements CommandLineRunner {
     public void update(Exchange exchange) {
         this.exchangeRepository.save(exchange);
     }
+
     @Override
     public void run(String... args) throws Exception {
         this.init();

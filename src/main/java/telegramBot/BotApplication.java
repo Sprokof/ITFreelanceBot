@@ -19,6 +19,10 @@ public class BotApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(BotApplication.class);
+        try {
+            SpringApplication.run(BotApplication.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

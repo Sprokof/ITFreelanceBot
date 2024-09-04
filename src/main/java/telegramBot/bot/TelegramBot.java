@@ -8,6 +8,7 @@ import telegramBot.entity.User;
 import telegramBot.enums.Language;
 import telegramBot.command.LastCommandHolder;
 import telegramBot.messages.SubscriptionMessage;
+import telegramBot.repository.helper.SqlExecuteHelper;
 import telegramBot.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @Component
+// main class
 public class TelegramBot extends TelegramLongPollingBot {
     private final static Map<String, LastCommandHolder> commands = new ConcurrentHashMap<>();
     private static final String COMMAND_PREFIX = "/";
@@ -32,10 +34,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final OrderService orderService;
     private final UserService userService;
 
-
     @Autowired
-    public TelegramBot(TelegramBotsApi botsApi, OrderService orderService,
-                       UserService userService, SubscriptionService subscriptionService, CommandValidation validation) throws Exception {
+    public TelegramBot (
+            TelegramBotsApi botsApi, OrderService orderService, UserService userService,
+            SubscriptionService subscriptionService, CommandValidation validation
+    ) throws Exception {
         botsApi.registerBot(this);
         this.orderService = orderService;
         this.userService = userService;
