@@ -7,10 +7,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import telegramBot.enums.Role;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Users")
@@ -43,10 +40,10 @@ public class User extends BaseEntity {
     @JoinTable(name = "Users_subscriptions",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = {@JoinColumn(name = "subscription_id")})
-    private Set<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
 
     public void addSubscription(Subscription subscription){
-        if(this.subscriptions == null) this.subscriptions = new HashSet<>();
+        if(this.subscriptions == null) this.subscriptions = new ArrayList<>();
         this.subscriptions.add(subscription);
     }
 
@@ -56,9 +53,9 @@ public class User extends BaseEntity {
         }
 
     }
-    public Set<Subscription> getSubscriptions() {
+    public List<Subscription> getSubscriptions() {
         if (this.subscriptions == null) {
-            this.subscriptions = new HashSet<>();
+            this.subscriptions = new ArrayList<>();
         }
         return this.subscriptions;
     }
@@ -67,4 +64,15 @@ public class User extends BaseEntity {
         return this.subscriptions.contains(subscription);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof User)) return false;
+        return this.chatId.equals(((User) obj).getChatId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.chatId);
+    }
 }

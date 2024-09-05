@@ -13,7 +13,7 @@ import telegramBot.service.*;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.service.runner.ExchangeRunner;
+import telegramBot.service.ExchangeService;
 import telegramBot.util.BotUtil;
 import telegramBot.validation.CommandValidation;
 
@@ -36,10 +36,10 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public TelegramBot (
             TelegramBotsApi botsApi, OrderService orderService, UserService userService,
-            SubscriptionService subscriptionService, CommandValidation validation, ExchangeRunner exchangeRunner
+            SubscriptionService subscriptionService, CommandValidation validation, ExchangeService exchangeService
     ) throws Exception {
         botsApi.registerBot(this);
-        exchangeRunner.run();
+        exchangeService.fill();
         this.orderService = orderService;
         this.userService = userService;
         this.subscriptionService = subscriptionService;

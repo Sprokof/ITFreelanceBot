@@ -39,12 +39,4 @@ public abstract class BaseEntity implements Persistable<Long> {
     public int hashCode() {
         return id == null ? 0 : id.intValue();
     }
-
-    @Override
-    // not correct impl
-    public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(!(obj instanceof BaseEntity entity)) return false;
-        return Objects.equals(this.id, entity.id);
-    }
 }

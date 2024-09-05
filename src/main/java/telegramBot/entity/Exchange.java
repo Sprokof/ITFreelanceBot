@@ -6,6 +6,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Exchange")
@@ -42,5 +43,15 @@ public class Exchange extends BaseEntity {
         this.orders.add(order);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Exchange exchange)) return false;
+        return this.link.equals(exchange.link) && this.name.equals(exchange.name);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.link, this.name);
+    }
 }
