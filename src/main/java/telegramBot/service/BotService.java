@@ -1,6 +1,5 @@
 package telegramBot.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,6 @@ import telegramBot.entity.Subscription;
 import telegramBot.entity.User;
 import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
-import telegramBot.service.runner.ExchangeRunner;
 import telegramBot.util.BotUtil;
 import telegramBot.util.ListUtil;
 
@@ -19,9 +17,9 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
-public class BotService implements CommandLineRunner {
+public final class BotService implements CommandLineRunner {
 
-    private final @Lazy ExchangeRunner exchangeRunner;
+    private final @Lazy ExchangeService exchangeService;
 
     private final MessageService messageService;
 
@@ -31,9 +29,9 @@ public class BotService implements CommandLineRunner {
 
     private final SubscriptionService subscriptionService;
 
-    public BotService(ExchangeRunner exchangeRunner, MessageService messageService, UserService userService,
+    public BotService(ExchangeService exchangeService, MessageService messageService, UserService userService,
                       OrderService orderService, SubscriptionService subscriptionService) {
-        this.exchangeRunner = exchangeRunner;
+        this.exchangeService = exchangeService;
         this.messageService = messageService;
         this.userService = userService;
         this.orderService = orderService;
@@ -43,15 +41,17 @@ public class BotService implements CommandLineRunner {
     private final ExecutorService executorService = Executors.newFixedThreadPool(BotUtil.SIZE);
 
     @Override
+    @SuppressWarnings("InfiniteLoopStatement")
     public void run(String... args) throws Exception {
         Set<OrderDto> all = new HashSet<>();
         while (true) {
             for (Subscription subscription : this.subscriptionService.getAllByStatus(SubscriptionStatus.INIT)) {
                 Language language = Language.ignoreCaseValueOf(subscription.getLanguage());
-                all.addAll(this.exchangeRunner.findNewOrders(language));
+                all.addAll(this.exchangeService.findNewOrders(language));
             }
             all.forEach(dto -> orderService.create(dto.toEntity(true)));
             List<User> activeUsers = this.userService.getAllActive();
+            // when users count is biggest than size it dived by partitions to concurrent run
             if (activeUsers.size() > BotUtil.SIZE) {
                 List<List<User>> usersPartition = ListUtil.partition(activeUsers);
                 for (List<User> users : usersPartition) {

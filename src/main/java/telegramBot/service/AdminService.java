@@ -5,7 +5,7 @@ import telegramBot.enums.Language;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdminService {
+public final class AdminService {
 
     private final OrderService orderService;
     private final UserService userService;

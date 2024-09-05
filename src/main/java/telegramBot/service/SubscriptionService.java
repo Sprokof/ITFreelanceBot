@@ -1,18 +1,14 @@
 package telegramBot.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import telegramBot.entity.Subscription;
 import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.SubscriptionRepository;
-import telegramBot.repository.datajpa.DataJpaSubscriptionRepository;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Service
-public class SubscriptionService {
+public final class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
 

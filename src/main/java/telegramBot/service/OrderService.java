@@ -13,9 +13,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Service
-public class OrderService implements CommandLineRunner {
+public final class OrderService implements CommandLineRunner {
 
-     private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;

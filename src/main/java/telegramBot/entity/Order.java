@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Orders")
@@ -49,15 +50,10 @@ public class Order extends BaseEntity {
     public boolean equals(Object obj) {
         if(this == obj) return true;
         if(!(obj instanceof Order order)) return false;
-        return this.title.equals(order.title);
+        return this.title.equals(order.title) &&
+                this.initDate.equals(order.initDate)
+                && this.link.equals(order.link);
     }
-
-    public Order(Order order){
-        this.setTitle(order.getTitle());
-        this.setLink(order.getLink());
-        this.setInitDate(order.getInitDate());
-    }
-
     private LocalDate now(){
         return LocalDate.now();
     }
@@ -86,6 +82,6 @@ public class Order extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return this.subscription.hashCode();
+        return Objects.hash(this.title, this.link, this.initDate);
     }
 }

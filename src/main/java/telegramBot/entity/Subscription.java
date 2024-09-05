@@ -12,6 +12,7 @@ import telegramBot.enums.SubscriptionStatus;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "Subscription")
 @Entity
@@ -45,4 +46,15 @@ public class Subscription extends BaseEntity {
         orders.add(order);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Subscription)) return false;
+        return this.language.equals(((Subscription) obj).language);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.language);
+    }
 }

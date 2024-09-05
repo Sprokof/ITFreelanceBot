@@ -1,6 +1,6 @@
-package telegramBot.service.runner;
+package telegramBot.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import telegramBot.dto.OrderDto;
 import telegramBot.entity.Exchange;
 import telegramBot.entity.Order;
@@ -9,14 +9,12 @@ import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
 import telegramBot.parser.job.ExchangesOrdersJob;
-import telegramBot.service.OrderService;
-import telegramBot.service.SubscriptionService;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;
 
-@Component
-public final class ExchangeRunner {
+@Service
+public final class ExchangeService {
 
     private final ExchangeRepository exchangeRepository;
 
@@ -26,8 +24,8 @@ public final class ExchangeRunner {
 
     private final ExchangesOrdersJob parser;
 
-    public ExchangeRunner(ExchangeRepository exchangeRepository, SubscriptionService subscriptionService,
-                          OrderService orderService, ExchangesOrdersJob parser) {
+    public ExchangeService(ExchangeRepository exchangeRepository, SubscriptionService subscriptionService,
+                           OrderService orderService, ExchangesOrdersJob parser) {
         this.exchangeRepository = exchangeRepository;
         this.subscriptionService = subscriptionService;
         this.orderService = orderService;
@@ -38,7 +36,8 @@ public final class ExchangeRunner {
         return this.exchangeRepository.getByName(exchange.getName());
     }
 
-    private void init() {
+    // method for firstly fill db
+    public void fill() {
         List<Subscription> subscriptions = subscriptionService.getAllByStatus(SubscriptionStatus.CREATE);
         telegramBot.enums.Exchange[] exchanges = telegramBot.enums.Exchange.get();
         for (Subscription subscription : subscriptions) {
@@ -66,9 +65,6 @@ public final class ExchangeRunner {
         this.exchangeRepository.save(exchange);
     }
 
-    public void run() {
-        this.init();
-    }
 
     public Set<OrderDto> findNewOrders(Language language) {
         Set<OrderDto> newOrders = new HashSet<>();
