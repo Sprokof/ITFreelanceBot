@@ -10,12 +10,12 @@ public final class PropertiesUtil {
     private PropertiesUtil () throws AccessException {
         throw new AccessException("Constructor can't be created");
     }
+    static Properties PROPERTIES;
 
     static {
         PROPERTIES = new Properties();
         init();
     }
-    static Properties PROPERTIES;
 
     private static void init() {
         try (InputStream is = PropertiesUtil.class.getClassLoader().getResourceAsStream("application.properties")){

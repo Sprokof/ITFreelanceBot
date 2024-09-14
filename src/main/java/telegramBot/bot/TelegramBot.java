@@ -13,7 +13,6 @@ import telegramBot.service.*;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.service.ExchangeService;
 import telegramBot.util.BotUtil;
 import telegramBot.validation.CommandValidation;
 

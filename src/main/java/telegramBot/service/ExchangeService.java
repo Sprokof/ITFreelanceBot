@@ -9,6 +9,8 @@ import telegramBot.enums.Language;
 import telegramBot.enums.SubscriptionStatus;
 import telegramBot.repository.ExchangeRepository;
 import telegramBot.parser.job.ExchangesOrdersJob;
+import telegramBot.service.OrderService;
+import telegramBot.service.SubscriptionService;
 import telegramBot.util.OrderUtil;
 
 import java.util.*;
