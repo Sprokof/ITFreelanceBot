@@ -1,4 +1,4 @@
-package telegramBot.service;
+package telegramBot.parser;
 
 
 import org.junit.jupiter.api.Assertions;
@@ -9,7 +9,7 @@ import telegramBot.parser.KworkParser;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class KworkParserTest {
+class KworkParserTest {
 
     private KworkParser kworkParser;
 

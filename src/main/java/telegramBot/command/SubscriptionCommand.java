@@ -2,15 +2,11 @@ package telegramBot.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.entity.Subscription;
-import telegramBot.enums.SubscriptionStatus;
 import telegramBot.service.MessageService;
 import telegramBot.service.SubscriptionService;
-import telegramBot.service.UserService;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 public class SubscriptionCommand implements Command {
     private static final String[] SUBSCRIPTION_COMMANDS = {
